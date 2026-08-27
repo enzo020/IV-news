@@ -1,0 +1,6 @@
+@IVnews_HostAddress = http://localhost:5022
+
+GET {{IVnews_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
