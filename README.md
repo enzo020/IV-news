@@ -1,13 +1,67 @@
-# Guia de execução 
-- Sempre execute o comando `dotnet restore` após uma alteração estrutural para restaurar as dependências
-.
-- Para iniciar o backend, utilize o comando `dotnet run` no diretório raiz do backend.
+# Guia de execução
+## Pré-requisitos
 
-- Para acessar a API, abra o navegador e vá para `http://localhost:5000` (ou a porta especificada no terminal com ctrl+click em cima do link gerado). 
+Antes de executar o projeto, instale:
 
-- O swagger é uma ferramenta incluída no projeto, acessível em `http://localhost:5000/swagger` quando o servidor for iniciado, e serve para para testar os endpoints da API.
+.NET SDK — necessário para o backend.
+Node.js e npm — necessários para o frontend React.
+Git — para clonar e versionar o projeto.
 
-- Para iniciar o frontend, inicie um servidor local (como o Live Server do VS Code) no diretório raiz do frontend clicando com o botão direito no código do arquivo e selecionando "open with live server". Para isso, certifique-se de que a extensão Live Server esteja instalada no VS Code.
+Não é necessário instalar as dependências do projeto manualmente. Elas são instaladas pelos comandos descritos abaixo.
+
+O projeto pode ser desenvolvido em qualquer editor de código. O VS Code é recomendado, mas não é obrigatório.
+
+Backend
+
+Entre no diretório do backend:
+
+cd backend
+
+Restaure as dependências:
+
+dotnet restore
+
+Inicie o servidor:
+
+dotnet run
+
+O terminal exibirá o endereço em que a API está sendo executada, por exemplo:
+
+Now listening on: http://localhost:5000
+
+A porta pode variar de acordo com a configuração local. Utilize sempre o endereço exibido no terminal.
+
+# Swagger
+
+Com o backend em execução, o Swagger pode ser acessado pelo endereço com ctrl+click:
+
+http://localhost:5000/swagger
+
+Caso a API esteja utilizando outra porta, substitua 5000 pela porta exibida no terminal.
+
+O Swagger permite visualizar e testar os endpoints disponíveis na API.
+
+# Frontend
+
+O frontend utiliza React + Vite.
+
+Entre no diretório do frontend:
+
+cd frontend
+
+Instale as dependências:
+
+npm install
+
+Inicie o servidor de desenvolvimento:
+
+npm run dev
+
+O terminal exibirá um endereço semelhante a:
+
+http://localhost:5173
+
+Abra esse endereço no navegador com ctrl+click.
 
 # Guia de branches e versionamento git
 - O projeto utiliza o Git para versionamento de código. As branches seguem o padrão:
