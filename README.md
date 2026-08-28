@@ -36,9 +36,9 @@ O **IV News** é uma plataforma web para exibição de notícias em tempo real, 
 ## 👥 Integrantes do Projeto
 * **Enzo** - Backend (C# / ASP.NET)
 * **Adam** - Frontend / Documentação
-* **Junior** - Frontend / Documentação
-* **Murilo** - Banco de Dados (SQLite)
-* **Maria Clara** - Integração e Testes (Google Maps / IA)
+* **Junior** -  Documentação e IAs
+* **Murilo** - Front-end(React)
+* **Maria Clara** - Banco de Dados (SQLlite)
 
 ---
 
