@@ -1,3 +1,126 @@
-h1 {
-    font-size: 40px;
+:root {
+    --primary-color: #7C4CB3;
+
+    --background-color: #0D0D0D;
+    --surface-color: #181818;
+    --surface-light: #242424;
+
+    --text-color: #F5F5F5;
+    --text-secondary: #B8B8B8;
+}
+
+body {
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.site-header {
+    background-color: #000;
+    color: white;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 200px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.header-center h1 {
+    margin: 0;
+    font-size: 48px;
+    font-weight: 400;
+    color: var(--primary-color);
+}
+
+.header-center p {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-icon {
+    width: 50px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.account-button {
+    border: none;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+
+    background-color: var(--primary-color);
+    color: #000;
+
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+
+    width: 450px;
+    height: 42px;
+
+    border: 1px solid #777;
+    border-radius: 25px;
+
+    padding: 0 15px;
+}
+
+.search-box input {
+    flex: 1;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: white;
+
+    text-align: center;
+    font-size: 17px;
+}
+
+.search-box input::placeholder {
+    color: #ddd;
+}
+
+.site-navbar {
+    background-color: #000;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+}
+
+.navbar-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-links a {
+    padding: 18px 10px;
+
+    color: white;
+    text-decoration: none;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.navbar-links a:hover {
+    color: var(--primary-color);
 }
