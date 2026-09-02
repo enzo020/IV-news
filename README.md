@@ -36,9 +36,9 @@ A porta pode variar de acordo com a configuração local. Utilize sempre o ender
 
 Com o backend em execução, o Swagger pode ser acessado pelo endereço com ctrl+click:
 
-http://localhost:5000/swagger
+http://localhost:5022/
 
-Caso a API esteja utilizando outra porta, substitua 5000 pela porta exibida no terminal.
+Caso a API esteja utilizando outra porta, substitua 5022 pela porta exibida no terminal.
 
 O Swagger permite visualizar e testar os endpoints disponíveis na API.
 
