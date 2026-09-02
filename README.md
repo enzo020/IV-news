@@ -3,7 +3,8 @@
 
 Antes de executar o projeto, instale:
 
-.NET SDK — necessário para o backend.
+.NET SDK 8.0 — necessário para o backend.
+https://dotnet.microsoft.com/pt-br/download/dotnet/8.0
 Node.js e npm — necessários para o frontend React.
 Git — para clonar e versionar o projeto.
 
