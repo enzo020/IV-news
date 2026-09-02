@@ -16,6 +16,16 @@ function Home() {
                     title="Segunda notícia"
                     description="Descrição da segunda notícia."
                 />
+
+                <NewsCard
+                    title="Segunda notícia"
+                    description="Descrição da segunda notícia."
+                />
+
+                <NewsCard
+                    title="Segunda notícia"
+                    description="Descrição da segunda notícia."
+                />
             </section>
         </main>
     );

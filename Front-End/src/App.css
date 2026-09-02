@@ -135,7 +135,12 @@ body {
 }
 
 .news-grid {
-    display: grid;
+    justify-content: space-around;
+    margin: 5%;
+    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;
 }
 
 .news-card {
