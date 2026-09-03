@@ -3,6 +3,7 @@ using System;
 using IVnews.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IVnews.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260903224436_UpdateNoticiaComRelacionamentos")]
+    partial class UpdateNoticiaComRelacionamentos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -30,23 +33,6 @@ namespace IVnews.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categorias");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nome = "Política"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nome = "Esporte"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nome = "Tecnologia"
-                        });
                 });
 
             modelBuilder.Entity("IVnews.Model.Localizacao", b =>
@@ -66,20 +52,6 @@ namespace IVnews.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Localizacoes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Cidade = "Maringá",
-                            Estado = "PR"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Cidade = "São Paulo",
-                            Estado = "SP"
-                        });
                 });
 
             modelBuilder.Entity("IVnews.Model.Noticia", b =>
@@ -112,17 +84,6 @@ namespace IVnews.Migrations
                     b.HasIndex("LocalizacaoId");
 
                     b.ToTable("Noticias");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoriaId = 3,
-                            Conteudo = "Conteúdo de exemplo pra testar o banco.",
-                            LocalizacaoId = 1,
-                            PublicadoEm = new DateTime(2026, 9, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Titulo = "Notícia de teste"
-                        });
                 });
 
             modelBuilder.Entity("IVnews.Model.Resumo", b =>
@@ -143,14 +104,6 @@ namespace IVnews.Migrations
                     b.HasIndex("NoticiaId");
 
                     b.ToTable("Resumos");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            NoticiaId = 1,
-                            Texto = "Resumo de exemplo da notícia de teste."
-                        });
                 });
 
             modelBuilder.Entity("IVnews.Model.Noticia", b =>
