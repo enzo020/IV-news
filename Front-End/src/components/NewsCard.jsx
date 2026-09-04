@@ -1,4 +1,4 @@
-function NewsCard({ title, description }) {
+function NewsCard({ title, description, image }) {
     
     
     return (
@@ -8,7 +8,7 @@ function NewsCard({ title, description }) {
             </h2>
 
             <div className="news-card-image">
-                <img alt="imagem da notícia"></img>
+                <img alt="imagem da notícia" src={image}></img>
             </div>
 
             <p className="news-card-description">

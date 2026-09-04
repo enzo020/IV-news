@@ -8,23 +8,27 @@ function Home() {
 
             <section className="news-grid">
                 <NewsCard
-                    title="Primeira notícia"
-                    description="Descrição da primeira notícia."
+                    title="Manoel Gomes é eleito como deputado federal"
+                    description="Agora vai ser tudo bom de maise"
+                    image="/imgNoticia.jpg" 
                 />
 
                 <NewsCard
                     title="Segunda notícia"
                     description="Descrição da segunda notícia."
+                    image=""
                 />
 
                 <NewsCard
                     title="Segunda notícia"
                     description="Descrição da segunda notícia."
+                    image=""
                 />
 
                 <NewsCard
                     title="Segunda notícia"
                     description="Descrição da segunda notícia."
+                    image=""
                 />
             </section>
         </main>

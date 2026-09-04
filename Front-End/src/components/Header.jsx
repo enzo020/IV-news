@@ -1,12 +1,21 @@
 import Icon from "./Icon";
 
-function Header() {
+function Header({ onMenuClick }) {
     return (
         <header className="site-header">
 
-            <div className="container header-content">
+            <div className="container-fluid header-content">
+                <div className="d-flex align-items-center justify-content-between w-100">
+                <button
+                    className="menu-button"
+                    onClick={onMenuClick}
+                >
+                    ☰
+                </button>
+                    <Icon />
+                </div>
 
-                <Icon />
+
 
                 <div className="header-center">
                     <h1>IV NEWS</h1>
@@ -26,7 +35,6 @@ function Header() {
                 </button>
 
             </div>
-
         </header>
     );
 }
