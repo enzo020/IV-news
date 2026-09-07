@@ -28,7 +28,7 @@ dotnet run
 
 O terminal exibirá o endereço em que a API está sendo executada, por exemplo:
 
-Now listening on: http://localhost:5000
+Now listening on: http://localhost:5022
 
 A porta pode variar de acordo com a configuração local. Utilize sempre o endereço exibido no terminal.
 
