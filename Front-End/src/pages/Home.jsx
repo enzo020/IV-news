@@ -1,36 +1,29 @@
 import NewsCard from "../components/NewsCard";
-import Footer from "../components/Footer";
+import FeaturedNews from "../components/FeaturedNews";
+
+// Tmeporário:
+import noticias from "../data/NewsMock";
 
 function Home() {
+
     return (
         <main>
-            <h1>Últimas notícias</h1>
+            <FeaturedNews news={noticias} />
+            <h1 className="last-news-title">Últimas notícias</h1>
 
-            <section className="news-grid">
-                <NewsCard
-                    title="Manoel Gomes é eleito como deputado federal"
-                    description="Agora vai ser tudo bom de maise"
-                    image="/imgNoticia.jpg" 
-                />
-
-                <NewsCard
-                    title="Segunda notícia"
-                    description="Descrição da segunda notícia."
-                    image=""
-                />
-
-                <NewsCard
-                    title="Segunda notícia"
-                    description="Descrição da segunda notícia."
-                    image=""
-                />
-
-                <NewsCard
-                    title="Segunda notícia"
-                    description="Descrição da segunda notícia."
-                    image=""
-                />
-            </section>
+            <div className="news-grid">
+                {noticias.map((noticia) => (
+                    <NewsCard
+                        key={noticia.id}
+                        id={noticia.id}
+                        title={noticia.title}
+                        description={noticia.description}
+                        image={noticia.image}
+                        category={noticia.category}
+                        location={noticia.location}
+                    />
+                ))}
+            </div>
         </main>
     );
 }

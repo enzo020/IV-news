@@ -1,9 +1,11 @@
+import { Link } from "react-router-dom";
+
 function Navbar() {
     return (
         <nav className="site-navbar">
             <div className="container">
                 <div className="navbar-links">
-                    <a href="#">Home</a>
+                    <Link to={`/`}>Home</Link>
                     <a href="#">Categorias</a>
                     <a href="#">Últimas notícias</a>
                     <a href="#">Sobre</a>

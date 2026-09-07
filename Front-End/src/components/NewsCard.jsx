@@ -1,19 +1,51 @@
-function NewsCard({ title, description, image }) {
-    
-    
+import { Link } from "react-router-dom";
+
+function NewsCard({
+    id,
+    title,
+    description,
+    image,
+    category,
+    location
+}) {
+
     return (
         <article className="news-card">
-            <h2 className="news-card-title">
-                {title}
-            </h2>
 
             <div className="news-card-image">
-                <img alt="imagem da notícia" src={image}></img>
+                <img
+                    src={image}
+                    alt={title}
+                />
             </div>
 
-            <p className="news-card-description">
-                {description}
-            </p>
+            <div className="news-card-content">
+
+                <span className="news-card-category">
+                    {category}
+                </span>
+
+                <h2 className="news-card-title">
+                    {title}
+                </h2>
+
+                <span className="news-card-location">
+                    {location}
+                </span>
+
+                <p className="news-card-description">
+                    {description}
+                </p>
+
+                <Link
+                    to={`/noticia/${id}`}
+                    className="news-card-button"
+                >
+                    Ler notícia
+                </Link>
+
+            </div>
+
         </article>
     );
 }
