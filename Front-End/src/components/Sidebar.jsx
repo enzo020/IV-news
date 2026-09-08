@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+
+
 function Sidebar({ isOpen, onClose }) {
     return (
         <>
@@ -30,9 +33,9 @@ function Sidebar({ isOpen, onClose }) {
 
                 <nav className="sidebar-nav">
 
-                    <a href="#">
+                    <Link to={"/"}>
                         🏠 Início
-                    </a>
+                    </Link>
 
                     <a href="#">
                         📰 Últimas notícias
