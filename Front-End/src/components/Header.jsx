@@ -16,11 +16,20 @@ function Header({ onMenuClick }) {
                 </div>
 
 
-
+          
                 <div className="header-center">
-                    <h1>IV NEWS</h1>
 
-                    <p>Notícias digitais atualizadas em mãos</p>
+                    <a href="/" className="site-logo">
+                        <span className="site-logo-mark">IV</span>
+
+                        <span className="site-logo-name">
+                            NEWS
+                        </span>
+                    </a>
+
+                    <p className="site-tagline">
+                        Notícias atualizadas, onde você estiver
+                    </p>
 
                     <div className="search-box">
                         <input
@@ -28,7 +37,10 @@ function Header({ onMenuClick }) {
                             placeholder="Pesquise notícias"
                         />
                     </div>
+
                 </div>
+   
+
 
                 <button className="account-button">
                     Conta
