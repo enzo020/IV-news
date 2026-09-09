@@ -3,6 +3,7 @@ using System;
 using IVnews.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IVnews.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260907142613_ExpandeCamposNoticiaCategoriaLocalizacao")]
+    partial class ExpandeCamposNoticiaCategoriaLocalizacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.30");
@@ -53,18 +56,6 @@ namespace IVnews.Migrations
                             Id = 3,
                             Descricao = "Notícias sobre tecnologia e inovação",
                             Nome = "Tecnologia"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Descricao = "Notícias sobre saúde e bem-estar",
-                            Nome = "Saúde"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Descricao = "Notícias sobre economia e mercado financeiro",
-                            Nome = "Economia"
                         });
                 });
 
@@ -103,20 +94,6 @@ namespace IVnews.Migrations
                             Id = 2,
                             Cidade = "São Paulo",
                             Estado = "SP",
-                            Pais = "Brasil"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Cidade = "Curitiba",
-                            Estado = "PR",
-                            Pais = "Brasil"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Cidade = "Rio de Janeiro",
-                            Estado = "RJ",
                             Pais = "Brasil"
                         });
                 });
@@ -176,54 +153,6 @@ namespace IVnews.Migrations
                             LocalizacaoId = 1,
                             PublicadoEm = new DateTime(2026, 9, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Titulo = "Notícia de teste"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Autor = "Ana Silva",
-                            CategoriaId = 1,
-                            Conteudo = "Candidatos iniciam campanhas em todo o estado.",
-                            Fonte = "IV News",
-                            ImagemUrl = "https://via.placeholder.com/600x400",
-                            LocalizacaoId = 2,
-                            PublicadoEm = new DateTime(2026, 9, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Titulo = "Eleições municipais se aproximam"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Autor = "Carlos Souza",
-                            CategoriaId = 2,
-                            Conteudo = "Vitória histórica na final do estadual.",
-                            Fonte = "IV News",
-                            ImagemUrl = "https://via.placeholder.com/600x400",
-                            LocalizacaoId = 3,
-                            PublicadoEm = new DateTime(2026, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Titulo = "Time local vence campeonato"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Autor = "Beatriz Lima",
-                            CategoriaId = 3,
-                            Conteudo = "Startup lança ferramenta de saúde com inteligência artificial.",
-                            Fonte = "IV News",
-                            ImagemUrl = "https://via.placeholder.com/600x400",
-                            LocalizacaoId = 4,
-                            PublicadoEm = new DateTime(2026, 9, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Titulo = "Nova IA promete revolucionar diagnósticos"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Autor = "Rafael Costa",
-                            CategoriaId = 5,
-                            Conteudo = "Bolsa de valores tem alta após anúncio do governo.",
-                            Fonte = "IV News",
-                            ImagemUrl = "https://via.placeholder.com/600x400",
-                            LocalizacaoId = 1,
-                            PublicadoEm = new DateTime(2026, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Titulo = "Mercado financeiro reage a nova taxa"
                         });
                 });
 
@@ -252,30 +181,6 @@ namespace IVnews.Migrations
                             Id = 1,
                             NoticiaId = 1,
                             Texto = "Resumo de exemplo da notícia de teste."
-                        },
-                        new
-                        {
-                            Id = 2,
-                            NoticiaId = 2,
-                            Texto = "Candidatos disputam eleições municipais em todo o estado."
-                        },
-                        new
-                        {
-                            Id = 3,
-                            NoticiaId = 3,
-                            Texto = "Time conquista título estadual em final emocionante."
-                        },
-                        new
-                        {
-                            Id = 4,
-                            NoticiaId = 4,
-                            Texto = "Startup inova com IA aplicada à saúde."
-                        },
-                        new
-                        {
-                            Id = 5,
-                            NoticiaId = 5,
-                            Texto = "Governo anuncia nova taxa e mercado reage positivamente."
                         });
                 });
 
