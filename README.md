@@ -3322,3 +3322,2041 @@ eventuais restrições do provedor.
 
 API Principal: Google Gemini API
 API Reserva: Groq Groq API
+....................................................
+API de imagem
+1. Google Gemini API / Gemini Image
+
+Link de acesso: https://ai.google.dev/gemini-api/docs/image-generation
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DO MODELO
+
+A API Gemini possui modelos atuais de geração de imagens, como:
+
+Gemini 3.1 Flash Image;
+Gemini 3.1 Flash Lite Image;
+Gemini 3 Pro Image.
+
+Porém, os modelos atuais de geração de imagens não possuem nível gratuito de API para geração de imagens na tabela atual de preços. A geração de imagens é cobrada conforme o modelo e a quantidade de imagens/tokens gerados.
+
+⚠️ Isso é diferente da IA de texto Gemini, que possui modelos com Free Tier.
+
+Resultado
+
+🟡 Geração de imagem via API: disponível, mas sem Free Tier de geração atualmente.
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM — excelente
+
+A Gemini pode gerar imagens a partir de prompts e também realizar edição/transformação de imagens.
+
+Os modelos atuais são destinados a:
+
+geração de imagens;
+edição;
+composição;
+criação visual;
+geração com contexto textual.
+
+A documentação atual recomenda os modelos Nano Banana para geração de imagens.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 SIM — depende do modelo
+
+Cada modelo possui suas próprias características de resolução e limites.
+
+Por exemplo, o Gemini 3.1 Flash Image possui geração em:
+
+512 px;
+1K;
+2K;
+4K,
+
+dependendo da configuração/modelo.
+
+Resultado
+
+🟢 Adequado para geração de imagens do projeto.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE
+
+Para geração de imagens via API, os modelos atuais são cobrados.
+
+Portanto, para utilizar a geração de imagens além de testes disponíveis no Google AI Studio, pode ser necessário habilitar faturamento.
+
+⚠️ Não devemos considerar a geração de imagens do Gemini como "gratuita" apenas porque a API Gemini possui Free Tier para determinados modelos de texto.
+
+Resultado
+
+🟡 Para uso gratuito via API: não é uma opção segura.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Gemini API possui API HTTP/REST e pode ser integrada diretamente ao MVC.
+
+É possível enviar o prompt para a API e receber o resultado da geração.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário respeitar:
+
+termos do Google;
+políticas de uso;
+políticas de conteúdo;
+direitos autorais;
+regras relacionadas às imagens geradas;
+regras de tratamento dos dados enviados.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagens: 🟢
+Conteúdo de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA API TECNICAMENTE, MAS NÃO É A MELHOR PARA O REQUISITO GRATUITO.
+
+2. Stability AI API
+
+Link de acesso: https://platform.stability.ai/
+
+....................................................
+
+Limite gratuito
+
+🟢 SIM — 25 créditos iniciais
+
+A Stability AI oferece 25 créditos gratuitos para novos usuários. A própria documentação informa que a criação da conta utilizando Google concede esses créditos.
+
+Os créditos são consumidos conforme o modelo utilizado.
+
+Por exemplo, a tabela atual apresenta diferentes custos para os modelos de geração de imagem.
+
+Resultado
+
+🟢 Free: SIM — 25 créditos iniciais
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM — excelente
+
+A Stability AI é especializada em geração de imagens.
+
+A API oferece serviços para:
+
+geração;
+edição;
+transformação;
+inpainting;
+criação visual.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+Cada serviço possui sua própria resolução e consumo de créditos.
+
+A quantidade de imagens possíveis depende diretamente do modelo escolhido e do custo em créditos.
+
+Resultado
+
+🟢 Adequado para geração de imagens.
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO para receber os créditos iniciais
+
+A documentação informa que é possível criar a conta utilizando Google e receber 25 créditos gratuitos.
+
+⚠️ Depois que os créditos gratuitos terminarem, será necessário comprar créditos para continuar utilizando a API.
+
+Resultado
+
+🟢 Cartão para começar: não é necessário para os créditos iniciais.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Stability possui API HTTP com autenticação por API Key.
+
+As requisições utilizam o header Authorization e podem retornar a imagem diretamente ou como dados codificados.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário respeitar:
+
+termos da Stability AI;
+políticas de conteúdo;
+propriedade intelectual;
+regras de utilização da API;
+condições específicas dos modelos.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Conteúdo de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟢 EXCELENTE CANDIDATA
+
+3. Cloudflare Workers AI
+
+Link de acesso: https://developers.cloudflare.com/workers-ai/
+
+....................................................
+
+Limite gratuito
+
+🟢 SIM — 10.000 Neurons/dia
+
+A Cloudflare disponibiliza atualmente:
+
+10.000 Neurons por dia gratuitamente.
+
+O limite é reiniciado diariamente às 00:00 UTC.
+
+⚠️ Neurons não correspondem diretamente a "número de imagens". O consumo depende do modelo utilizado.
+
+Por exemplo, o FLUX.1 Schnell possui preços em Neurons por tile e por step.
+
+Resultado
+
+🟢 Free: 10.000 Neurons/dia
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+O Workers AI disponibiliza modelos específicos para geração de imagens.
+
+Entre eles estão modelos da família FLUX e outros modelos de geração visual.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+O consumo varia conforme:
+
+modelo;
+resolução;
+número de steps;
+tamanho da imagem;
+processamento utilizado.
+
+Por exemplo, o preço atual do FLUX.1 Schnell é calculado em Neurons por tile/step.
+
+Resultado
+
+🟢 Adequado para o projeto.
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO para a alocação gratuita básica
+
+O Workers AI possui uma alocação gratuita de 10.000 Neurons/dia.
+
+⚠️ Alguns modelos específicos exigem plano pago ou método de pagamento. A própria Cloudflare identifica modelos que exigem billing.
+
+Resultado
+
+🟢 Free básico: não
+⚠️ Alguns modelos: podem exigir pagamento
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+O Workers AI pode ser utilizado através da API e integrado a aplicações web.
+
+Isso permite que o MVC envie o prompt e receba a imagem gerada.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário considerar:
+
+termos da Cloudflare;
+políticas do Workers AI;
+políticas de conteúdo;
+licença do modelo utilizado.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Modelos gratuitos: 🟢
+Restrições específicas de modelos: ⚠️
+
+....................................................
+
+Resultado
+
+🟢 EXCELENTE CANDIDATA
+
+4. Hugging Face Inference Providers
+
+Link de acesso: https://huggingface.co/docs/inference-providers
+
+....................................................
+
+Limite gratuito
+
+🟡 MUITO PEQUENO
+
+Usuários gratuitos recebem atualmente:
+
+US$ 0,10/mês
+
+em créditos para Inference Providers. O valor está sujeito a alteração.
+
+A plataforma oferece acesso a mais de 200 modelos/provedores e inclui modelos de geração de imagem.
+
+Resultado
+
+🟡 Free: US$ 0,10/mês
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+A Hugging Face possui suporte à tarefa Text-to-Image.
+
+Entre os modelos recomendados atualmente estão:
+
+FLUX;
+Qwen Image;
+Hyper-SD.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟡 DEPENDE DO MODELO
+
+Como existem muitos modelos e provedores, não existe um único limite global de resolução ou quantidade.
+
+Resultado
+
+🟡 Depende do modelo escolhido.
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO para utilizar os créditos gratuitos
+
+O usuário pode utilizar os créditos incluídos sem precisar contratar um plano pago.
+
+⚠️ Depois de consumir os créditos, é necessário comprar créditos para continuar usando a infraestrutura paga.
+
+Resultado
+
+🟢 Cartão para começar: não necessário
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Hugging Face permite utilizar os Inference Providers através de API, inclusive com requisições HTTP utilizando User Access Token.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+Além dos termos da Hugging Face, é necessário verificar:
+
+licença do modelo;
+provedor utilizado;
+restrições específicas;
+direitos sobre o conteúdo gerado.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Modelos de terceiros: ⚠️
+Licença individual: ⚠️
+
+....................................................
+
+Resultado
+
+🟡 BOA TECNICAMENTE, MAS O LIMITE GRATUITO É MUITO PEQUENO.
+
+5. Pollinations AI
+
+Link de acesso: https://pollinations.ai/
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DO MODELO/SERVIÇO
+
+A Pollinations oferece geração de imagens através de sua infraestrutura de IA.
+
+Porém, os limites, modelos disponíveis e condições de utilização podem variar.
+
+⚠️ Portanto, não devemos tratar a plataforma como tendo uma franquia fixa de imagens por dia sem considerar o serviço/modelo específico.
+
+Resultado
+
+🟡 Gratuidade: disponível em determinadas modalidades, mas limite variável.
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+A plataforma oferece geração de imagens através de prompts.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟡 DEPENDE DO MODELO
+
+Os limites dependem do serviço utilizado.
+
+Resultado
+
+🟡 Limite variável.
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO como requisito geral para começar
+
+A plataforma possui modalidades de utilização que não exigem contratação imediata de um serviço pago.
+
+Resultado
+
+🟢 Cartão: não é requisito geral para começar.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Pollinations disponibiliza endpoints HTTP para geração de imagens.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário observar:
+
+termos da plataforma;
+políticas de conteúdo;
+direitos autorais;
+regras sobre utilização do conteúdo gerado;
+condições específicas de recursos experimentais.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Conteúdo de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA CANDIDATA PARA PROTÓTIPO/EXPERIMENTAÇÃO.
+
+6. Replicate
+
+Link de acesso: https://replicate.com/
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DA CONTA
+
+A Replicate disponibiliza inúmeros modelos de geração de imagens.
+
+Porém, a utilização é predominantemente baseada em consumo/modelo, e não em uma grande franquia gratuita permanente.
+
+Resultado
+
+🟡 Free: depende de créditos/ofertas da conta.
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+A Replicate oferece diversos modelos de geração de imagens através de uma API unificada.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢/🟡 DEPENDE DO MODELO
+
+Cada modelo possui suas próprias características de:
+
+resolução;
+steps;
+tempo de execução;
+consumo.
+
+Resultado
+
+🟡 Depende do modelo.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA CONTA E DO USO
+
+Como a plataforma é baseada em cobrança por utilização, a necessidade de faturamento depende da modalidade utilizada.
+
+Resultado
+
+🟡 Não é a opção mais simples para um projeto estritamente gratuito.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Replicate disponibiliza API para executar modelos remotamente.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário considerar:
+
+termos da Replicate;
+política de uso;
+licença do modelo;
+eventuais restrições do modelo escolhido.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Modelos de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 EXCELENTE TECNICAMENTE, MAS NÃO É A MELHOR PARA GRATUIDADE.
+
+7. fal.ai
+
+Link de acesso: https://fal.ai/
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DE CRÉDITOS/OFERTA
+
+A fal.ai oferece acesso a vários modelos de geração de imagem.
+
+A utilização é predominantemente baseada no consumo dos modelos.
+
+Resultado
+
+🟡 Free: depende da oferta/créditos da conta.
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+A fal.ai possui diversos modelos de geração de imagens.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢/🟡 DEPENDE DO MODELO
+
+Cada modelo possui suas próprias especificações de:
+
+resolução;
+steps;
+geração;
+consumo.
+
+Resultado
+
+🟡 Depende do modelo.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA MODALIDADE
+
+A utilização paga é baseada em consumo, portanto o método de faturamento depende da configuração da conta.
+
+Resultado
+
+🟡 Não é a opção mais simples para Free Tier.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A fal.ai disponibiliza API para integração com aplicações.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+Devem ser observados:
+
+termos da fal.ai;
+políticas de conteúdo;
+licenças dos modelos;
+restrições específicas de cada modelo.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Modelos de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA CANDIDATA TÉCNICA, MAS NÃO PRIORITÁRIA PARA GRATUIDADE.
+
+8. Together AI
+
+Link de acesso: https://www.together.ai/
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DE CRÉDITOS/OFERTAS
+
+A Together AI oferece modelos de geração de imagem através de API.
+
+A utilização é predominantemente baseada em consumo.
+
+Resultado
+
+🟡 Gratuidade: depende da modalidade/créditos disponíveis.
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+A plataforma disponibiliza modelos generativos de imagem.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟡 DEPENDE DO MODELO
+
+Cada modelo possui suas próprias limitações de:
+
+resolução;
+quantidade;
+processamento.
+
+Resultado
+
+🟡 Depende do modelo.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DO ACESSO
+
+Pode variar conforme a modalidade da conta e a utilização de créditos.
+
+Resultado
+
+🟡 Não é uma opção ideal se o requisito for ausência de cobrança.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Together AI disponibiliza API para integração com aplicações.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário considerar:
+
+termos da Together AI;
+política de uso;
+licença do modelo;
+restrições específicas.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Modelos de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA TECNICAMENTE, MAS NÃO PRIORITÁRIA PARA O PROJETO GRATUITO.
+
+9. DeepInfra
+
+Link de acesso: https://deepinfra.com/
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DA OFERTA
+
+O DeepInfra disponibiliza vários modelos de geração de imagem, normalmente com cobrança baseada na utilização.
+
+Resultado
+
+🟡 Free: depende da oferta/créditos disponíveis.
+
+....................................................
+
+Geração de imagem
+
+🟢 SIM
+
+A plataforma oferece modelos de geração de imagens através de API.
+
+Resultado
+
+🟢 Geração de imagem: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟡 DEPENDE DO MODELO
+
+Os limites de resolução e utilização dependem do modelo escolhido.
+
+Resultado
+
+🟡 Depende do modelo.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA CONTA
+
+A utilização paga pode exigir configuração de faturamento.
+
+Resultado
+
+🟡 Não é a opção mais simples para um projeto totalmente gratuito.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+O DeepInfra disponibiliza APIs para integração com aplicações.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário respeitar:
+
+termos do DeepInfra;
+política de uso;
+licença dos modelos;
+restrições de cada modelo.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de imagem: 🟢
+Modelos de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA ALTERNATIVA TÉCNICA, MAS NÃO PRIORITÁRIA PARA O FREE TIER.
+
+API Principal e Reserva
+
+Considerando gratuidade, limites, cartão, HTTP e termos, as duas que ficam mais interessantes para o seu projeto são:
+
+API Principal: Cloudflare Workers AI
+
+API Reserva: Stability AI API
+
+....................................................
+
+🖼️ Definição
+
+API de imagem principal: Cloudflare Workers AI
+
+API de imagem reserva: Stability AI API
+
+A Cloudflare tem uma vantagem importante para o seu requisito: 10.000 Neurons gratuitos todos os dias, enquanto a Stability fornece 25 créditos iniciais.
+....................................................
+API de vídeo
+1. fal.ai
+
+Link de acesso: https://fal.ai/
+
+....................................................
+
+Limite gratuito
+
+🟢 SIM — 5 gerações gratuitas por dia
+
+A fal.ai oferece atualmente 5 gerações gratuitas de vídeo por dia para o modelo MiniMax H3 Max.
+
+Cada geração gratuita pode ter até 15 segundos e pode incluir áudio nativo. A franquia é disponibilizada para usuários conectados no Sandbox.
+
+Além disso, a geração pode ser feita tanto por:
+
+texto → vídeo;
+imagem → vídeo.
+
+Resultado
+
+🟢 Free: SIM — 5 gerações/dia
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM — excelente
+
+A fal.ai disponibiliza diversos modelos de geração de vídeo.
+
+O H3 Max oferece:
+
+Text-to-Video;
+Image-to-Video;
+geração com áudio;
+vídeos de até 15 segundos.
+
+Também existem outros modelos e fornecedores dentro da plataforma.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+No H3 Max, a geração gratuita chega a:
+
+768p;
+até 15 segundos por geração.
+
+A versão H3 Max também possui opções de 480p, 768p e 1080p quando utilizada de forma paga.
+
+Resultado
+
+🟢 Adequado para o MVP.
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO para a franquia gratuita do H3 Max
+
+A fal informa que as cinco gerações diárias gratuitas estão disponíveis para usuários conectados sem assinatura.
+
+A utilização paga somente passa a ser necessária quando o usuário deseja ultrapassar a franquia gratuita.
+
+Resultado
+
+🟢 Cartão para começar: não necessário para o Free do H3 Max
+
+....................................................
+
+Tempo de geração
+
+🟢 MUITO RÁPIDO
+
+A fal.ai informa que um vídeo de 5 segundos em 768p pode ser gerado em menos de 3 segundos pelo H3 Max em determinadas condições.
+
+Resultado
+
+🟢 Tempo de geração: excelente
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A fal.ai disponibiliza endpoints de API para os modelos.
+
+O mesmo modelo H3 Max possui endpoints para:
+
+Text-to-Video;
+Image-to-Video.
+
+A API utiliza autenticação e permite integrar a geração diretamente ao backend do projeto.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário considerar:
+
+termos da fal.ai;
+política de uso;
+políticas de conteúdo;
+licença do modelo;
+condições específicas do modelo utilizado.
+
+Como a plataforma reúne modelos de diferentes fornecedores, a licença pode variar conforme o modelo.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Modelos de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟢 EXCELENTE CANDIDATA — MELHOR OPÇÃO ENCONTRADA
+
+2. Magic Hour API
+
+Link de acesso: https://magichour.ai/api
+
+....................................................
+
+Limite gratuito
+
+🟢 SIM — 400 créditos iniciais + 100 créditos/dia
+
+A camada Free atualmente oferece:
+
+400 créditos no cadastro;
+100 créditos por dia;
+resolução máxima de 576 px.
+
+A documentação também informa que a conta Free continua tendo acesso à API.
+
+Resultado
+
+🟢 Free: SIM — 400 créditos + 100 créditos/dia
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM — excelente
+
+A Magic Hour oferece diversos recursos de geração e edição de vídeo.
+
+A plataforma possui, entre outros:
+
+geração de vídeo;
+animação;
+Face Swap;
+Lip Sync;
+Talking Photo;
+ferramentas de transformação.
+
+A própria documentação demonstra a criação de vídeo através da API.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟡 LIMITADO NO FREE
+
+O plano gratuito possui limite de 576 px.
+
+Planos superiores aumentam a resolução para:
+
+1024 px;
+1472 px;
+até 4K em determinados modos.
+
+Resultado
+
+🟡 Gratuito: 576 px
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO para começar no Free
+
+A conta pode começar utilizando a franquia gratuita.
+
+Depois que os créditos forem consumidos, é necessário comprar créditos ou mudar de plano.
+
+Resultado
+
+🟢 Cartão para começar: não necessário para utilizar a camada Free
+
+....................................................
+
+Tempo de geração
+
+🟡 DEPENDE DO MODELO/MODO
+
+A geração de vídeo é um processo que pode levar algum tempo.
+
+A Magic Hour trabalha com processamento assíncrono e permite utilização de webhooks, evitando que a aplicação precise ficar esperando continuamente pela resposta.
+
+Resultado
+
+🟢 Adequado para aplicações MVC.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Magic Hour possui API e documentação para integração programática.
+
+A própria documentação apresenta erros HTTP e autenticação através de API Key, além de permitir utilização de webhooks para resultados assíncronos.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário verificar:
+
+termos da Magic Hour;
+política de conteúdo;
+licença de utilização;
+condições comerciais;
+limitações da camada gratuita.
+
+Um ponto importante é que o plano Creator adiciona explicitamente uma licença para uso comercial, enquanto o Free é voltado principalmente para utilização limitada/testes.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Uso comercial no Free: ⚠️
+Conteúdo de terceiros: ⚠️
+
+....................................................
+
+Resultado
+
+🟢 EXCELENTE CANDIDATA — PRINCIPAL RESERVA
+
+3. Runway API
+
+Link de acesso: https://dev.runwayml.com/
+
+....................................................
+
+Limite gratuito
+
+🔴 NÃO — API baseada em créditos pagos
+
+A API Runway Dev atualmente cobra cada geração em créditos.
+
+Os créditos custam US$ 0,01 por crédito.
+
+Exemplos atuais:
+
+H3 Max 480p: 5 créditos/s;
+H3 Max 768p: 8 créditos/s;
+Gen-4.5: 12 créditos/s;
+Veo 3.1 sem áudio: 20 créditos/s;
+Veo 3.1 com áudio: 40 créditos/s.
+
+Resultado
+
+🔴 Não possui Free Tier de API comparável ao fal.ai.
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM — excelente
+
+A Runway oferece:
+
+Text-to-Video;
+Image-to-Video;
+Video-to-Video;
+Character Performance;
+Avatar Video;
+outros recursos.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+A API possui diferentes modelos e resoluções.
+
+Por exemplo, o Gen-4.5 permite geração em diferentes proporções e duração de vídeo. A API demonstra geração de vídeos de 5 segundos.
+
+Resultado
+
+🟢 Tecnicamente excelente.
+
+....................................................
+
+Necessidade de cartão
+
+🔴 PAGAMENTO NECESSÁRIO PARA USO CONTÍNUO
+
+Como a API utiliza créditos pagos, não é uma opção adequada para o requisito de API totalmente gratuita.
+
+Resultado
+
+🔴 Não atende ao requisito principal.
+
+....................................................
+
+Tempo de geração
+
+🟢 ASSÍNCRONO
+
+A Runway cria uma tarefa e devolve um ID.
+
+Depois o sistema consulta o status até a conclusão.
+
+A própria documentação mostra o fluxo:
+
+POST → task ID → consulta → resultado.
+
+Resultado
+
+🟢 Excelente para MVC.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Runway disponibiliza endpoints HTTP.
+
+Por exemplo:
+
+POST /v1/image_to_video
+
+A documentação apresenta inclusive uma chamada curl diretamente contra a API.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+Devem ser observados:
+
+termos da Runway;
+política de uso;
+direitos sobre os conteúdos;
+condições comerciais;
+licença dos modelos.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Uso comercial: 🟢/⚠️ conforme plano/termos
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 EXCELENTE TECNICAMENTE, MAS NÃO É A MELHOR PARA GRATUIDADE.
+
+4. Luma API / Dream Machine
+
+Link de acesso: https://lumalabs.ai/
+
+....................................................
+
+Limite gratuito
+
+🟡 LIMITADO/DEPENDE DA CONTA
+
+A Luma possui utilização gratuita/teste em seus produtos, porém não considero isso uma franquia gratuita de API recorrente equivalente aos cinco vídeos diários do fal.ai.
+
+Resultado
+
+🟡 Gratuidade: limitada
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM — excelente
+
+A Luma é especializada em geração de vídeo por IA.
+
+Possui recursos de:
+
+Text-to-Video;
+Image-to-Video;
+transformação de vídeo;
+criação cinematográfica.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+A duração, resolução e capacidade de geração dependem do modelo e do plano.
+
+Resultado
+
+🟢 Tecnicamente adequada.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA MODALIDADE
+
+O acesso gratuito/teste não deve ser confundido com uma franquia gratuita permanente da API.
+
+Resultado
+
+🟡 Não é a opção mais segura para o requisito sem pagamento.
+
+....................................................
+
+Tempo de geração
+
+🟡 ASSÍNCRONO
+
+A geração de vídeo envolve processamento e pode levar mais tempo que uma requisição convencional de texto ou imagem.
+
+Resultado
+
+🟢 Adequada tecnicamente.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Luma oferece acesso programático aos seus modelos.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+Devem ser observados:
+
+termos da Luma;
+política de conteúdo;
+direitos autorais;
+condições da API;
+licença e utilização comercial.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Conteúdo de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA TECNICAMENTE, MAS NÃO PRIORITÁRIA PARA O FREE TIER.
+
+5. MiniMax / Hailuo Video API
+
+Link de acesso: https://www.minimaxi.com/
+
+....................................................
+
+Limite gratuito
+
+🟡 LIMITADO/CRÉDITOS
+
+A MiniMax oferece modelos de vídeo através de API, mas a utilização da API é baseada principalmente em créditos/consumo.
+
+Não considero uma franquia gratuita recorrente suficientemente clara para substituir o Free Tier da fal.ai.
+
+Resultado
+
+🟡 Gratuidade: limitada
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM — excelente
+
+Os modelos MiniMax/Hailuo oferecem:
+
+Text-to-Video;
+Image-to-Video;
+geração de vídeo de maior duração;
+diferentes resoluções.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+Os modelos possuem diferentes:
+
+resoluções;
+durações;
+proporções;
+capacidades de referência.
+
+Resultado
+
+🟢 Muito boa tecnicamente.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA CONTA/CRÉDITOS
+
+A utilização contínua da API depende do saldo/créditos.
+
+Resultado
+
+🟡 Não é a opção mais simples para o requisito gratuito.
+
+....................................................
+
+Tempo de geração
+
+🟢 RÁPIDO EM MODELOS OTIMIZADOS
+
+A infraestrutura da fal.ai, por exemplo, informa que o H3 Max — baseado em MiniMax — pode gerar um vídeo de 5 segundos em menos de 3 segundos em 768p.
+
+Resultado
+
+🟢 Excelente quando utilizado através de infraestrutura otimizada.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+Os modelos MiniMax podem ser utilizados através de APIs.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário verificar:
+
+termos da MiniMax;
+política de uso;
+licença do modelo;
+direitos sobre conteúdo gerado;
+utilização comercial.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Conteúdo de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA TECNICAMENTE, MAS A FAL.AI É MAIS INTERESSANTE PARA O FREE TIER.
+
+6. Pika API
+
+Link de acesso: https://pika.art/
+
+....................................................
+
+Limite gratuito
+
+🔴 NÃO NA API
+
+É importante separar a plataforma Pika da Pika API.
+
+A plataforma Pika possui atualmente um plano gratuito com 80 créditos mensais, incluindo Pika 2.5 em 480p e determinados recursos.
+
+Porém, a API possui modelo Pay-as-you-go, sem assinatura obrigatória e sem mínimo, mas baseada em cobrança por utilização.
+
+Resultado
+
+🔴 API Free Tier: não
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM
+
+A Pika oferece diversos modelos de geração de vídeo.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+A plataforma API atualmente possui dezenas de modelos de vídeo e preços diferentes.
+
+Por exemplo, o Happyhorse 1.0 é cobrado por segundo.
+
+Resultado
+
+🟢 Tecnicamente adequada.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA API/COBRANÇA
+
+A API funciona por consumo.
+
+Resultado
+
+🟡 Não é adequada como solução gratuita principal.
+
+....................................................
+
+Tempo de geração
+
+🟡 DEPENDE DO MODELO
+
+A geração depende do modelo e da duração.
+
+Resultado
+
+🟡 Adequado tecnicamente.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Pika possui API para geração programática.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+Devem ser considerados:
+
+termos da Pika;
+política de conteúdo;
+licenças dos modelos;
+condições de uso comercial.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Uso comercial: ⚠️ conforme serviço
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA TECNICAMENTE, MAS NÃO É A MELHOR PARA API GRATUITA.
+
+7. Replicate
+
+Link de acesso: https://replicate.com/
+
+....................................................
+
+Limite gratuito
+
+🟡 DEPENDE DA CONTA/MODELO
+
+A Replicate disponibiliza uma grande quantidade de modelos de vídeo, mas não possui uma franquia universal de vídeo gratuita comparável aos cinco vídeos diários da fal.ai.
+
+A cobrança é normalmente baseada no modelo e no hardware/tempo utilizado.
+
+Resultado
+
+🟡 Free: depende da conta/oferta
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM — excelente
+
+A Replicate disponibiliza modelos de:
+
+Text-to-Video;
+Image-to-Video;
+Video-to-Video;
+animação;
+geração multimodal.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟢 DEPENDE DO MODELO
+
+Como a plataforma oferece vários modelos, cada um pode ter:
+
+resolução;
+duração;
+FPS;
+limite de entrada;
+custo;
+
+diferentes.
+
+Resultado
+
+🟢 Grande flexibilidade.
+
+....................................................
+
+Necessidade de cartão
+
+🟡 DEPENDE DA CONTA
+
+A utilização contínua é baseada em consumo e pode exigir configuração de faturamento.
+
+Resultado
+
+🟡 Não é a opção mais simples para um MVP sem custos.
+
+....................................................
+
+Tempo de geração
+
+🟡 DEPENDE DO MODELO
+
+Modelos diferentes apresentam tempos de processamento diferentes.
+
+Resultado
+
+🟡 Adequado, mas variável.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A Replicate possui API para executar modelos remotamente.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+É necessário verificar:
+
+termos da Replicate;
+política de uso;
+licença do modelo;
+restrições específicas;
+direitos sobre o conteúdo.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Modelos de terceiros: ⚠️
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 EXCELENTE TECNICAMENTE, MAS NÃO É A MELHOR PARA GRATUIDADE.
+
+8. GenRelay
+
+Link de acesso: https://genrelay.ai/
+
+....................................................
+
+Limite gratuito
+
+🟢 SIM — US$ 0,50 DE CRÉDITO INICIAL
+
+A GenRelay atualmente oferece US$ 0,50 em crédito gratuito para novos usuários.
+
+Depois disso, o serviço funciona por pré-pagamento.
+
+Resultado
+
+🟢 Free: US$ 0,50 inicial
+
+....................................................
+
+Geração de vídeo
+
+🟢 SIM
+
+A plataforma oferece modelos como:
+
+Grok Imagine 1.0;
+Grok Imagine 1.5;
+Veo 3.1;
+Gemini Omni Flash.
+
+Resultado
+
+🟢 Geração de vídeo: SIM
+
+....................................................
+
+Limite/tamanho
+
+🟡 DEPENDE DO MODELO
+
+Por exemplo, atualmente:
+
+Grok Imagine 1.0: cobrança por segundo;
+Grok Imagine 1.5: cobrança por geração;
+Veo 3.1: cobrança por geração;
+Gemini Omni Flash: cobrança por geração.
+
+Resultado
+
+🟡 Depende do modelo.
+
+....................................................
+
+Necessidade de cartão
+
+🟢 NÃO para começar
+
+A GenRelay informa que novos usuários recebem US$ 0,50 de crédito gratuito para testar os modelos.
+
+Resultado
+
+🟢 Cartão para começar: não necessário
+
+....................................................
+
+Tempo de geração
+
+🟡 DEPENDE DO MODELO
+
+O tempo varia conforme o modelo utilizado e a duração/resolução solicitada.
+
+Resultado
+
+🟡 Variável.
+
+....................................................
+
+Possibilidade de integração via HTTP
+
+🟢 SIM
+
+A GenRelay funciona como uma plataforma de API para os modelos disponibilizados.
+
+Resultado
+
+🟢 HTTP: SIM
+
+....................................................
+
+Termos de uso
+
+🟡 ATENÇÃO
+
+A plataforma informa que o usuário recebe licença comercial sobre os assets gerados, mas continuam existindo condições específicas de uso e da plataforma.
+
+Resultado
+
+Uso acadêmico: 🟢
+Geração de vídeo: 🟢
+Uso comercial: 🟢
+Uso indevido: 🔴
+
+....................................................
+
+Resultado
+
+🟡 BOA PARA TESTES, MAS O CRÉDITO INICIAL É PEQUENO.
+
+API Principal e Reserva
+
+Considerando gratuidade real, quantidade de gerações, ausência de cartão, qualidade, velocidade, HTTP e adequação ao MVP:
+
+🥇 API Principal: fal.ai
+
+A fal.ai é a melhor escolha porque atualmente oferece uma franquia realmente utilizável:
+
+5 vídeos gratuitos por dia;
+até 15 segundos;
+até 768p no H3 Max;
+áudio nativo;
+Text-to-Video;
+Image-to-Video;
+geração extremamente rápida;
+API;
+integração HTTP;
+sem necessidade de assinatura para utilizar a franquia gratuita.
+🥈 API Reserva: Magic Hour API
+
+A Magic Hour fica como reserva porque oferece:
+
+400 créditos no cadastro;
+100 créditos/dia;
+API;
+geração de vídeo;
+processamento assíncrono;
+webhooks;
+sem necessidade de cartão para começar;
+resolução gratuita de até 576 px.
+
+....................................................
+
+🎬 Definição
+
+API de vídeo principal: fal.ai
+
+API de vídeo reserva: Magic Hour API
+
+....................................................
+Tabela 1 — Comparativa das APIs de Notícias
++----+----------------------+----------------------+----------+---------+----------+----------------------+
+| Nº | API                  | Limite Free          | Brasil   | País    | Cidade   | Imagem              |
++----+----------------------+----------------------+----------+---------+----------+----------------------+
+|  1 | NewsData.io          | 200 créditos/dia     | SIM      | SIM     | SIM*     | SIM                 |
+|  2 | GNews                | 100 req/dia          | SIM      | SIM     | NÃO      | SIM                 |
+|  3 | NewsAPI.org          | 100 req/dia          | SIM      | SIM     | NÃO      | SIM                 |
+|  4 | APITube              | 100 req/dia          | SIM      | SIM     | SIM      | SIM                 |
+|  5 | Mediastack           | 100 chamadas/mês     | SIM      | SIM     | NÃO      | SIM                 |
+|  6 | The News API         | 100 req/dia          | SIM      | SIM     | NÃO      | SIM                 |
+|  7 | World News API       | 50 pontos/dia        | SIM      | SIM     | SIM      | SIM                 |
+|  8 | Currents API         | 250 req/dia          | SIM      | SIM     | PARCIAL  | SIM                 |
+|  9 | NewsCatcher          | Limitado             | SIM      | SIM     | SIM      | SIM                 |
+| 10 | Perigon              | 150 req/mês          | SIM      | SIM     | SIM      | SIM                 |
+| 11 | Guardian Open API    | Quota não confirmada | PARCIAL  | NÃO*    | NÃO      | SIM                 |
+| 12 | Google News RSS      | Não especificado     | SIM      | SIM     | SIM**    | PARCIAL             |
+| 13 | Bing News Search     | ~1000/mês***         | SIM      | SIM     | NÃO      | SIM                 |
+| 14 | FreeNewsAPI.io       | 5000 req/dia         | SIM      | SIM     | NÃO      | SIM                 |
+| 15 | Scrapingdog          | Depende do plano     | DEPENDE  | DEPENDE | DEPENDE  | DEPENDE             |
+| 16 | Webz.io              | ~500 chamadas/mês    | SIM      | SIM     | SIM      | SIM                 |
++----+----------------------+----------------------+----------+---------+----------+---------
+
+....................................................
+2. Definir stack final
+================================================================
+                         STACK FINAL
+================================================================
+
+CAMADA DE NOTÍCIAS
+    Principal: APITube
+    Reserva:   NewsData.io
+
+CAMADA DE IA — TEXTO
+    Principal: Google Gemini API
+    Reserva:   Groq API
+
+CAMADA DE IA — IMAGEM
+    Principal: Cloudflare Workers AI
+    Reserva:   Stability AI API
+
+CAMADA DE IA — VÍDEO
+    Principal: fal.ai
+    Reserva:   Magic Hour API
+
+================================================================
+
+APITube — API Principal de Notícias
+
+Foi escolhida como API principal por apresentar uma combinação adequada de cobertura de notícias, filtros geográficos, notícias locais, imagens, integração HTTP e camada gratuita. Também atende melhor à necessidade do projeto de trabalhar com notícias brasileiras e localização.
+================================================================
+NewsData.io foi definida como reserva por possuir boa cobertura, suporte ao Brasil, filtros, imagens e uma franquia gratuita relevante.
+================================================================
+Google Gemini API — API Principal de IA de Texto
+
+Foi escolhida como principal porque possui modelos com Free Tier, capacidade de processamento de texto, geração de resumos, grande capacidade de contexto e integração por HTTP.
+================================================================
+Groq API foi definida como reserva principalmente pela alta velocidade de inferência e pela existência de limites gratuitos utilizáveis.
+================================================================
+Cloudflare Workers AI — API Principal de Imagem
+
+Foi escolhida como principal porque possui uma franquia gratuita recorrente de 10.000 Neurons por dia, além de modelos de geração de imagens e integração via HTTP.
+
+Stability AI API foi definida como reserva porque oferece 25 créditos iniciais gratuitos e é especializada em geração e edição de imagens.
+================================================================
+fal.ai — API Principal de Vídeo
+
+Foi escolhida como principal porque possui uma modalidade com gerações gratuitas diárias, geração de vídeo, integração HTTP, processamento assíncrono e suporte a diferentes modelos.
+================================================================
+Magic Hour API foi definida como reserva porque possui uma camada gratuita própria, créditos iniciais, franquia diária e integração via API.
+================================================================
+Justificativa geral da arquitetura:
+
+A utilização de API Principal + API Reserva evita que uma indisponibilidade de determinado serviço interrompa completamente a aplicação.
+
+A arquitetura fica:
+
+API Principal
+     │
+     ├── funcionando ──► utiliza normalmente
+     │
+     └── indisponível
+              │
+              ▼
+        API Reserva
+              │
+              ▼
+        continua funcionando
