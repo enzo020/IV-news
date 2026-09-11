@@ -128,7 +128,7 @@ O sistema tem como meta principal entregar:
 ================================================================
 
 CAMADA DE NOTÍCIAS
-    Principal: APITube
+    Principal: APITube-100 Requisições (Qualidade boa de resumo)
     Reserva:   NewsData.io
 
 CAMADA DE IA — TEXTO
