@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import noticias from "../data/NewsMock";
 
 function NewsDetails() {
 
