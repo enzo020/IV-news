@@ -3,24 +3,52 @@ import { getNoticias } from "../services/noticiasService";
 
 import NewsCard from "../components/NewsCard";
 import FeaturedNews from "../components/FeaturedNews";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
 
 function Home() {
 
     const [noticias, setNoticias] = useState([]);
 
+    const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState(false);
+
     useEffect(() => {
         async function carregarNoticias() {
-            const dados = await getNoticias();
-            setNoticias(dados);
+
+            try {
+                setLoading(true);
+                setErro(false);
+
+                const dados = await getNoticias();
+                setNoticias(dados);
+
+            } catch (error) {
+                setErro(true);
+            } finally {
+                setLoading(false);
+            }
+
         }
 
         carregarNoticias();
     }, []);
 
+    if (loading) {
+        return <Loading />
+    }
+
+    if (erro) {
+        return <ErrorMessage
+            title="Não foi possível carregar as notícias"
+            message="Tente novamente mais tarde"
+        />
+    }
+
+    // Log para debug - Retirar futuramente
     console.log(noticias);
-
     let newsSection;
-
+    
     if (noticias.length === 0) {
         newsSection = <h1>Nenhuma notícia encontrada</h1>;
     } else {
@@ -39,8 +67,6 @@ function Home() {
 
     return (
         <main>
-            {/* <FeaturedNews news={noticias} /> */}
-
             <h1 className="last-news-title">
                 Últimas notícias
             </h1>
