@@ -87,7 +87,7 @@ namespace IVnews.Data
                     Conteudo = "Conteúdo de exemplo pra testar o banco.",
                     Autor = "Redação IV News",
                     Fonte = "IV News",
-                    ImagemUrl = "https://via.placeholder.com/600x400",
+                    ImagemUrl = "https://picsum.photos/600/400?random=5",
                     PublicadoEm = new DateTime(2026, 9, 3),
                     CategoriaId = 3,
                     LocalizacaoId = 1
@@ -99,7 +99,7 @@ namespace IVnews.Data
                     Conteudo = "Candidatos iniciam campanhas em todo o estado.",
                     Autor = "Ana Silva",
                     Fonte = "IV News",
-                    ImagemUrl = "https://via.placeholder.com/600x400",
+                    ImagemUrl = "https://picsum.photos/600/400?random=4",
                     PublicadoEm = new DateTime(2026, 9, 4),
                     CategoriaId = 1,
                     LocalizacaoId = 2
@@ -111,7 +111,7 @@ namespace IVnews.Data
                     Conteudo = "Vitória histórica na final do estadual.",
                     Autor = "Carlos Souza",
                     Fonte = "IV News",
-                    ImagemUrl = "https://via.placeholder.com/600x400",
+                    ImagemUrl = "https://picsum.photos/600/400?random=1",
                     PublicadoEm = new DateTime(2026, 9, 5),
                     CategoriaId = 2,
                     LocalizacaoId = 3
@@ -123,7 +123,7 @@ namespace IVnews.Data
                     Conteudo = "Startup lança ferramenta de saúde com inteligência artificial.",
                     Autor = "Beatriz Lima",
                     Fonte = "IV News",
-                    ImagemUrl = "https://via.placeholder.com/600x400",
+                    ImagemUrl = "https://picsum.photos/600/400?random=2",
                     PublicadoEm = new DateTime(2026, 9, 6),
                     CategoriaId = 3,
                     LocalizacaoId = 4
@@ -135,7 +135,7 @@ namespace IVnews.Data
                     Conteudo = "Bolsa de valores tem alta após anúncio do governo.",
                     Autor = "Rafael Costa",
                     Fonte = "IV News",
-                    ImagemUrl = "https://via.placeholder.com/600x400",
+                    ImagemUrl = "https://picsum.photos/600/400?random=3",
                     PublicadoEm = new DateTime(2026, 9, 7),
                     CategoriaId = 5,
                     LocalizacaoId = 1

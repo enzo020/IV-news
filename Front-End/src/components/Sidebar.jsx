@@ -33,51 +33,52 @@ function Sidebar({ isOpen, onClose }) {
 
                 <nav className="sidebar-nav">
 
-                    <Link to={"/"}>
+                    <Link to={"/"} onClick={onClose}>
                         🏠 Início
                     </Link>
 
-                    <a href="#">
+                    <Link to={"/"} onClick={onClose}>
                         📰 Últimas notícias
-                    </a>
+                    </Link>
 
-                    <div className="sidebar-section">
+                    <div className="sidebar-section" onClick={onClose}>
                         <span>CATEGORIAS</span>
                     </div>
 
-                    <a
-                        href="#"
+                    <Link
+                        to={"/"}
+                        onClick={onClose}
                         className="sidebar-link d-flex align-items-center gap-3"
                     >
                         <span>💻</span>
                         <span>Tecnologia</span>
-                    </a>
+                    </Link>
 
-                    <a href="#" className="sidebar-link d-flex align-items-center gap-3">
+                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
                         <span>⚽</span>
                         <span>Esportes</span>
-                    </a>
+                    </Link>
 
-                    <a href="#" className="sidebar-link d-flex align-items-center gap-3">
+                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
                         <span>🏛️</span>
                         <span>Política</span>
-                    </a>
+                    </Link>
 
-                    <a href="#" className="sidebar-link d-flex align-items-center gap-3">
+                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
                         <span>🔬</span>
                         <span>Ciência</span>
-                    </a>
+                    </Link>
 
-                    <a href="#" className="sidebar-link d-flex align-items-center gap-3">
+                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
                         <span>🎬</span>
                         <span>Entretenimento</span>
-                    </a>
+                    </Link>
 
                 </nav>
 
                 <div className="sidebar-bottom">
-                    <a href="#">⚙️ Configurações</a>
-                    <a href="#">❓ Ajuda</a>
+                    <Link to={"/"} onClick={onClose}>⚙️ Configurações</Link>
+                    <Link to={"/"} onClick={onClose}>❓ Ajuda</Link>
                 </div>
 
             </aside>
