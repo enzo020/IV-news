@@ -80,7 +80,17 @@ O desenvolvimento deve seguir o fluxo:
 - Para integrar suas alterações à branch main, acesse a branch main com `git checkout main`, atualize-a com `git pull origin main` e depois faça o merge da sua branch pessoal com `git merge <seu-nome>`.
 - Por fim, envie as alterações integradas para o repositório remoto com `git push origin main`.
 
+## Configuração das APIs
 
+As API keys NÃO devem ser adicionadas ao código ou ao GitHub.
+
+Após clonar o projeto, configure sua API key:
+
+dotnet user-secrets init
+(exemplo, para o APITube, substitua "SUA_API_KEY" pela sua chave real):
+dotnet user-secrets set "APITube:ApiKey" "SUA_API_KEY"
+
+Os principais arquivos da pasta Services servirão para configurar as APIs externas.
 
 # 📰 IV News
 
