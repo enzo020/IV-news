@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore; // Clara 03/09
 using IVnews.Data; // Clara 03/09
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 
 builder.Services.AddControllers();
