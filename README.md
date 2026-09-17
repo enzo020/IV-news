@@ -90,6 +90,9 @@ dotnet user-secrets init
 (exemplo, para o APITube, substitua "SUA_API_KEY" pela sua chave real):
 dotnet user-secrets set "APITube:ApiKey" "SUA_API_KEY"
 
+APITube: link padrão para noticias em portugues
+https://api.apitube.io/v1/news/everything?language.code=pt
+
 Os principais arquivos da pasta Services servirão para configurar as APIs externas.
 
 # 📰 IV News
