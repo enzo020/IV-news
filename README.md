@@ -157,3 +157,56 @@ CAMADA DE IA — VÍDEO
     Reserva:   Magic Hour API
 
 ================================================================
+
+Formato Esperado do Resumo
+
+Para padronizar o consumo pela sua aplicação, o retorno da IA deve seguir uma estrutura fixa em JSON validado:
+
+{
+  "titulo": "Título curto e chamativo (máx. 10 palavras)",
+  "resumo_executivo": "Parágrafo com o contexto geral e principal fato da notícia (2 a 3 frases).",
+  "pontos_chave": [
+    "Destaque relevante 1",
+    "Destaque relevante 2",
+    "Destaque relevante 3"
+  ],
+  "categoria": "Ex: Tecnologia | Economia | Política",
+  "sentimento": "Neutro | Positivo | Negativo"
+}
+
+Exemplo de Prompt (System Prompt)
+
+Este prompt garante um retorno conciso e previne a inclusão de formatação Markdown extra fora do objeto JSON:
+
+> Role: Você é um assistente especialista em síntese de notícias para feeds rápidos.
+> Instrução: Analise o texto da notícia fornecido e crie um resumo objetivo. Retorne estritamente um objeto JSON sem blocos de código markdown ou texto explicativo extra.
+> Regras:
+> * Mantenha o tom neutro e baseado estritamente no texto fornecido.
+> * O campo resumo_executivo não deve ultrapassar 60 palavras.
+> * O campo pontos_chave deve conter exatamente 3 itens curtos.
+> Texto da Notícia: {texto_noticia_aqui}
+> 
+
+Documentação da API Escolhida (Google Gemini API — Principal)
+
+ * Modelo Recomendado: gemini-2.5-flash ou gemini-1.5-flash (ideais para inferência rápida e baixo custo).
+ * Configuração de Resposta: Suporta response_mime_type: "application/json" para garantir o Schema JSON sem erros de parse.
+ * Limite da Camada Gratuita:
+   * 15 RPM (Requisições por minuto)
+   * 1.000 a 1.500 RPD (Requisições por dia)
+   * 1M Tokens de Janela de Contexto
+ * Tamanho Máximo de Entrada: Suporta até ~700.000 palavras por requisição na camada gratuita (mais que suficiente para notícias).
+
+Definição do Plano B (Groq API — Reserva)
+
+ * Propósito: Assumir as chamadas caso o limite de requisições (429 Too Many Requests) ou instabilidade ocorra na Google Gemini API.
+ * Modelo Recomendado: llama-3.3-70b-versatile ou gpt-oss-120b (rodando na infraestrutura ultra-rápida LPU da Groq).
+ * Limite da Camada Gratuita:
+   * 30 RPM (Requisições por minuto)
+   * 1.000 RPD (Requisições por dia)
+   * 200.000 TPD (Tokens por dia)
+ * Comportamento de Failover: O backend deve interceptar o código HTTP 429 ou erros de timeout da API do Gemini e redirecionar o payload (noticia + prompt) para o endpoint da Groq via SDK da OpenAI / Groq.
+
+
+
+
