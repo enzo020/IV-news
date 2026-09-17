@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore; // Clara 03/09
-using IVnews.Data; // Clara 03/09
+using IVnews.Data;
+using IVNews.Services; // Clara 03/09
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -23,6 +24,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient<INoticiaService, NoticiaService>();
 
 var app = builder.Build();
 
