@@ -22,7 +22,7 @@ namespace IVNews.Services
             var baseUrl = _configuration["ApiTubeSettings:BaseUrl"];
             var token = _configuration["ApiTubeSettings:Token"];
 
-            _httpClient.BaseAddress = new Uri(baseUrl);
+            _httpClient.BaseAddress = new Uri("https://api.apitube.io/v1/news/everything?language.code=pt");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
