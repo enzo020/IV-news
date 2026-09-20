@@ -9,6 +9,13 @@ function NewsCard({
     location
 }) {
 
+    var totalNull = id;
+    var nullimage = "https://picsum.photos/600/400?random=" + totalNull;
+
+    if (image === null || image === undefined || image === "") {
+        image = nullimage;
+    }
+
     return (
         <article className="news-card">
 

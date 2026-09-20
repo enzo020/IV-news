@@ -31,7 +31,15 @@ namespace IVNews.Controllers
         {
             var noticias = await _noticiaService.ObterNoticiasDaApiAsync();
 
-            return Content(noticias, "application/json");
+            return Ok(noticias);
+        }
+
+
+        [HttpPost("apitube/importar")]
+        public async Task<IActionResult> ImportarNoticiasDaApiTube()
+        {
+            var quantidade = await _noticiaService.SalvarNoticiasDaApiAsync();
+            return Ok(new { mensagem = $"Quantidade de notícias importadas: {quantidade}" });
         }
 
 

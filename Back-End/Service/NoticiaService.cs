@@ -1,18 +1,23 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
+using IVnews.Data;
+using IVnews.DTOs.ApiTube;
+using IVnews.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace IVNews.Services
 {
     public class NoticiaService : INoticiaService
     {
+        private readonly AppDbContext _context;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        public NoticiaService(
-            HttpClient httpClient,
-            IConfiguration configuration)
+        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context)
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            _context = context;
 
             var baseUrl = _configuration["ApiTubeSettings:BaseUrl"];
             var token = _configuration["ApiTubeSettings:Token"];
@@ -37,27 +42,53 @@ namespace IVNews.Services
                 new AuthenticationHeaderValue("Bearer", token);
         }
 
-        public async Task<string> ObterNoticiasDaApiAsync()
+        public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync()
         {
-            var endpoint =
-                "/v1/news/everything?language.code=pt&per_page=5";
+            var endpoint = "https://api.apitube.io/v1/news/everything?language.code=pt&per_page=5";
 
             var response = await _httpClient.GetAsync(endpoint);
 
-            var jsonResponse =
-                await response.Content.ReadAsStringAsync();
+            var jsonResponse = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
+            var data = JsonSerializer.Deserialize<ApiTubeResponse>(
+                jsonResponse,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+
+            return data.Results;
+        }
+
+        public async Task<int> SalvarNoticiasDaApiAsync()
+        {
+            var noticiasApi = await ObterNoticiasDaApiAsync();
+
+            foreach (var article in noticiasApi)
             {
-                throw new HttpRequestException(
-                    $"Erro ao consumir a APITube. " +
-                    $"Status: {(int)response.StatusCode} " +
-                    $"({response.StatusCode}). " +
-                    $"Resposta: {jsonResponse}"
-                );
-            }
+                var noticiaExistente = await _context.Noticias
+                    .FirstOrDefaultAsync(n => n.IdExterno == article.Id.ToString());
 
-            return jsonResponse;
+                if (noticiaExistente == null)
+                {
+                    var noticia = new Noticia
+                    {
+                        Titulo = article.Title,
+                        Conteudo = article.Body,
+                        Autor = article.Author?.Name,
+                        Fonte = article.Source?.Domain,
+                        UrlNoticia = article.Href,
+                        ImagemUrl = article.Media?.FirstOrDefault()?.Url,
+                        IdExterno = article.Id.ToString(),
+                        PublicadoEm = article.PublishedAt
+                    };
+
+                    _context.Noticias.Add(noticia);
+                }
+            }
+            await _context.SaveChangesAsync();
+            return noticiasApi.Count;
         }
     }
 }

@@ -1,7 +1,11 @@
+using IVnews.DTOs.ApiTube;
+
 namespace IVNews.Services
 {
     public interface INoticiaService
     {
-        Task<string> ObterNoticiasDaApiAsync();
+        Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync();
+
+        Task<int> SalvarNoticiasDaApiAsync();
     }
 }
