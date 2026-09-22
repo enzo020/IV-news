@@ -9,21 +9,17 @@ function NewsCard({
     location
 }) {
 
-    var totalNull = id;
-    var nullimage = "https://picsum.photos/600/400?random=" + totalNull;
-
-    if (image === null || image === undefined || image === "") {
-        image = nullimage;
-    }
 
     return (
         <article className="news-card">
 
             <div className="news-card-image">
-                <img
-                    src={image}
-                    alt={title}
-                />
+                {image ? (
+                    <img src={image} alt={title} className="news-details-image"/>
+                ) : (
+                        <img src ="../public/imgPlaceholder.svg" alt="Sem imagem" className="news-details-image"/>
+
+                )}
             </div>
 
             <div className="news-card-content">

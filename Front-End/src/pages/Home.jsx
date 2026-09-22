@@ -3,7 +3,7 @@ import { getNoticias } from "../services/noticiasService";
 
 import NewsCard from "../components/NewsCard";
 import FeaturedNews from "../components/FeaturedNews";
-import Loading from "../components/Loading";
+import Loading from "../components/Loading/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 
 function Home() {

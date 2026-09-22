@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { getNoticiaById } from "../services/noticiasService";
 import { useEffect, useState } from "react";
-import Loading from "../components/Loading";
+import Loading from "../components/Loading/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 
 function NewsDetails() {
@@ -46,11 +46,13 @@ function NewsDetails() {
 
             <article className="news-details mx-auto">
 
-                <img
-                    src={noticia.imagemUrl}
-                    alt={noticia.titulo}
-                    className="news-details-image"
-                />
+                {noticia.imagemUrl ? (
+                    <img src={noticia.imagemUrl} alt={noticia.titulo} className="news-details-image"/>
+                ) : (
+                    <div className="news-image-placeholder">
+                        <img src ="../public/imgPlaceholder.svg" alt="Sem imagem" className="news-details-image"/>
+                    </div>
+                )}
 
                 <div className="news-details-content">
 
@@ -63,7 +65,7 @@ function NewsDetails() {
                     </h1>
 
                     <p className="news-details-location">
-                        📍 {noticia.localizacao?.cidade}
+                        {noticia.localizacao?.cidade}
                     </p>
 
                     <p className="news-details-description">
@@ -81,14 +83,6 @@ function NewsDetails() {
                             Fonte: {noticia.fonte}
                         </span>
 
-                        {/* <a
-                            href={noticia.sourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn news-details-source-button"
-                        >
-                            Ler matéria original
-                        </a> */}
                     </div>
 
                 </div>

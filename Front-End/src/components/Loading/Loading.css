@@ -1,0 +1,73 @@
+.loading-logo-svg {
+    width: 200px;
+    height: 200px;
+}
+
+.loading-lupa {
+    transform-box: view-box;
+    transform-origin: 55px 42px;
+    animation: lupa-girar 3s linear infinite;
+}
+
+@keyframes lupa-girar {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-eye {
+    transform-origin: 55px 42px;
+    animation: olho-piscar 5s ease-in-out infinite;
+}
+
+@keyframes olho-piscar {
+    0%,
+    90%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    93% {
+        transform: scaleY(0.15);
+    }
+
+    96% {
+        transform: scaleY(1);
+    }
+}
+
+.loading-pupil {
+    animation: olho-olhando 5s ease-in-out infinite;
+}
+
+@keyframes olho-olhando {
+    0%,
+    20%,
+    100% {
+        transform: translateX(0);
+    }
+
+    35% {
+        transform: translateX(-3px);
+    }
+
+    50% {
+        transform: translateX(3px);
+    }
+
+    65% {
+        transform: translateX(0);
+    }
+}
+
+.loading-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
