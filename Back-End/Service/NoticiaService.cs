@@ -44,7 +44,11 @@ namespace IVNews.Services
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync()
         {
-            var endpoint = "https://api.apitube.io/v1/news/everything?language.code=pt&per_page=5";
+            var endpoint = "v1/news/everything" +
+                "?language.code=pt" +
+                "&per_page=5" +
+                "&source.country.code=br";
+
 
             var response = await _httpClient.GetAsync(endpoint);
 

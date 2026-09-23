@@ -57,7 +57,7 @@ function NewsDetails() {
                 <div className="news-details-content">
 
                     <span className="badge news-details-category mb-3">
-                        {noticia.categoria?.nome}
+                        {noticia.categoria ? noticia.categoria.nome : "Categoria não informada"}
                     </span>
 
                     <h1 className="news-details-title">
@@ -65,7 +65,7 @@ function NewsDetails() {
                     </h1>
 
                     <p className="news-details-location">
-                        {noticia.localizacao?.cidade}
+                        {noticia.localizacao ? noticia.localizacao.cidade : "Localização não informada"}
                     </p>
 
                     <p className="news-details-description">

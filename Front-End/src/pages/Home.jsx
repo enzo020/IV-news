@@ -61,6 +61,7 @@ function Home() {
             category={noticia.categoria?.nome}
             location={noticia.localizacao?.cidade}
             image={noticia.imagemUrl}
+            datetime={noticia.publicadoEm}
         />
 ));
     }
