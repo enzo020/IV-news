@@ -4,8 +4,8 @@ namespace IVNews.Services
 {
     public interface INoticiaService
     {
-        Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync();
+        Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage);
+        Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage);
 
-        Task<int> SalvarNoticiasDaApiAsync();
     }
 }

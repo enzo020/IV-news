@@ -23,38 +23,54 @@ namespace IVNews.Controllers
 
         // =====================================================
         // TESTE DA APITUBE
-        // GET: api/noticias/apitube
+        // GET: api/noticias/apitube?perPage=5
         // =====================================================
 
         [HttpGet("apitube")]
-        public async Task<IActionResult> TestarApiTube()
+        public async Task<IActionResult> TestarApiTube([FromQuery] int perPage = 5)
         {
-            var noticias = await _noticiaService.ObterNoticiasDaApiAsync();
+            if (perPage < 1 || perPage > 10)
+            {
+                return BadRequest(new { mensagem = "O parâmetro perPage deve estar entre 1 e 10 (limite do plano free do ApiTube)." });
+            }
+
+            var noticias = await _noticiaService.ObterNoticiasDaApiAsync(perPage);
 
             return Ok(noticias);
         }
 
-
+        // POST: api/noticias/apitube/importar?perPage=5
         [HttpPost("apitube/importar")]
-        public async Task<IActionResult> ImportarNoticiasDaApiTube()
-        {
-            try
-            {
-                var quantidade = await _noticiaService.SalvarNoticiasDaApiAsync();
-                return Ok(new { mensagem = $"Quantidade de notícias importadas: {quantidade}" });
-            }
-            catch (DbUpdateException)
-            {
-                return StatusCode(500, new { mensagem = "Não foi possível salvar as notícias importadas." });
-            }
-        }
+       [HttpPost("apitube/importar")]
+public async Task<IActionResult> ImportarNoticiasDaApiTube([FromQuery] int perPage = 5)
+{
+    if (perPage < 1 || perPage > 10)
+    {
+        return BadRequest(new { mensagem = "O parâmetro perPage deve estar entre 1 e 10 (limite do plano free do ApiTube)." });
+    }
 
-
+    try
+    {
+        var resultado = await _noticiaService.SalvarNoticiasDaApiAsync(perPage);
+        return Ok(resultado);
+    }
+    catch (HttpRequestException ex)
+    {
+        return StatusCode(503, new { mensagem = "Não foi possível importar as notícias. O ApiTube está indisponível no momento.", detalhe = ex.Message });
+    }
+    catch (DbUpdateException)
+    {
+        return StatusCode(500, new { mensagem = "Erro de banco de dados: Não foi possível salvar as notícias importadas." });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { mensagem = "Ocorreu um erro inesperado durante a importação.", detalhe = ex.Message });
+    }
+}
         // =====================================================
-        // CRUD DE NOTÍCIAS
+        // CRUD DE NOTÍCIAS (Mantido igual)
         // =====================================================
-
-        // GET: api/noticias
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Noticia>>> GetNoticias()
         {
@@ -66,8 +82,6 @@ namespace IVNews.Controllers
             return Ok(noticias);
         }
 
-
-        // GET: api/noticias/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Noticia>> GetNoticia(int id)
         {
@@ -84,8 +98,6 @@ namespace IVNews.Controllers
             return Ok(noticia);
         }
 
-
-        // POST: api/noticias
         [HttpPost]
         public async Task<ActionResult<Noticia>> PostNoticia(Noticia noticia)
         {
@@ -107,12 +119,8 @@ namespace IVNews.Controllers
             );
         }
 
-
-        // PUT: api/noticias/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutNoticia(
-            int id,
-            Noticia noticia)
+        public async Task<IActionResult> PutNoticia(int id, Noticia noticia)
         {
             if (id != noticia.Id)
             {
@@ -131,7 +139,6 @@ namespace IVNews.Controllers
                 {
                     return NotFound();
                 }
-
                 return StatusCode(500, new { mensagem = "Não foi possível atualizar a notícia." });
             }
             catch (DbUpdateException)
@@ -142,8 +149,6 @@ namespace IVNews.Controllers
             return NoContent();
         }
 
-
-        // DELETE: api/noticias/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNoticia(int id)
         {
@@ -168,10 +173,13 @@ namespace IVNews.Controllers
             return NoContent();
         }
 
-
         private bool NoticiaExists(int id)
         {
             return _context.Noticias.Any(e => e.Id == id);
         }
+
+        
+
+        
     }
 }
