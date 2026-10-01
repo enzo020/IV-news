@@ -38,8 +38,15 @@ namespace IVNews.Controllers
         [HttpPost("apitube/importar")]
         public async Task<IActionResult> ImportarNoticiasDaApiTube()
         {
-            var quantidade = await _noticiaService.SalvarNoticiasDaApiAsync();
-            return Ok(new { mensagem = $"Quantidade de notícias importadas: {quantidade}" });
+            try
+            {
+                var quantidade = await _noticiaService.SalvarNoticiasDaApiAsync();
+                return Ok(new { mensagem = $"Quantidade de notícias importadas: {quantidade}" });
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { mensagem = "Não foi possível salvar as notícias importadas." });
+            }
         }
 
 
@@ -84,7 +91,14 @@ namespace IVNews.Controllers
         {
             _context.Noticias.Add(noticia);
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { mensagem = "Não foi possível salvar a notícia." });
+            }
 
             return CreatedAtAction(
                 nameof(GetNoticia),
@@ -118,7 +132,11 @@ namespace IVNews.Controllers
                     return NotFound();
                 }
 
-                throw;
+                return StatusCode(500, new { mensagem = "Não foi possível atualizar a notícia." });
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { mensagem = "Não foi possível atualizar a notícia." });
             }
 
             return NoContent();
@@ -138,7 +156,14 @@ namespace IVNews.Controllers
 
             _context.Noticias.Remove(noticia);
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { mensagem = "Não foi possível excluir a notícia." });
+            }
 
             return NoContent();
         }
