@@ -45,8 +45,6 @@ function Home() {
         />
     }
 
-    // Log para debug - Retirar futuramente
-    console.log(noticias);
     let newsSection;
     
     if (noticias.length === 0) {

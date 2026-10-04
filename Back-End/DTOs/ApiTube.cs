@@ -2,6 +2,7 @@
 
 namespace IVnews.DTOs.ApiTube
 {
+    
     public class ApiTubeResponse
     {
         public string Status { get; set; }
@@ -22,7 +23,7 @@ namespace IVnews.DTOs.ApiTube
         
         // Novas entidades mapeadas
         public List<ApiTubeCategory> Categories { get; set; }
-        public ApiTubeSummary Summary { get; set; }
+        // public ApiTubeSummary Summary { get; set; } (temporariamente retirado para testes)
         public ApiTubeLocation Location { get; set; }
     }
 
@@ -46,7 +47,14 @@ namespace IVnews.DTOs.ApiTube
     public class ApiTubeCategory
     {
         public string Name { get; set; }
-        public string Slug { get; set; } // Opcional: útil para identificação amigável
+        public double Score { get; set; }
+        public string Taxonomy { get; set; }
+        public ApiTubeLinks Links { get; set; }
+    }
+
+    public class ApiTubeLinks
+    {
+        public string Self { get; set; }
     }
 
     public class ApiTubeSummary
@@ -60,5 +68,7 @@ namespace IVnews.DTOs.ApiTube
         public string Country { get; set; }
         public string Region { get; set; }
         public string City { get; set; }
+        public string Lat { get; set; }
+        public string Long { get; set; }
     }
 }

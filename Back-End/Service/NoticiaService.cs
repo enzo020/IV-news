@@ -42,113 +42,176 @@ namespace IVNews.Services
                 new AuthenticationHeaderValue("Bearer", token);
         }
 
-  public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
-{
-    var endpoint = $"v1/news/everything?language.code=pt&per_page={perPage}&source.country.code=br";
-
-    HttpResponseMessage response;
-
-    try
-    {
-        // Tenta realizar a requisição à API externa
-        response = await _httpClient.GetAsync(endpoint);
-    }
-    catch (TaskCanceledException)
-    {
-        throw new HttpRequestException(
-            "[ApiTube Error] A requisição excedeu o tempo limite (Timeout). O serviço do ApiTube pode estar indisponível ou instável."
-        );
-    }
-    catch (HttpRequestException ex)
-    {
-        throw new HttpRequestException(
-            $"[ApiTube Error] Falha de conexão de rede ao tentar acessar o ApiTube. Verifique sua conexão com a internet. Detalhes: {ex.Message}", 
-            ex
-        );
-    }
-
-    var jsonResponse = await response.Content.ReadAsStringAsync();
-
-    // Se a API retornar erro HTTP (ex: 502, 503, 504, 500)
-    if (!response.IsSuccessStatusCode)
-    {
-        throw new HttpRequestException(
-            $"[ApiTube Error] O ApiTube retornou um erro. Status Code: {(int)response.StatusCode} ({response.StatusCode}). " +
-            $"Detalhes: {jsonResponse}"
-        );
-    }
-
-    if (string.IsNullOrWhiteSpace(jsonResponse))
-    {
-        throw new InvalidOperationException(
-            "[ApiTube Error] A API retornou uma resposta com corpo vazio."
-        );
-    }
-
-    var data = JsonSerializer.Deserialize<ApiTubeResponse>(
-        jsonResponse,
-        new JsonSerializerOptions
+        // Mapeamento das categorias ApiTube > IvNews
+        private static readonly Dictionary<string, int> CategoriaMapeamento = new()
         {
-            PropertyNameCaseInsensitive = true
-        }
-    );
+            // Política
+            ["medtop:11000000"] = 1,
+            ["medtop:20000574"] = 1,
+            ["medtop:20000586"] = 1,
 
-    if (data?.Results == null)
-    {
-        throw new InvalidOperationException(
-            $"[ApiTube Error] Falha ao processar os dados recebidos. JSON: {jsonResponse}"
-        );
-    }
+            // Economia
+            ["medtop:04000000"] = 5,
+            ["medtop:20000170"] = 5, 
+            ["medtop:20000209"] = 5, 
+            ["medtop:20000200"] = 5, 
+            ["medtop:20001366"] = 5, 
 
-    return data.Results;
-}
-        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
-{
-    var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
-    
-    int inseridas = 0;
-    int ignoradas = 0;
+            // Esporte
+            ["medtop:15000000"] = 2,
 
-    foreach (var article in noticiasApi)
-    {
-        var noticiaExistente = await _context.Noticias
-            .FirstOrDefaultAsync(n => n.IdExterno == article.Id.ToString());
+            // Tecnologia
+            // adicionar categorias de tecnologia aqui
 
-        if (noticiaExistente == null)
+            // Saúde
+            // adicionar categorias de saúde aqui
+        };
+
+        public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
-            var noticia = new Noticia
+            var endpoint = $"v1/news/everything?language.code=pt&per_page={perPage}&source.country.code=br";
+
+            HttpResponseMessage response;
+
+            try
             {
-                Titulo = article.Title,
-                Conteudo = article.Body,
-                Autor = article.Author?.Name,
-                Fonte = article.Source?.Domain,
-                UrlNoticia = article.Href,
-                ImagemUrl = article.Media?.FirstOrDefault()?.Url,
-                IdExterno = article.Id.ToString(),
-                PublicadoEm = article.PublishedAt
-            };
+                // Tenta realizar a requisição à API externa
+                response = await _httpClient.GetAsync(endpoint);
+            }
+            catch (TaskCanceledException)
+            {
+                throw new HttpRequestException(
+                    "[ApiTube Error] A requisição excedeu o tempo limite (Timeout). O serviço do ApiTube pode estar indisponível ou instável."
+                );
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException(
+                    $"[ApiTube Error] Falha de conexão de rede ao tentar acessar o ApiTube. Verifique sua conexão com a internet. Detalhes: {ex.Message}",
+                    ex
+                );
+            }
 
-            _context.Noticias.Add(noticia);
-            inseridas++;
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(jsonResponse);
+
+            // Se a API retornar erro HTTP (ex: 502, 503, 504, 500)
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"[ApiTube Error] O ApiTube retornou um erro. Status Code: {(int)response.StatusCode} ({response.StatusCode}). " +
+                    $"Detalhes: {jsonResponse}"
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(jsonResponse))
+            {
+                throw new InvalidOperationException(
+                    "[ApiTube Error] A API retornou uma resposta com corpo vazio."
+                );
+            }
+
+            var data = JsonSerializer.Deserialize<ApiTubeResponse>(
+                jsonResponse,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+
+            if (data?.Results == null)
+            {
+                throw new InvalidOperationException(
+                    $"[ApiTube Error] Falha ao processar os dados recebidos. JSON: {jsonResponse}"
+                );
+            }
+
+            return data.Results;
         }
-        else
+
+        private static string? ObterIdExternoCategoria(ApiTubeCategory categoria)
         {
-            ignoradas++;
+            return categoria.Links?.Self?
+                .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                .LastOrDefault();
         }
-    }
 
-    if (inseridas > 0)
-    {
-        await _context.SaveChangesAsync();
-    }
+        private static Categoria? ObterCategoria(
+            ApiTubeArticle article,
+            List<Categoria> categoriasBanco)
+        {
+            var categorias = article.Categories?
+                .OrderByDescending(c => c.Score)
+                ?? Enumerable.Empty<ApiTubeCategory>();
 
-    return new ImportacaoResultadoDto
-    {
-        TotalRecebidoDaApi = noticiasApi.Count,
-        TotalInserido = inseridas,
-        TotalIgnoradasDuplicadas = ignoradas,
-        Mensagem = $"Importação finalizada. Recebidas: {noticiasApi.Count} | Inseridas: {inseridas} | Ignoradas (já existiam): {ignoradas}"
-    };
-}
+            foreach (var categoriaApi in categorias)
+            {
+                var idExterno = ObterIdExternoCategoria(categoriaApi);
+
+                if (idExterno != null &&
+                    CategoriaMapeamento.TryGetValue(idExterno, out var categoriaId))
+                {
+                    return categoriasBanco
+                        .FirstOrDefault(c => c.Id == categoriaId);
+                }
+            }
+
+            return null;
+        }
+        
+        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
+        {
+            var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
+            
+            int inseridas = 0;
+            int ignoradas = 0;
+
+            var categoriasBanco = await _context.Categorias.ToListAsync();
+
+            foreach (var article in noticiasApi)
+            {
+                var noticiaExistente = await _context.Noticias
+                    .FirstOrDefaultAsync(n => n.IdExterno == article.Id.ToString());
+
+                if (noticiaExistente == null)
+                {
+                    var categoria = ObterCategoria(article, categoriasBanco);
+
+                    var noticia = new Noticia
+                    {
+                        Titulo = article.Title,
+                        Conteudo = article.Body,
+                        Autor = article.Author?.Name,
+                        Fonte = article.Source?.Domain,
+                        UrlNoticia = article.Href,
+                        ImagemUrl = article.Media?.FirstOrDefault()?.Url,
+                        IdExterno = article.Id.ToString(),
+                        PublicadoEm = article.PublishedAt,
+                        Categoria = categoria
+                    };
+
+                    _context.Noticias.Add(noticia);
+                    inseridas++;
+                }
+                else
+                {
+                    ignoradas++;
+                }
+            }
+
+            if (inseridas > 0)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return new ImportacaoResultadoDto
+            {
+                TotalRecebidoDaApi = noticiasApi.Count,
+                TotalInserido = inseridas,
+                TotalIgnoradasDuplicadas = ignoradas,
+                Mensagem = $"Importação finalizada. Recebidas: {noticiasApi.Count} | Inseridas: {inseridas} | Ignoradas (já existiam): {ignoradas}"
+            };  
+        }
     }
 }

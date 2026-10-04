@@ -43,31 +43,47 @@ namespace IVnews.Data
             );
 
             modelBuilder.Entity<Localizacao>().HasData(
-                new Localizacao {
+                new Localizacao
+                {
                     Id = 1,
                     Cidade = "Maringá",
                     Estado = "PR",
                     Pais = "Brasil"
                 },
-                new Localizacao {
+                new Localizacao
+                {
                     Id = 2,
                     Cidade = "São Paulo",
                     Estado = "SP",
                     Pais = "Brasil"
                 },
-                new Localizacao {
+                new Localizacao
+                {
                     Id = 3,
                     Cidade = "Curitiba",
                     Estado = "PR",
                     Pais = "Brasil"
                 },
-                new Localizacao {
+                new Localizacao
+                {
                     Id = 4,
                     Cidade = "Rio de Janeiro",
                     Estado = "RJ",
                     Pais = "Brasil"
                 }
             );
+            
+            modelBuilder.Entity<Noticia>()
+                .HasOne(n => n.Categoria)
+                .WithMany()
+                .HasForeignKey("CategoriaId")
+                .IsRequired(false);
+
+            modelBuilder.Entity<Noticia>()
+                .HasOne(n => n.Localizacao)
+                .WithMany()
+                .HasForeignKey("LocalizacaoId")
+                .IsRequired(false);
 
             modelBuilder.Entity<Noticia>().HasData(
                 new {

@@ -41,32 +41,31 @@ namespace IVNews.Controllers
 
         // POST: api/noticias/apitube/importar?perPage=5
         [HttpPost("apitube/importar")]
-       [HttpPost("apitube/importar")]
-public async Task<IActionResult> ImportarNoticiasDaApiTube([FromQuery] int perPage = 5)
-{
-    if (perPage < 1 || perPage > 10)
-    {
-        return BadRequest(new { mensagem = "O parâmetro perPage deve estar entre 1 e 10 (limite do plano free do ApiTube)." });
-    }
+        public async Task<IActionResult> ImportarNoticiasDaApiTube([FromQuery] int perPage = 5)
+        {
+            if (perPage < 1 || perPage > 10)
+            {
+                return BadRequest(new { mensagem = "O parâmetro perPage deve estar entre 1 e 10 (limite do plano free do ApiTube)." });
+            }
 
-    try
-    {
-        var resultado = await _noticiaService.SalvarNoticiasDaApiAsync(perPage);
-        return Ok(resultado);
-    }
-    catch (HttpRequestException ex)
-    {
-        return StatusCode(503, new { mensagem = "Não foi possível importar as notícias. O ApiTube está indisponível no momento.", detalhe = ex.Message });
-    }
-    catch (DbUpdateException)
-    {
-        return StatusCode(500, new { mensagem = "Erro de banco de dados: Não foi possível salvar as notícias importadas." });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, new { mensagem = "Ocorreu um erro inesperado durante a importação.", detalhe = ex.Message });
-    }
-}
+            try
+            {
+                var resultado = await _noticiaService.SalvarNoticiasDaApiAsync(perPage);
+                return Ok(resultado);
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCode(503, new { mensagem = "Não foi possível importar as notícias. O ApiTube está indisponível no momento.", detalhe = ex.Message });
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { mensagem = "Erro de banco de dados: Não foi possível salvar as notícias importadas." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensagem = "Ocorreu um erro inesperado durante a importação.", detalhe = ex.Message });
+            }
+        }
         // =====================================================
         // CRUD DE NOTÍCIAS (Mantido igual)
         // =====================================================
