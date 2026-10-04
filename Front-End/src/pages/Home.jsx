@@ -45,11 +45,21 @@ function Home() {
         />
     }
 
+    const featuredNews = noticias
+    .slice(0, 5)
+    .map((noticia) => ({
+        id: noticia.id,
+        title: noticia.titulo,
+        description: noticia.conteudo,
+        image: noticia.imagemUrl,
+    }));
+
     let newsSection;
     
     if (noticias.length === 0) {
         newsSection = <h1>Nenhuma notícia encontrada</h1>;
     } else {
+
         newsSection = noticias.map((noticia) => (
         <NewsCard
             key={noticia.id}
@@ -65,15 +75,14 @@ function Home() {
     }
 
     return (
-        <main>
-            <h1 className="last-news-title">
-                Últimas notícias
-            </h1>
+      <main>
+            <FeaturedNews news={featuredNews} />
+            
+        <h1 className="last-news-title">Últimas notícias</h1>
 
-            <div className="news-grid">
-                {newsSection}
-            </div>
-        </main>
+            <div className="news-grid">{newsSection}</div>
+            
+      </main>
     );
 }
 

@@ -3,6 +3,7 @@ import { getNoticiaById } from "../services/noticiasService";
 import { useEffect, useState } from "react";
 import Loading from "../components/Loading/Loading";
 import ErrorMessage from "../components/ErrorMessage";
+import ImageWithFallback from "../components/ImageWithFallBack";
 
 function NewsDetails() {
 
@@ -42,54 +43,42 @@ function NewsDetails() {
         />
 
     return (
-        <main className="container py-5">
+      <main className="container py-5">
+        <article className="news-details mx-auto">
+          <div className="news-details-image">
+            <ImageWithFallback src={noticia.imagemUrl} alt={noticia.titulo} />
+          </div>
+          <div className="news-details-content">
+            <span className="badge news-details-category mb-3">
+              {noticia.categoria
+                ? noticia.categoria.nome
+                : "Categoria não informada"}
+            </span>
 
-            <article className="news-details mx-auto">
+            <h1 className="news-details-title">{noticia.titulo}</h1>
 
-                {noticia.imagemUrl ? (
-                    <img src={noticia.imagemUrl} alt={noticia.titulo} className="news-details-image"/>
-                ) : (
-                    <div className="news-image-placeholder">
-                        <img src ="../public/imgPlaceholder.svg" alt="Sem imagem" className="news-details-image"/>
-                    </div>
-                )}
+            <p className="news-details-location">
+              {noticia.localizacao
+                ? noticia.localizacao.cidade
+                : "Localização não informada"}
+            </p>
 
-                <div className="news-details-content">
+            <p className="news-details-description">{noticia.conteudo}</p>
 
-                    <span className="badge news-details-category mb-3">
-                        {noticia.categoria ? noticia.categoria.nome : "Categoria não informada"}
-                    </span>
+            <hr />
 
-                    <h1 className="news-details-title">
-                        {noticia.titulo}
-                    </h1>
+            <div className="news-details-body">
+              <p>{noticia.conteudo}</p>
+            </div>
 
-                    <p className="news-details-location">
-                        {noticia.localizacao ? noticia.localizacao.cidade : "Localização não informada"}
-                    </p>
-
-                    <p className="news-details-description">
-                        {noticia.conteudo}
-                    </p>
-
-                    <hr />
-
-                    <div className="news-details-body">
-                        <p>{noticia.conteudo}</p>
-                    </div>
-
-                    <div className="news-details-source mt-5">
-                        <span className="text-secondary">
-                            Fonte: {noticia.fonte}
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </article>
-
-        </main>
+            <div className="news-details-source mt-5">
+              <span className="text-secondary">
+                Fonte: <a href={noticia.urlNoticia} target="_blank">{noticia.fonte}</a>
+              </span>
+            </div>
+          </div>
+        </article>
+      </main>
     );
 }
 
