@@ -5,12 +5,25 @@ function Navbar() {
         <nav className="site-navbar">
             <div className="container">
                 <div className="navbar-links">
-                    <Link to={`/`}>Home</Link>
-                    <a href="#">Categorias</a>
-                    <a href="#">Últimas notícias</a>
-                    <a href="#">Sobre</a>
-                    <a href="#">Planos</a>
-                    <a href="#">Ajuda</a>
+
+                    <Link to="/">Home</Link>
+
+                    <Link to="/noticias">
+                        Notícias
+                    </Link>
+
+                    <Link to="/categorias">
+                        Categorias
+                    </Link>
+
+                    <Link to="/sobre">
+                        Sobre
+                    </Link>
+
+                    <Link to="/ajuda">
+                        Ajuda
+                    </Link>
+
                 </div>
             </div>
         </nav>
