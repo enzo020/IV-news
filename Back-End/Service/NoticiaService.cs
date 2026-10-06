@@ -52,10 +52,10 @@ namespace IVNews.Services
 
             // Economia
             ["medtop:04000000"] = 5,
-            ["medtop:20000170"] = 5, 
-            ["medtop:20000209"] = 5, 
-            ["medtop:20000200"] = 5, 
-            ["medtop:20001366"] = 5, 
+            ["medtop:20000170"] = 5,
+            ["medtop:20000209"] = 5,
+            ["medtop:20000200"] = 5,
+            ["medtop:20001366"] = 5,
 
             // Esporte
             ["medtop:15000000"] = 2,
@@ -137,10 +137,9 @@ namespace IVNews.Services
                 .LastOrDefault();
         }
 
-        private static Categoria? ObterCategoria(
-            ApiTubeArticle article,
-            List<Categoria> categoriasBanco)
+        private static Categoria? ObterCategoria(ApiTubeArticle article, List<Categoria> categoriasBanco)
         {
+            const int CategoriaOutrosId = 6;
             var categorias = article.Categories?
                 .OrderByDescending(c => c.Score)
                 ?? Enumerable.Empty<ApiTubeCategory>();
@@ -149,15 +148,12 @@ namespace IVNews.Services
             {
                 var idExterno = ObterIdExternoCategoria(categoriaApi);
 
-                if (idExterno != null &&
-                    CategoriaMapeamento.TryGetValue(idExterno, out var categoriaId))
-                {
-                    return categoriasBanco
-                        .FirstOrDefault(c => c.Id == categoriaId);
-                }
+                if (idExterno != null && CategoriaMapeamento.TryGetValue(idExterno, out var categoriaId))
+                        return categoriasBanco.FirstOrDefault(c => c.Id == categoriaId);
+            
+                
             }
-
-            return null;
+            return categoriasBanco.FirstOrDefault(c => c.Id == CategoriaOutrosId);
         }
         
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)

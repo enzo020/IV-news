@@ -3,6 +3,7 @@ using System;
 using IVnews.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IVnews.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006221158_NomeDaSuaMudanca")]
+    partial class NomeDaSuaMudanca
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.30");
@@ -66,12 +69,6 @@ namespace IVnews.Migrations
                             Id = 5,
                             Descricao = "Notícias sobre economia e mercado financeiro",
                             Nome = "Economia"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Descricao = "Notícias sobre categorias variadas",
-                            Nome = "Outros"
                         });
                 });
 

@@ -35,10 +35,17 @@ namespace IVnews.Data
                     Nome = "Saúde",
                     Descricao = "Notícias sobre saúde e bem-estar"
                 },
-                new Categoria {
+                new Categoria
+                {
                     Id = 5,
                     Nome = "Economia",
                     Descricao = "Notícias sobre economia e mercado financeiro"
+                },
+                new Categoria
+                {
+                    Id = 6,
+                    Nome = "Outros",
+                    Descricao = "Notícias sobre categorias variadas"
                 }
             );
 
@@ -85,101 +92,6 @@ namespace IVnews.Data
                 .HasForeignKey("LocalizacaoId")
                 .IsRequired(false);
 
-            modelBuilder.Entity<Noticia>().HasData(
-                new {
-                    Id = 1,
-                    Titulo = "Notícia de teste",
-                    Conteudo = "Conteúdo de exemplo pra testar o banco.",
-                    Autor = "Redação IV News",
-                    Fonte = "IV News",
-                    UrlNoticia = "https://ivnews.com/noticia-teste",
-                    ImagemUrl = "https://picsum.photos/600/400?random=5",
-                    IdExterno = (string?)null,
-                    PublicadoEm = new DateTime(2026, 9, 3),
-                    CategoriaId = 3,
-                    LocalizacaoId = 1
-                },
-                new {
-                    Id = 2,
-                    Titulo = "Eleições municipais se aproximam",
-                    Conteudo = "Candidatos iniciam campanhas em todo o estado.",
-                    Autor = "Ana Silva",
-                    Fonte = "IV News",
-                    UrlNoticia = "https://ivnews.com/eleicoes-municipais",
-                    ImagemUrl = "https://picsum.photos/600/400?random=4",
-                    IdExterno = (string?)null,
-                    PublicadoEm = new DateTime(2026, 9, 4),
-                    CategoriaId = 1,
-                    LocalizacaoId = 2
-                },
-                new {
-                    Id = 3,
-                    Titulo = "Time local vence campeonato",
-                    Conteudo = "Vitória histórica na final do estadual.",
-                    Autor = "Carlos Souza",
-                    Fonte = "IV News",
-                    UrlNoticia = "https://ivnews.com/time-vence-campeonato",
-                    ImagemUrl = "https://picsum.photos/600/400?random=1",
-                    IdExterno = (string?)null,
-                    PublicadoEm = new DateTime(2026, 9, 5),
-                    CategoriaId = 2,
-                    LocalizacaoId = 3
-                },
-                new {
-                    Id = 4,
-                    Titulo = "Nova IA promete revolucionar diagnósticos",
-                    Conteudo = "Startup lança ferramenta de saúde com inteligência artificial.",
-                    Autor = "Beatriz Lima",
-                    Fonte = "IV News",
-                    UrlNoticia = "https://ivnews.com/nova-ia-diagnosticos",
-                    ImagemUrl = "https://picsum.photos/600/400?random=2",
-                    IdExterno = (string?)null,
-                    PublicadoEm = new DateTime(2026, 9, 6),
-                    CategoriaId = 3,
-                    LocalizacaoId = 4
-                },
-                new {
-                    Id = 5,
-                    Titulo = "Mercado financeiro reage a nova taxa",
-                    Conteudo = "Bolsa de valores tem alta após anúncio do governo.",
-                    Autor = "Rafael Costa",
-                    Fonte = "IV News",
-                    UrlNoticia = "https://ivnews.com/mercado-financeiro-taxa",
-                    ImagemUrl = "https://picsum.photos/600/400?random=3",
-                    IdExterno = (string?)null,
-                    PublicadoEm = new DateTime(2026, 9, 7),
-                    CategoriaId = 5,
-                    LocalizacaoId = 1
-                }
-            );
-
-            modelBuilder.Entity<Resumo>().HasData(
-                new Resumo {
-                    Id = 1,
-                    Texto = "Resumo de exemplo da notícia de teste.",
-                    NoticiaId = 1
-                },
-                new Resumo {
-                    Id = 2,
-                    Texto = "Candidatos disputam eleições municipais em todo o estado.",
-                    NoticiaId = 2
-                },
-                new Resumo {
-                    Id = 3,
-                    Texto = "Time conquista título estadual em final emocionante.",
-                    NoticiaId = 3
-                },
-                new Resumo {
-                    Id = 4,
-                    Texto = "Startup inova com IA aplicada à saúde.",
-                    NoticiaId = 4
-                },
-                new Resumo {
-                    Id = 5,
-                    Texto = "Governo anuncia nova taxa e mercado reage positivamente.",
-                    NoticiaId = 5
-                }
-            );
         }
     }
 }
