@@ -26,6 +26,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient<INoticiaService, NoticiaService>();
+builder.Services.AddHttpClient<ImagemService>();
+builder.Services.AddScoped<IGeminiService, GeminiService>();
 
 var app = builder.Build();
 

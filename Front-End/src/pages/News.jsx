@@ -103,14 +103,47 @@ function News() {
           >
             Todas
           </button>
+          <a
+            href="/noticias?categoria=Tecnologia"
+            className={categoriaSelecionada === "Tecnologia" ? "active" : ""}
+          >
+            Tecnologia
+          </a>
 
-          <a href="/noticias?categoria=Tecnologia">Tecnologia</a>
+          <a
+            href="/noticias?categoria=Economia"
+            className={categoriaSelecionada === "Economia" ? "active" : ""}
+          >
+            Economia
+          </a>
 
-          <a href="/noticias?categoria=Esportes">Esportes</a>
+          <a
+            href="/noticias?categoria=Esportes"
+            className={categoriaSelecionada === "Esportes" ? "active" : ""}
+          >
+            Esportes
+          </a>
 
-          <a href="/noticias?categoria=Política">Política</a>
+          <a
+            href="/noticias?categoria=Política"
+            className={categoriaSelecionada === "Política" ? "active" : ""}
+          >
+            Política
+          </a>
 
-          <a href="/noticias?categoria=Ciência">Ciência</a>
+          <a
+            href="/noticias?categoria=Ciência"
+            className={categoriaSelecionada === "Ciência" ? "active" : ""}
+          >
+            Ciência
+          </a>
+
+          <a
+            href="/noticias?categoria=Outros"
+            className={categoriaSelecionada === "Outros" ? "active" : ""}
+          >
+            Outros
+          </a>
         </div>
       </section>
 

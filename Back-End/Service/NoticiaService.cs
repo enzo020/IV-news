@@ -4,6 +4,7 @@ using IVnews.Data;
 using IVnews.DTOs.ApiTube;
 using IVnews.Model;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
 
 namespace IVNews.Services
 {
@@ -12,12 +13,14 @@ namespace IVNews.Services
         private readonly AppDbContext _context;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly ImagemService _imagemService;
 
-        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context)
+        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _context = context;
+            _imagemService = imagemService;
 
             var baseUrl = _configuration["ApiTubeSettings:BaseUrl"];
             var token = _configuration["ApiTubeSettings:Token"];
@@ -149,17 +152,34 @@ namespace IVNews.Services
                 var idExterno = ObterIdExternoCategoria(categoriaApi);
 
                 if (idExterno != null && CategoriaMapeamento.TryGetValue(idExterno, out var categoriaId))
-                        return categoriasBanco.FirstOrDefault(c => c.Id == categoriaId);
-            
-                
+                    return categoriasBanco.FirstOrDefault(c => c.Id == categoriaId);
+
+
             }
             return categoriasBanco.FirstOrDefault(c => c.Id == CategoriaOutrosId);
         }
-        
+
+        private async Task<string?> ObterImagemValidaAsync(ApiTubeArticle article)
+        {
+            if (article.Media == null)
+                return null;
+
+            foreach (var media in article.Media)
+            {
+                if (string.IsNullOrWhiteSpace(media.Url))
+                    continue;
+
+                if (await _imagemService.ImagemEhValida(media.Url))
+                    return media.Url;
+            }
+
+            return null;
+        }
+
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
         {
             var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
-            
+
             int inseridas = 0;
             int ignoradas = 0;
 
@@ -173,6 +193,7 @@ namespace IVNews.Services
                 if (noticiaExistente == null)
                 {
                     var categoria = ObterCategoria(article, categoriasBanco);
+                    var imagemUrl = await ObterImagemValidaAsync(article);
 
                     var noticia = new Noticia
                     {
@@ -181,7 +202,7 @@ namespace IVNews.Services
                         Autor = article.Author?.Name,
                         Fonte = article.Source?.Domain,
                         UrlNoticia = article.Href,
-                        ImagemUrl = article.Media?.FirstOrDefault()?.Url,
+                        ImagemUrl = imagemUrl,
                         IdExterno = article.Id.ToString(),
                         PublicadoEm = article.PublishedAt,
                         Categoria = categoria
@@ -207,7 +228,7 @@ namespace IVNews.Services
                 TotalInserido = inseridas,
                 TotalIgnoradasDuplicadas = ignoradas,
                 Mensagem = $"Importação finalizada. Recebidas: {noticiasApi.Count} | Inseridas: {inseridas} | Ignoradas (já existiam): {ignoradas}"
-            };  
+            };
         }
     }
 }

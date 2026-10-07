@@ -87,8 +87,13 @@ As API keys NÃO devem ser adicionadas ao código ou ao GitHub.
 Após clonar o projeto, configure sua API key:
 
 dotnet user-secrets init
-(exemplo, para o APITube, substitua "SUA_API_KEY" pela sua chave real):
+E para as APIs, substitua "SUA_API_KEY" pela sua chave real:
+
+APITube:
 dotnet user-secrets set "ApiTubeSettings:Token" SUA_API_KEY
+
+Gemini:
+dotnet user-secrets set "Gemini:ApiKey" SUA_API_KEY
 
 APITube: link padrão para noticias em portugues
 https://api.apitube.io/v1/news/everything?language.code=pt

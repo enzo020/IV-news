@@ -14,6 +14,7 @@ import News from "./pages/News";
 // Páginas
 import Home from "./pages/Home";
 import NewsDetails from "./pages/NewsDetails";
+import Categories from "./pages/Categories";
 
 function App() {
 
@@ -46,6 +47,11 @@ function App() {
                 <Route
                     path="/noticias"
                     element={<News />}
+                />
+
+                <Route
+                    path="/categorias"
+                    element={<Categories />}
                 />
 
                 <Route
