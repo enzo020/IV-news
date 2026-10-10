@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using IVnews.Data;
@@ -72,7 +73,8 @@ namespace IVNews.Services
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
-            var endpoint = $"v1/news/everything?language.code=pt&per_page={perPage}&source.country.code=br";
+            // retirado para testes: &source.country.code=br
+            var endpoint = $"v1/news/everything?language.code=pt,en,es&per_page={perPage}";
 
             HttpResponseMessage response;
 
@@ -96,8 +98,6 @@ namespace IVNews.Services
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine(jsonResponse);
 
             // Se a API retornar erro HTTP (ex: 502, 503, 504, 500)
             if (!response.IsSuccessStatusCode)
@@ -176,6 +176,64 @@ namespace IVNews.Services
             return null;
         }
 
+        private static double? ConverterCoordenada(string? valor)
+        {
+            if (string.IsNullOrWhiteSpace(valor))
+                return null;
+
+            return double.TryParse(
+                valor,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out var coordenada)
+                    ? coordenada
+                    : null;
+        }
+        private async Task<Localizacao?> ObterOuCriarLocalizacaoAsync(ApiTubeLocation? dados)
+        {
+            if (dados == null)
+                return null;
+
+            var pais = Normalizar(dados.Country);
+            var estado = Normalizar(dados.Region);
+            var cidade = Normalizar(dados.City);
+
+            // Não cadastrar uma localização completamente vazia.
+            if (pais == null && estado == null && cidade == null)
+                return null;
+
+            var existente = await _context.Localizacoes.FirstOrDefaultAsync(l =>
+                l.Pais == pais &&
+                l.Estado == estado &&
+                l.Cidade == cidade);
+
+            if (existente != null)
+                return existente;
+
+            var localizacao = new Localizacao
+            {
+                Pais = pais,
+                Estado = estado,
+                Cidade = cidade,
+                Latitude = ConverterCoordenada(dados.Lat),
+                Longitude = ConverterCoordenada(dados.Long)
+            };
+
+            _context.Localizacoes.Add(localizacao);
+
+            // Persiste para gerar o Id.
+            await _context.SaveChangesAsync();
+
+            return localizacao;
+        }
+
+        private static string? Normalizar(string? valor)
+        {
+            return string.IsNullOrWhiteSpace(valor)
+                ? null
+                : valor.Trim();
+        }
+
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
         {
             var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
@@ -194,6 +252,7 @@ namespace IVNews.Services
                 {
                     var categoria = ObterCategoria(article, categoriasBanco);
                     var imagemUrl = await ObterImagemValidaAsync(article);
+                    var localizacao = await ObterOuCriarLocalizacaoAsync(article.Location);
 
                     var noticia = new Noticia
                     {
@@ -205,7 +264,8 @@ namespace IVNews.Services
                         ImagemUrl = imagemUrl,
                         IdExterno = article.Id.ToString(),
                         PublicadoEm = article.PublishedAt,
-                        Categoria = categoria
+                        Categoria = categoria,
+                        Localizacao = localizacao
                     };
 
                     _context.Noticias.Add(noticia);

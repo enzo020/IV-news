@@ -6,14 +6,20 @@ import { getNoticias } from "../services/noticiasService";
 import NewsCard from "../components/NewsCard";
 import Loading from "../components/Loading/Loading";
 import ErrorMessage from "../components/ErrorMessage";
+import { useCategorias } from "../hooks/useCategorias";
 
 function News() {
   const [noticias, setNoticias] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const {
+  categorias,
+  loading: loadingCategorias,
+  erro: erroCategorias,
+} = useCategorias();
 
   const categoriaSelecionada = searchParams.get("categoria");
   const busca = searchParams.get("busca");
@@ -36,10 +42,20 @@ function News() {
     carregarNoticias();
   }, []);
 
+  function selecionarCategoria(categoria) {
+    setSearchParams((params) => {
+      if (categoria) {
+        params.set("categoria", categoria);
+      } else {
+        params.delete("categoria");
+      }
+
+      return params;
+    });
+  }
+
   const noticiasFiltradas = useMemo(() => {
     let resultado = [...noticias];
-
-    // Filtro por categoria
 
     if (categoriaSelecionada) {
       resultado = resultado.filter(
@@ -48,8 +64,6 @@ function News() {
           categoriaSelecionada.toLowerCase(),
       );
     }
-
-    // Filtro por busca
 
     if (busca) {
       const termo = busca.toLowerCase();
@@ -94,56 +108,35 @@ function News() {
       <section className="news-filters">
         <div className="news-filter-group">
           <button
+            type="button"
             className={!categoriaSelecionada ? "active" : ""}
-            onClick={() => {
-              window.history.pushState({}, "", "/noticias");
-
-              window.location.reload();
-            }}
+            onClick={() => selecionarCategoria(null)}
           >
             Todas
           </button>
-          <a
-            href="/noticias?categoria=Tecnologia"
-            className={categoriaSelecionada === "Tecnologia" ? "active" : ""}
-          >
-            Tecnologia
-          </a>
 
-          <a
-            href="/noticias?categoria=Economia"
-            className={categoriaSelecionada === "Economia" ? "active" : ""}
-          >
-            Economia
-          </a>
+          {categorias.map((categoria) => (
+            <button
+              type="button"
+              key={categoria.id}
+              className={`category-filter ${
+                categoriaSelecionada?.toLowerCase() ===
+                categoria.nome.toLowerCase()
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => selecionarCategoria(categoria.nome)}
+              title={categoria.descricao || categoria.nome}
+            >
+              {categoria.nome}
 
-          <a
-            href="/noticias?categoria=Esportes"
-            className={categoriaSelecionada === "Esportes" ? "active" : ""}
-          >
-            Esportes
-          </a>
-
-          <a
-            href="/noticias?categoria=Política"
-            className={categoriaSelecionada === "Política" ? "active" : ""}
-          >
-            Política
-          </a>
-
-          <a
-            href="/noticias?categoria=Ciência"
-            className={categoriaSelecionada === "Ciência" ? "active" : ""}
-          >
-            Ciência
-          </a>
-
-          <a
-            href="/noticias?categoria=Outros"
-            className={categoriaSelecionada === "Outros" ? "active" : ""}
-          >
-            Outros
-          </a>
+              {categoria.descricao && (
+                <span className="category-tooltip" role="tooltip">
+                  {categoria.descricao}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </section>
 

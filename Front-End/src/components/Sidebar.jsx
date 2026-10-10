@@ -1,96 +1,74 @@
 import { Link } from "react-router-dom";
-
+import { useCategorias } from "../hooks/useCategorias";
+import CategoryLink from "./CategoryLink";
 
 function Sidebar({ isOpen, onClose }) {
-    return (
-        <>
-            <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
+  const { categorias, loading, erro } = useCategorias();
 
-                <div className="sidebar-header">
-                    <div className="d-flex align-items-center gap-3 p-4">
-                        <div className="account-avatar">
-                            M
-                        </div>
+  return (
+    <>
+      <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
+        <div className="sidebar-header">
+          <div className="d-flex align-items-center gap-3 p-4">
+            <div className="account-avatar">M</div>
 
-                        <div>
-                            <strong className="d-block">
-                                Murilo
-                            </strong>
+            <div>
+              <strong className="d-block">Murilo</strong>
+              <small className="text-secondary">murilo@email.com</small>
+            </div>
+          </div>
 
-                            <small className="text-secondary">
-                                murilo@email.com
-                            </small>
-                        </div>
-                    </div>
+          <button
+            className="sidebar-close"
+            onClick={onClose}
+            aria-label="Fechar menu"
+          >
+            ×
+          </button>
+        </div>
 
-                    <button
-                        className="sidebar-close"
-                        onClick={onClose}
-                    >
-                        ×
-                    </button>
-                </div>
+        <nav className="sidebar-nav">
+          <Link to="/" onClick={onClose}>
+            🏠 Início
+          </Link>
 
-                <nav className="sidebar-nav">
+          <Link to="/noticias" onClick={onClose}>
+            📰 Últimas notícias
+          </Link>
 
-                    <Link to={"/"} onClick={onClose}>
-                        🏠 Início
-                    </Link>
+          <div className="sidebar-section">
+            <span>CATEGORIAS</span>
+          </div>
 
-                    <Link to={"/"} onClick={onClose}>
-                        📰 Últimas notícias
-                    </Link>
+          {loading && <span>Carregando categorias...</span>}
 
-                    <div className="sidebar-section" onClick={onClose}>
-                        <span>CATEGORIAS</span>
-                    </div>
+          {erro && <span>Não foi possível carregar as categorias.</span>}
 
-                    <Link
-                        to={"/"}
-                        onClick={onClose}
-                        className="sidebar-link d-flex align-items-center gap-3"
-                    >
-                        <span>💻</span>
-                        <span>Tecnologia</span>
-                    </Link>
+          {!loading &&
+            !erro &&
+            categorias.map((categoria) => (
+              <CategoryLink
+                key={categoria.id}
+                categoria={categoria}
+                onClick={onClose}
+                className="sidebar-link d-flex align-items-center gap-3"
+              />
+            ))}
+        </nav>
 
-                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
-                        <span>⚽</span>
-                        <span>Esportes</span>
-                    </Link>
+        <div className="sidebar-bottom">
+          <Link to="/" onClick={onClose}>
+            ⚙️ Configurações
+          </Link>
+          <Link to="/" onClick={onClose}>
+            ❓ Ajuda
+          </Link>
+        </div>
+      </aside>
 
-                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
-                        <span>🏛️</span>
-                        <span>Política</span>
-                    </Link>
-
-                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
-                        <span>🔬</span>
-                        <span>Ciência</span>
-                    </Link>
-
-                    <Link to={"/"} className="sidebar-link d-flex align-items-center gap-3" onClick={onClose}>
-                        <span>🎬</span>
-                        <span>Entretenimento</span>
-                    </Link>
-
-                </nav>
-
-                <div className="sidebar-bottom">
-                    <Link to={"/"} onClick={onClose}>⚙️ Configurações</Link>
-                    <Link to={"/"} onClick={onClose}>❓ Ajuda</Link>
-                </div>
-
-            </aside>
-
-            {isOpen && (
-                <div
-                    className="sidebar-overlay"
-                    onClick={onClose}
-                />
-            )}
-        </>
-    );
+      {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
+    </>
+  );
 }
 
 export default Sidebar;

@@ -1,9 +1,9 @@
 import apiFetch from "./api";
 
 export async function getNoticias() {
-    return apiFetch("/api/noticias");
+    return apiFetch("/noticias");
 }
 
 export async function getNoticiaById(id) {
-    return apiFetch(`/api/noticias/${id}`);
+    return apiFetch(`/noticias/${id}`);
 }
