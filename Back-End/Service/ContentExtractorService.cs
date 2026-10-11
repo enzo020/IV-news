@@ -2,7 +2,7 @@ using SmartReader;
 
 namespace IVNews.Backend.Services;
 
-public class ContentExtractorService
+public class ContentExtractorService : IContentExtractorService
 {
     public async Task<ExtractionResult> ExtractAsync(string url)
     {

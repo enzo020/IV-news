@@ -8,15 +8,13 @@ using IVnews.Data;
 namespace IVNews.Backend.Controllers;
 
 [ApiController]
-[Route("api/teste-extrator")]
-public class ContentExtractorTestController : ControllerBase
+[Route("api/extrator")]
+public class ContentExtractorController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly ContentExtractorService _extractor;
+    private readonly IContentExtractorService _extractor;
 
-    public ContentExtractorTestController(
-        AppDbContext context,
-        ContentExtractorService extractor)
+    public ContentExtractorController(AppDbContext context, IContentExtractorService extractor)
     {
         _context = context;
         _extractor = extractor;
@@ -38,8 +36,7 @@ public class ContentExtractorTestController : ControllerBase
 
         foreach (var noticia in noticias)
         {
-            var resultado = await _extractor.ExtractAsync(
-                noticia.UrlNoticia!);
+            var resultado = await _extractor.ExtractAsync(noticia.UrlNoticia!);
 
             resultados.Add(new
             {
@@ -49,13 +46,47 @@ public class ContentExtractorTestController : ControllerBase
                 resultado.IsReadable,
                 resultado.Completed,
                 TamanhoTexto = resultado.Text.Length,
-                Amostra = resultado.Text.Length > 1000
-                    ? resultado.Text
-                    : resultado.Text,
+                Amostra = resultado.Text,
                 resultado.Error
             });
         }
 
         return Ok(resultados);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> ExtrairPorId(int id)
+    {
+        var noticia = await _context.Noticias.FirstOrDefaultAsync(n => n.Id == id);
+
+        if (noticia == null)
+        {
+            return NotFound(new
+            {
+                mensagem = $"Notícia com ID {id} não encontrada."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(noticia.UrlNoticia))
+        {
+            return BadRequest(new
+            {
+                mensagem = "A notícia não possui uma URL válida."
+            });
+        }
+
+        var resultado = await _extractor.ExtractAsync(noticia.UrlNoticia);
+
+        return Ok(new
+        {
+            noticia.Id,
+            noticia.Titulo,
+            noticia.UrlNoticia,
+            resultado.IsReadable,
+            resultado.Completed,
+            TamanhoTexto = resultado.Text.Length,
+            Texto = resultado.Text,
+            resultado.Error
+        });
     }
 }
