@@ -188,10 +188,25 @@ namespace IVnews.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Categoria")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("NoticiaId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("PontosChave")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResumoExecutivo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sentimento")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Texto")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Titulo")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
