@@ -1,3 +1,4 @@
+using System.Text.Json;
 using IVnews.Data;
 using IVnews.Model;
 using IVNews.Services;
@@ -12,13 +13,16 @@ namespace IVNews.Controllers
     {
         private readonly AppDbContext _context;
         private readonly INoticiaService _noticiaService;
+        private readonly IGeminiService _geminiService;
 
         public NoticiaController(
             AppDbContext context,
-            INoticiaService noticiaService)
+            INoticiaService noticiaService,
+            IGeminiService geminiService)
         {
             _context = context;
             _noticiaService = noticiaService;
+            _geminiService = geminiService;
         }
 
         // =====================================================
@@ -95,6 +99,78 @@ namespace IVNews.Controllers
             }
 
             return Ok(noticia);
+        }
+
+        [HttpPost("{id}/resumo")]
+        public async Task<IActionResult> GerarResumoDaNoticia(int id)
+        {
+            var noticia = await _context.Noticias
+                .FirstOrDefaultAsync(n => n.Id == id);
+
+            if (noticia == null)
+            {
+                return NotFound(new { mensagem = $"Notícia com ID {id} não encontrada." });
+            }
+
+            if (string.IsNullOrWhiteSpace(noticia.Conteudo))
+            {
+                return BadRequest(new { mensagem = "A notícia não possui conteúdo para resumo." });
+            }
+
+            try
+            {
+                var resumoJson = await _geminiService.GerarResumoAsync(noticia.Conteudo);
+
+                if (string.IsNullOrWhiteSpace(resumoJson))
+                {
+                    return StatusCode(502, new { mensagem = "O Gemini não retornou um resumo válido." });
+                }
+
+                using var document = JsonDocument.Parse(resumoJson);
+                var root = document.RootElement;
+
+                var resumo = new Resumo
+                {
+                    Texto = root.TryGetProperty("resumo_executivo", out var resumoExecutivo)
+                        ? resumoExecutivo.GetString()
+                        : noticia.Conteudo,
+                    Titulo = root.TryGetProperty("titulo", out var titulo) ? titulo.GetString() : noticia.Titulo,
+                    ResumoExecutivo = root.TryGetProperty("resumo_executivo", out var resumoExecutivoTexto)
+                        ? resumoExecutivoTexto.GetString()
+                        : noticia.Conteudo,
+                    PontosChave = root.TryGetProperty("pontos_chave", out var pontosChave)
+                        ? pontosChave.EnumerateArray()
+                            .Select(item => item.GetString())
+                            .Where(item => !string.IsNullOrWhiteSpace(item))
+                            .ToList() ?? new List<string>()
+                        : new List<string>(),
+                    Categoria = root.TryGetProperty("categoria", out var categoria) ? categoria.GetString() : "Outros",
+                    Sentimento = root.TryGetProperty("sentimento", out var sentimento) ? sentimento.GetString() : "Neutro",
+                    NoticiaId = noticia.Id,
+                    Noticia = noticia
+                };
+
+                _context.Resumos.Add(resumo);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    noticiaId = noticia.Id,
+                    titulo = resumo.Titulo,
+                    resumo_executivo = resumo.ResumoExecutivo,
+                    pontos_chave = resumo.PontosChave,
+                    categoria = resumo.Categoria,
+                    sentimento = resumo.Sentimento
+                });
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCode(502, new { mensagem = "Não foi possível gerar o resumo com o Gemini.", detalhe = ex.Message });
+            }
+            catch (JsonException)
+            {
+                return StatusCode(502, new { mensagem = "O Gemini retornou um JSON inválido para o resumo da notícia." });
+            }
         }
 
         [HttpPost]

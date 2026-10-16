@@ -92,6 +92,12 @@ namespace IVnews.Data
                 .HasForeignKey("LocalizacaoId")
                 .IsRequired(false);
 
+            modelBuilder.Entity<Resumo>()
+                .HasOne(r => r.Noticia)
+                .WithMany()
+                .HasForeignKey(r => r.NoticiaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
