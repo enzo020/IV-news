@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using IVNews.Backend;
 using IVnews.Data;
 
-namespace IVNews.Backend.Controllers;
+namespace IVNews.Controllers;
 
 [ApiController]
 [Route("api/extrator")]
@@ -21,8 +21,7 @@ public class ContentExtractorController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Testar(
-        [FromQuery] int quantidade = 5)
+    public async Task<IActionResult> Testar([FromQuery] int quantidade = 5)
     {
         quantidade = Math.Clamp(quantidade, 1, 10);
 

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using IVnews.Data;
 using IVnews.Model;
+using IVNews.Backend.Services;
 using IVNews.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +15,18 @@ namespace IVNews.Controllers
         private readonly AppDbContext _context;
         private readonly INoticiaService _noticiaService;
         private readonly IGeminiService _geminiService;
+        private readonly IContentExtractorService _contentExtractorService;
 
         public NoticiaController(
             AppDbContext context,
             INoticiaService noticiaService,
-            IGeminiService geminiService)
+            IGeminiService geminiService,
+            IContentExtractorService contentExtractorService)
         {
             _context = context;
             _noticiaService = noticiaService;
             _geminiService = geminiService;
+            _contentExtractorService = contentExtractorService;
         }
 
         // =====================================================
@@ -73,7 +77,7 @@ namespace IVNews.Controllers
         // =====================================================
         // CRUD DE NOTÍCIAS (Mantido igual)
         // =====================================================
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Noticia>>> GetNoticias()
         {
@@ -253,8 +257,5 @@ namespace IVNews.Controllers
             return _context.Noticias.Any(e => e.Id == id);
         }
 
-        
-
-        
     }
 }

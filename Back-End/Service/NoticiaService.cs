@@ -4,6 +4,7 @@ using System.Text.Json;
 using IVnews.Data;
 using IVnews.DTOs.ApiTube;
 using IVnews.Model;
+using IVNews.Backend.Services;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 
@@ -15,13 +16,17 @@ namespace IVNews.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ImagemService _imagemService;
+        private readonly IContentExtractorService _contentExtractor;
+        private readonly IGeminiService _geminiService;
 
-        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService)
+        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService, IContentExtractorService contentExtractor, IGeminiService geminiService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _context = context;
             _imagemService = imagemService;
+            _contentExtractor = contentExtractor;
+            _geminiService = geminiService;
 
             var baseUrl = _configuration["ApiTubeSettings:BaseUrl"];
             var token = _configuration["ApiTubeSettings:Token"];
@@ -73,8 +78,7 @@ namespace IVNews.Services
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
-            // retirado para testes: &source.country.code=br
-            var endpoint = $"v1/news/everything?language.code=pt,en,es&per_page={perPage}";
+            var endpoint = $"v1/news/everything?language.code=pt&source.country.code=br&per_page={perPage}";
 
             HttpResponseMessage response;
 
@@ -234,61 +238,123 @@ namespace IVNews.Services
                 : valor.Trim();
         }
 
-        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
+        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(
+    int perPage)
+{
+    var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
+
+    int inseridas = 0;
+    int ignoradas = 0;
+    int falhasExtracao = 0;
+    int falhasProcessamento = 0;
+
+    var categoriasBanco = await _context.Categorias.ToListAsync();
+
+    foreach (var article in noticiasApi)
+    {
+        var noticiaExistente = await _context.Noticias
+            .FirstOrDefaultAsync(
+                n => n.IdExterno == article.Id.ToString());
+
+        if (noticiaExistente != null)
         {
-            var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
-
-            int inseridas = 0;
-            int ignoradas = 0;
-
-            var categoriasBanco = await _context.Categorias.ToListAsync();
-
-            foreach (var article in noticiasApi)
-            {
-                var noticiaExistente = await _context.Noticias
-                    .FirstOrDefaultAsync(n => n.IdExterno == article.Id.ToString());
-
-                if (noticiaExistente == null)
-                {
-                    var categoria = ObterCategoria(article, categoriasBanco);
-                    var imagemUrl = await ObterImagemValidaAsync(article);
-                    var localizacao = await ObterOuCriarLocalizacaoAsync(article.Location);
-
-                    var noticia = new Noticia
-                    {
-                        Titulo = article.Title,
-                        Conteudo = article.Body,
-                        Autor = article.Author?.Name,
-                        Fonte = article.Source?.Domain,
-                        UrlNoticia = article.Href,
-                        ImagemUrl = imagemUrl,
-                        IdExterno = article.Id.ToString(),
-                        PublicadoEm = article.PublishedAt,
-                        Categoria = categoria,
-                        Localizacao = localizacao
-                    };
-
-                    _context.Noticias.Add(noticia);
-                    inseridas++;
-                }
-                else
-                {
-                    ignoradas++;
-                }
-            }
-
-            if (inseridas > 0)
-            {
-                await _context.SaveChangesAsync();
-            }
-
-            return new ImportacaoResultadoDto
-            {
-                TotalRecebidoDaApi = noticiasApi.Count,
-                TotalInserido = inseridas,
-                TotalIgnoradasDuplicadas = ignoradas,
-                Mensagem = $"Importação finalizada. Recebidas: {noticiasApi.Count} | Inseridas: {inseridas} | Ignoradas (já existiam): {ignoradas}"
-            };
+            ignoradas++;
+            continue;
         }
+
+        // 1. Extrai o conteúdo da página original.
+        var extraction = await _contentExtractor.ExtractAsync(
+            article.Href ?? "");
+
+        if (string.IsNullOrWhiteSpace(extraction.Text))
+        {
+            falhasExtracao++;
+            continue;
+        }
+
+        // 2. Processa o texto extraído com o Gemini.
+        ProcessamentoNoticiaDto? processada;
+
+        try
+        {
+            processada = await _geminiService.ProcessarNoticiaAsync(
+                extraction.Text);
+        }
+        catch (Exception ex) when (
+            ex is HttpRequestException ||
+            ex is JsonException ||
+            ex is InvalidOperationException)
+        {
+            falhasProcessamento++;
+            continue;
+        }
+
+        if (processada == null ||
+            string.IsNullOrWhiteSpace(processada.ConteudoTratado) ||
+            string.IsNullOrWhiteSpace(processada.ResumoExecutivo))
+        {
+            falhasProcessamento++;
+            continue;
+        }
+
+        // 3. Recupera os metadados da notícia.
+        var categoria = ObterCategoria(article, categoriasBanco);
+        var imagemUrl = await ObterImagemValidaAsync(article);
+        var localizacao =
+            await ObterOuCriarLocalizacaoAsync(article.Location);
+
+        // 4. Salva o texto tratado, não o Body do ApiTube.
+        var noticia = new Noticia
+        {
+            Titulo = article.Title,
+
+            Conteudo = processada.ConteudoTratado,
+
+            Autor = article.Author?.Name,
+            Fonte = article.Source?.Domain,
+            UrlNoticia = article.Href,
+            ImagemUrl = imagemUrl,
+            IdExterno = article.Id.ToString(),
+            PublicadoEm = article.PublishedAt,
+            Categoria = categoria,
+            Localizacao = localizacao
+        };
+
+        // 5. Cria o resumo associado à notícia.
+        var resumo = new Resumo
+        {
+            Texto = processada.ResumoExecutivo,
+            Titulo = noticia.Titulo,
+            ResumoExecutivo = processada.ResumoExecutivo,
+            PontosChave = processada.PontosChave ?? new(),
+            Sentimento = processada.Sentimento,
+
+            Noticia = noticia
+        };
+
+        _context.Noticias.Add(noticia);
+        _context.Resumos.Add(resumo);
+
+        inseridas++;
+    }
+
+    await _context.SaveChangesAsync();
+
+    return new ImportacaoResultadoDto
+    {
+        TotalRecebidoDaApi = noticiasApi.Count,
+        TotalInserido = inseridas,
+        TotalIgnoradasDuplicadas = ignoradas,
+
+        // Adapte esses campos à definição real do seu DTO.
+        Mensagem =
+            $"Importação finalizada. " +
+            $"Recebidas: {noticiasApi.Count} | " +
+            $"Inseridas: {inseridas} | " +
+            $"Duplicadas: {ignoradas} | " +
+            $"Falhas na extração: {falhasExtracao} | " +
+            $"Falhas no Gemini: {falhasProcessamento}"
+    };
+}
     }
 }
