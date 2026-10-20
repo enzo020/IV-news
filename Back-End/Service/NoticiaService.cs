@@ -323,7 +323,6 @@ namespace IVNews.Services
         // 5. Cria o resumo associado à notícia.
         var resumo = new Resumo
         {
-            Texto = processada.ResumoExecutivo,
             Titulo = noticia.Titulo,
             ResumoExecutivo = processada.ResumoExecutivo,
             PontosChave = processada.PontosChave ?? new(),

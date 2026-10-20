@@ -15,7 +15,7 @@ namespace IVnews.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.31");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.32");
 
             modelBuilder.Entity("IVnews.Model.Categoria", b =>
                 {
@@ -201,9 +201,6 @@ namespace IVnews.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Sentimento")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Texto")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Titulo")

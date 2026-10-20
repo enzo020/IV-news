@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Loading from "../components/Loading/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 import ImageWithFallback from "../components/ImageWithFallBack";
+import NewsSummary from "../components/NewsSummary";
+import { getResumoByNoticiaId } from "../services/resumosService";
 
 function NewsDetails() {
 
@@ -12,6 +14,7 @@ function NewsDetails() {
     const [noticia, setNoticia] = useState(null);
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(false);
+    const [resumo, setResumo] = useState(null);
 
     useEffect(() => {
         async function carregarNoticia() {
@@ -33,16 +36,46 @@ function NewsDetails() {
         carregarNoticia();
     }, [id]);
 
-    if (loading)
-        return <Loading />
+    useEffect(() => {
+      let ativo = true;
 
-    if (erro)
-        return <ErrorMessage 
+      async function carregarResumo() {
+        setResumo(null);
+
+        try {
+          const dadosResumo = await getResumoByNoticiaId(Number(id));
+
+          if (ativo) {
+            setResumo(dadosResumo);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar resumo:", error);
+        }
+      }
+
+      if (id) {
+        carregarResumo();
+      }
+
+      return () => {
+        ativo = false;
+      };
+    }, [id]);
+
+  console.log(resumo);
+
+      if (loading) return <Loading />;
+
+      if (erro)
+        return (
+          <ErrorMessage
             title="Erro ao carregar notícia"
             message="Tente novamente mais tarde"
-        />
+          />
+        );
 
-    return (
+  return (
+
       <main className="container py-5">
         <article className="news-details mx-auto">
           <div className="news-details-image">
@@ -61,7 +94,8 @@ function NewsDetails() {
               {noticia.localizacao
                 ? noticia.localizacao.cidade
                 : "Localização não informada"}
-            </p>
+          </p>
+          <p> { resumo?.resumoExecutivo ?? "Resumo indisponível" }</p>
 
             <p className="news-details-description">{noticia.conteudo}</p>
 

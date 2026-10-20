@@ -135,9 +135,6 @@ namespace IVNews.Controllers
 
                 var resumo = new Resumo
                 {
-                    Texto = root.TryGetProperty("resumo_executivo", out var resumoExecutivo)
-                        ? resumoExecutivo.GetString()
-                        : noticia.Conteudo,
                     Titulo = root.TryGetProperty("titulo", out var titulo) ? titulo.GetString() : noticia.Titulo,
                     ResumoExecutivo = root.TryGetProperty("resumo_executivo", out var resumoExecutivoTexto)
                         ? resumoExecutivoTexto.GetString()
@@ -175,6 +172,21 @@ namespace IVNews.Controllers
             {
                 return StatusCode(502, new { mensagem = "O Gemini retornou um JSON inválido para o resumo da notícia." });
             }
+        }
+
+
+        [HttpGet("{id}/resumo")]
+        public async Task<IActionResult> ObterResumoDaNoticia(int id)
+        {
+            var resumo = await _context.Resumos
+                .FirstOrDefaultAsync(r => r.NoticiaId == id);
+
+            if (resumo == null)
+            {
+                return NotFound(new { mensagem = $"Resumo para a notícia com ID {id} não encontrado." });
+            }
+
+            return Ok(resumo);
         }
 
         [HttpPost]
