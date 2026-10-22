@@ -63,7 +63,11 @@ namespace IVNews.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(503, new { mensagem = "Não foi possível importar as notícias. O ApiTube está indisponível no momento.", detalhe = ex.Message });
+                return StatusCode(503, new { mensagem = "Não foi possível importar as notícias porque uma API externa (ApiTube ou Gemini) está indisponível.", detalhe = ex.Message });
+            }
+            catch (TaskCanceledException)
+            {
+                return StatusCode(503, new { mensagem = "A requisição a uma API externa excedeu o tempo limite. Tente importar novamente mais tarde." });
             }
             catch (DbUpdateException)
             {
@@ -121,6 +125,9 @@ namespace IVNews.Controllers
                 return BadRequest(new { mensagem = "A notícia não possui conteúdo para resumo." });
             }
 
+            var resumo = await _context.Resumos
+                .FirstOrDefaultAsync(r => r.NoticiaId == noticia.Id);
+
             try
             {
                 var resumoJson = await _geminiService.GerarResumoAsync(noticia.Conteudo);
@@ -133,7 +140,7 @@ namespace IVNews.Controllers
                 using var document = JsonDocument.Parse(resumoJson);
                 var root = document.RootElement;
 
-                var resumo = new Resumo
+                var dadosResumo = new
                 {
                     Texto = root.TryGetProperty("resumo_executivo", out var resumoExecutivo)
                         ? resumoExecutivo.GetString()
@@ -149,12 +156,26 @@ namespace IVNews.Controllers
                             .ToList() ?? new List<string>()
                         : new List<string>(),
                     Categoria = root.TryGetProperty("categoria", out var categoria) ? categoria.GetString() : "Outros",
-                    Sentimento = root.TryGetProperty("sentimento", out var sentimento) ? sentimento.GetString() : "Neutro",
-                    NoticiaId = noticia.Id,
-                    Noticia = noticia
+                    Sentimento = root.TryGetProperty("sentimento", out var sentimento) ? sentimento.GetString() : "Neutro"
                 };
 
-                _context.Resumos.Add(resumo);
+                if (resumo == null)
+                {
+                    resumo = new Resumo
+                    {
+                        NoticiaId = noticia.Id,
+                        Noticia = noticia
+                    };
+                    _context.Resumos.Add(resumo);
+                }
+
+                resumo.Texto = dadosResumo.Texto;
+                resumo.Titulo = dadosResumo.Titulo;
+                resumo.ResumoExecutivo = dadosResumo.ResumoExecutivo;
+                resumo.PontosChave = dadosResumo.PontosChave;
+                resumo.Categoria = dadosResumo.Categoria;
+                resumo.Sentimento = dadosResumo.Sentimento;
+
                 await _context.SaveChangesAsync();
 
                 return Ok(new
@@ -169,7 +190,11 @@ namespace IVNews.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(502, new { mensagem = "Não foi possível gerar o resumo com o Gemini.", detalhe = ex.Message });
+                return StatusCode(503, new { mensagem = "O Gemini está indisponível no momento. Tente novamente mais tarde.", detalhe = ex.Message });
+            }
+            catch (TaskCanceledException)
+            {
+                return StatusCode(503, new { mensagem = "A requisição ao Gemini excedeu o tempo limite. Tente novamente mais tarde." });
             }
             catch (JsonException)
             {

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using IVnews.Data;
+using IVnews.DTOs;
 using IVnews.DTOs.ApiTube;
 using IVnews.Model;
 using IVNews.Backend.Services;
@@ -238,6 +239,62 @@ namespace IVNews.Services
                 : valor.Trim();
         }
 
+        public async Task<Localizacao> SalvarLocalizacaoAsync(LocalizacaoDto localizacaoDto)
+        {
+            ArgumentNullException.ThrowIfNull(localizacaoDto);
+
+            var pais = Normalizar(localizacaoDto.Pais);
+            var estado = Normalizar(localizacaoDto.Estado);
+            var cidade = Normalizar(localizacaoDto.Cidade);
+
+            if (pais == null && estado == null && cidade == null)
+            {
+                throw new ArgumentException(
+                    "Informe pelo menos cidade, estado ou país.",
+                    nameof(localizacaoDto));
+            }
+
+            if (localizacaoDto.Latitude.HasValue &&
+                (!double.IsFinite(localizacaoDto.Latitude.Value) ||
+                 localizacaoDto.Latitude is < -90 or > 90))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(localizacaoDto),
+                    "A latitude deve estar entre -90 e 90.");
+            }
+
+            if (localizacaoDto.Longitude.HasValue &&
+                (!double.IsFinite(localizacaoDto.Longitude.Value) ||
+                 localizacaoDto.Longitude is < -180 or > 180))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(localizacaoDto),
+                    "A longitude deve estar entre -180 e 180.");
+            }
+
+            var existente = await _context.Localizacoes.FirstOrDefaultAsync(l =>
+                l.Pais == pais &&
+                l.Estado == estado &&
+                l.Cidade == cidade);
+
+            if (existente != null)
+                return existente;
+
+            var localizacao = new Localizacao
+            {
+                Pais = pais,
+                Estado = estado,
+                Cidade = cidade,
+                Latitude = localizacaoDto.Latitude,
+                Longitude = localizacaoDto.Longitude
+            };
+
+            _context.Localizacoes.Add(localizacao);
+            await _context.SaveChangesAsync();
+
+            return localizacao;
+        }
+
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(
     int perPage)
 {
@@ -281,7 +338,6 @@ namespace IVNews.Services
                 extraction.Text);
         }
         catch (Exception ex) when (
-            ex is HttpRequestException ||
             ex is JsonException ||
             ex is InvalidOperationException)
         {
