@@ -56,9 +56,35 @@ namespace IVNews.Services
         private static readonly Dictionary<string, int> CategoriaMapeamento = new()
         {
             // Política
+            ["medtop:16000000"] = 1,
+            ["medtop:20000368"] = 1,
+            ["medtop:20000593"] = 1,
+            ["medtop:20000577"] = 1,
+            ["medtop:20000586"] = 1,
+            ["medtop:20000582"] = 1,
             ["medtop:11000000"] = 1,
             ["medtop:20000574"] = 1,
-            ["medtop:20000586"] = 1,
+
+            // Esporte
+            ["medtop:15000000"] = 2,
+            ["medtop:20001108"] = 2,
+
+            // Tecnologia
+            ["medtop:13000000"] = 3,
+            ["medtop:20000086"] = 3,
+            ["medtop:20000265"] = 3,
+            ["medtop:20000731"] = 3,
+            ["medtop:20000256"] = 3,
+            ["medtop:20000717"] = 3,
+            ["medtop:20000257"] = 3,
+            ["medtop:20000231"] = 3,
+            ["medtop:20000225"] = 3,
+
+            // Saúde
+            ["medtop:07000000"] = 4,
+            ["medtop:20000461"] = 4,
+            ["medtop:20001358"] = 4,
+            ["medtop:20000462"] = 4,
 
             // Economia
             ["medtop:04000000"] = 5,
@@ -66,15 +92,29 @@ namespace IVNews.Services
             ["medtop:20000209"] = 5,
             ["medtop:20000200"] = 5,
             ["medtop:20001366"] = 5,
+            ["medtop:20000346"] = 5,
 
-            // Esporte
-            ["medtop:15000000"] = 2,
+            // Negócios
+            ["medtop:20000243"] = 7,
+            ["medtop:20000209"] = 7,
+            ["medtop:20001136"] = 7,
+            ["medtop:20001371"] = 7,
+            ["medtop:09000000"] = 7,
+            ["medtop:20000509"] = 7,
+            ["medtop:20000513"] = 7,
 
-            // Tecnologia
-            // adicionar categorias de tecnologia aqui
+            // Educação
+            ["medtop:05000000"] = 8,
 
-            // Saúde
-            // adicionar categorias de saúde aqui
+            // Cultura
+            ["medtop:20000038"] = 9,
+            ["medtop:20000043"] = 9,
+            ["medtop:14000000"] = 9,
+            ["medtop:01000000"] = 9,
+
+            // Segurança
+            ["medtop:02000000"] = 10,
+            ["medtop:20000133"] = 10
         };
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
@@ -333,8 +373,7 @@ namespace IVNews.Services
 
                 try
                 {
-                    processada = await _geminiService.ProcessarNoticiaAsync(
-                        extraction.Text);
+                    processada = await _geminiService.ProcessarNoticiaAsync(extraction.Text);
                 }
                 catch (Exception ex) when (
                     ex is JsonException ||
@@ -346,7 +385,8 @@ namespace IVNews.Services
 
                 if (processada == null ||
                     string.IsNullOrWhiteSpace(processada.ConteudoTratado) ||
-                    string.IsNullOrWhiteSpace(processada.ResumoExecutivo))
+                    string.IsNullOrWhiteSpace(processada.ResumoExecutivo) ||
+                    string.IsNullOrWhiteSpace(processada.Descricao))
                 {
                     falhasProcessamento++;
                     continue;
@@ -362,6 +402,7 @@ namespace IVNews.Services
                 var noticia = new Noticia
                 {
                     Titulo = article.Title,
+                    Descricao = processada.Descricao,
 
                     Conteudo = processada.ConteudoTratado,
 

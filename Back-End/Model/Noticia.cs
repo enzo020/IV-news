@@ -20,7 +20,7 @@ namespace IVnews.Model
         public string? UrlNoticia { get; set; }
         public string? ImagemUrl { get; set; }
         public string? IdExterno { get; set; }
-        public string? Idioma { get; set; }
+        public string? Descricao { get; set; }
 
         public DateTime PublicadoEm { get; set; }
 

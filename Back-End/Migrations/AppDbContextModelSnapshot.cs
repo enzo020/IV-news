@@ -72,6 +72,30 @@ namespace IVnews.Migrations
                             Id = 6,
                             Descricao = "Notícias sobre categorias variadas",
                             Nome = "Outros"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Descricao = "Notícias sobre negócios, trading e empreendedorismo",
+                            Nome = "Negócios"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Descricao = "Notícias sobre o mundo acadêmico, cursos e pesquisas",
+                            Nome = "Educação"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Descricao = "Notícias sobre Arte, Música e eventos culturais",
+                            Nome = "Cultura"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Descricao = "Notícias sobre crimes e artigos policiais",
+                            Nome = "Segurança"
                         });
                 });
 
@@ -147,14 +171,14 @@ namespace IVnews.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Descricao")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Fonte")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("IdExterno")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Idioma")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagemUrl")

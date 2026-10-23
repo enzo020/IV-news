@@ -117,7 +117,7 @@ function Home() {
                 key={noticia.id}
                 id={noticia.id}
                 title={noticia.titulo}
-                description={noticia.conteudo}
+                description={noticia.descricao}
                 category={noticia.categoria?.nome}
                 location={noticia.localizacao?.cidade}
                 image={noticia.imagemUrl}

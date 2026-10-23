@@ -588,6 +588,9 @@ body {
     transform: translateX(-100%);
     transition: transform 0.25s ease;
 
+    overflow-x: hidden;
+    overflow-y: auto;
+
     display: flex;
     flex-direction: column;
 }
@@ -1146,15 +1149,27 @@ body {
     border-radius: 30px;
 }
 
+
 .news-details-image {
     width: 100%;
-    height: 450px;
-    object-fit: cover;
-    display: block;
+    height: clamp(220px, 45vw, 450px);
+    overflow: hidden;
+    position: relative;
+    background-color: var(--surface-color);
 }
+
+.news-details-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
 
 .news-details-content {
     padding: 40px;
+    white-space: pre-line;
 }
 
 .news-details-category {

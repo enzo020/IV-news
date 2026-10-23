@@ -13,4 +13,7 @@ public class ProcessamentoNoticiaDto
 
     [JsonPropertyName("sentimento")]
     public string? Sentimento { get; set; }
+
+    [JsonPropertyName("descricao")]
+    public string? Descricao { get; set; }
 }

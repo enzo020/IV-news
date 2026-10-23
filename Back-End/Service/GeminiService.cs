@@ -11,15 +11,12 @@ public class GeminiService : IGeminiService
         PropertyNameCaseInsensitive = true
     };
 
-    public GeminiService(
-        HttpClient httpClient,
-        IConfiguration configuration)
+    public GeminiService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _configuration = configuration;
 
-        _httpClient.BaseAddress ??=
-            new Uri("https://generativelanguage.googleapis.com/");
+        _httpClient.BaseAddress ??= new Uri("https://generativelanguage.googleapis.com/");
     }
 
     public async Task<ProcessamentoNoticiaDto?> ProcessarNoticiaAsync(string conteudo)
@@ -45,7 +42,8 @@ public class GeminiService : IGeminiService
 
         if (resultado == null ||
             string.IsNullOrWhiteSpace(resultado.ConteudoTratado) ||
-            string.IsNullOrWhiteSpace(resultado.ResumoExecutivo))
+            string.IsNullOrWhiteSpace(resultado.ResumoExecutivo) ||
+            string.IsNullOrWhiteSpace(resultado.Descricao))
         {
             throw new InvalidOperationException(
                 "O Gemini retornou dados incompletos para a notícia.");
@@ -94,7 +92,7 @@ public class GeminiService : IGeminiService
             "- conteudo_tratado: limpe o texto, removendo menus, " +
             "avisos de cookies, navegação, duplicações e elementos " +
             "irrelevantes. Preserve os fatos, nomes, datas, números, " +
-            "citações e o sentido original. Não invente informações. Mantenha todas as palavras relevantes para o texto, não resuma aqui, apenas limpe e organize.");
+            @"citações e o sentido original. Não invente informações. Mantenha todas as palavras relevantes para o texto, não resuma aqui, apenas limpe e organize. Utilize a tag \n para inserir quebras de linha e espaços para parágrafos de no mínimo 4 linhas, mantendo o texto menos condensado");
 
         prompt.AppendLine(
             "- resumo_executivo: resumo fiel e objetivo, com no máximo 60 palavras.");
@@ -106,10 +104,18 @@ public class GeminiService : IGeminiService
             "- sentimento: escolha entre Positivo, Negativo ou Neutro.");
 
         prompt.AppendLine(
+            "- descricao: uma frase curta e objetiva que descreva o assunto central da notícia."
+        );
+
+        prompt.AppendLine(
+            "- Não copie o título ou o resumo na descrição, o objetivo do campo descricao é ser uma frase curta, idealmente de 10 a 20 palavras, que apresente o assunto da notícia."
+        );
+
+        prompt.AppendLine(
             "- Se o conteúdo estiver incompleto, não invente os trechos ausentes.");
 
         prompt.AppendLine(
-            "O JSON deve conter os campos: conteudo_tratado, " +
+            "O JSON deve conter os campos: conteudo_tratado, descricao" +
             "resumo_executivo, pontos_chave, categoria e sentimento.");
 
         prompt.AppendLine();

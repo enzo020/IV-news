@@ -12,25 +12,30 @@ namespace IVnews.Data
         public DbSet<Localizacao> Localizacoes { get; set; }
         public DbSet<Resumo> Resumos { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder){
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 
             modelBuilder.Entity<Categoria>().HasData(
-                new Categoria {
+                new Categoria
+                {
                     Id = 1,
                     Nome = "Política",
                     Descricao = "Notícias sobre política nacional e internacional"
                 },
-                new Categoria {
+                new Categoria
+                {
                     Id = 2,
                     Nome = "Esporte",
                     Descricao = "Notícias sobre esportes em geral"
                 },
-                new Categoria {
+                new Categoria
+                {
                     Id = 3,
                     Nome = "Tecnologia",
                     Descricao = "Notícias sobre tecnologia e inovação"
                 },
-                new Categoria {
+                new Categoria
+                {
                     Id = 4,
                     Nome = "Saúde",
                     Descricao = "Notícias sobre saúde e bem-estar"
@@ -46,6 +51,30 @@ namespace IVnews.Data
                     Id = 6,
                     Nome = "Outros",
                     Descricao = "Notícias sobre categorias variadas"
+                },
+                new Categoria
+                {
+                    Id = 7,
+                    Nome = "Negócios",
+                    Descricao = "Notícias sobre negócios, trading e empreendedorismo"
+                },
+                new Categoria
+                {
+                    Id = 8,
+                    Nome = "Educação",
+                    Descricao = "Notícias sobre o mundo acadêmico, cursos e pesquisas"
+                },
+                new Categoria
+                {
+                    Id = 9,
+                    Nome = "Cultura",
+                    Descricao = "Notícias sobre Arte, Música e eventos culturais"
+                }, 
+                new Categoria
+                {
+                    Id = 10,
+                    Nome = "Segurança",
+                    Descricao = "Notícias sobre crimes e artigos policiais"
                 }
             );
 
@@ -79,7 +108,7 @@ namespace IVnews.Data
                     Pais = "Brasil"
                 }
             );
-            
+
             modelBuilder.Entity<Noticia>()
                 .HasOne(n => n.Categoria)
                 .WithMany()
