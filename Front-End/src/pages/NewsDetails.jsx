@@ -62,8 +62,6 @@ function NewsDetails() {
       };
     }, [id]);
 
-  console.log(resumo);
-
       if (loading) return <Loading />;
 
       if (erro)
@@ -75,45 +73,54 @@ function NewsDetails() {
         );
 
   return (
+    <main className="container py-5">
+      <article className="news-details mx-auto">
+        <div className="news-details-image">
+          <ImageWithFallback src={noticia.imagemUrl} alt={noticia.titulo} />
+        </div>
+        <div className="news-details-content">
+          <span className="badge news-details-category mb-3">
+            {noticia.categoria
+              ? noticia.categoria.nome
+              : "Categoria não informada"}
+          </span>
 
-      <main className="container py-5">
-        <article className="news-details mx-auto">
-          <div className="news-details-image">
-            <ImageWithFallback src={noticia.imagemUrl} alt={noticia.titulo} />
-          </div>
-          <div className="news-details-content">
-            <span className="badge news-details-category mb-3">
-              {noticia.categoria
-                ? noticia.categoria.nome
-                : "Categoria não informada"}
-            </span>
+          <h1 className="news-details-title">{noticia.titulo}</h1>
 
-            <h1 className="news-details-title">{noticia.titulo}</h1>
-
-            <p className="news-details-location">
-              {noticia.localizacao
-                ? noticia.localizacao.cidade
-                : "Localização não informada"}
+          <p className="news-details-location">
+            {noticia.localizacao
+              ? noticia.localizacao.cidade
+              : "Localização não informada"}
           </p>
-          <p> { resumo?.resumoExecutivo ?? "Resumo indisponível" }</p>
+          <NewsSummary resumo={resumo} />
 
-            <p className="news-details-description">{noticia.conteudo}</p>
+          <details className="news-details-full-content">
+            <summary>
+              <i className="bi bi-file-text" aria-hidden="true"></i>
+              Ler conteúdo completo
+              <i
+                className="bi bi-chevron-down news-details-chevron"
+                aria-hidden="true"
+              ></i>
+            </summary>
 
-            <hr />
+            <div className="news-details-description">{noticia.conteudo}</div>
+          </details>
 
-            <div className="news-details-body">
-              <p>{noticia.conteudo}</p>
-            </div>
+          <hr />
 
-            <div className="news-details-source mt-5">
-              <span className="text-secondary">
-                Fonte: <a href={noticia.urlNoticia} target="_blank">{noticia.fonte}</a>
-              </span>
-            </div>
+          <div className="news-details-source mt-5">
+            <span className="text-secondary">
+              Fonte:{" "}
+              <a href={noticia.urlNoticia} target="_blank">
+                {noticia.fonte}
+              </a>
+            </span>
           </div>
-        </article>
-      </main>
-    );
+        </div>
+      </article>
+    </main>
+  );
 }
 
 export default NewsDetails;

@@ -109,95 +109,95 @@ namespace IVNews.Controllers
             return Ok(noticia);
         }
 
-        [HttpPost("{id}/resumo")]
-        public async Task<IActionResult> GerarResumoDaNoticia(int id)
-        {
-            var noticia = await _context.Noticias
-                .FirstOrDefaultAsync(n => n.Id == id);
+        // [HttpPost("{id}/resumo")]
+        // public async Task<IActionResult> GerarResumoDaNoticia(int id)
+        // {
+        //     var noticia = await _context.Noticias
+        //         .FirstOrDefaultAsync(n => n.Id == id);
 
-            if (noticia == null)
-            {
-                return NotFound(new { mensagem = $"Notícia com ID {id} não encontrada." });
-            }
+        //     if (noticia == null)
+        //     {
+        //         return NotFound(new { mensagem = $"Notícia com ID {id} não encontrada." });
+        //     }
 
-            if (string.IsNullOrWhiteSpace(noticia.Conteudo))
-            {
-                return BadRequest(new { mensagem = "A notícia não possui conteúdo para resumo." });
-            }
+        //     if (string.IsNullOrWhiteSpace(noticia.Conteudo))
+        //     {
+        //         return BadRequest(new { mensagem = "A notícia não possui conteúdo para resumo." });
+        //     }
 
-            var resumo = await _context.Resumos
-                .FirstOrDefaultAsync(r => r.NoticiaId == noticia.Id);
+        //     var resumo = await _context.Resumos
+        //         .FirstOrDefaultAsync(r => r.NoticiaId == noticia.Id);
 
-            try
-            {
-                var resumoJson = await _geminiService.GerarResumoAsync(noticia.Conteudo);
+        //     try
+        //     {
+        //         var resumoJson = await _geminiService.GerarResumoAsync(noticia.Conteudo);
 
-                if (string.IsNullOrWhiteSpace(resumoJson))
-                {
-                    return StatusCode(502, new { mensagem = "O Gemini não retornou um resumo válido." });
-                }
+        //         if (string.IsNullOrWhiteSpace(resumoJson))
+        //         {
+        //             return StatusCode(502, new { mensagem = "O Gemini não retornou um resumo válido." });
+        //         }
 
-                using var document = JsonDocument.Parse(resumoJson);
-                var root = document.RootElement;
+        //         using var document = JsonDocument.Parse(resumoJson);
+        //         var root = document.RootElement;
 
-                var dadosResumo = new
-                {
-                    Titulo = root.TryGetProperty("titulo", out var titulo) ? titulo.GetString() : noticia.Titulo,
-                    ResumoExecutivo = root.TryGetProperty("resumo_executivo", out var resumoExecutivoTexto)
-                        ? resumoExecutivoTexto.GetString()
-                        : noticia.Conteudo,
-                    PontosChave = root.TryGetProperty("pontos_chave", out var pontosChave)
-                        ? pontosChave.EnumerateArray()
-                            .Select(item => item.GetString())
-                            .Where(item => !string.IsNullOrWhiteSpace(item))
-                            .ToList() ?? new List<string>()
-                        : new List<string>(),
-                    Categoria = root.TryGetProperty("categoria", out var categoria) ? categoria.GetString() : "Outros",
-                    Sentimento = root.TryGetProperty("sentimento", out var sentimento) ? sentimento.GetString() : "Neutro"
-                };
+        //         var dadosResumo = new
+        //         {
+        //             Titulo = root.TryGetProperty("titulo", out var titulo) ? titulo.GetString() : noticia.Titulo,
+        //             ResumoExecutivo = root.TryGetProperty("resumo_executivo", out var resumoExecutivoTexto)
+        //                 ? resumoExecutivoTexto.GetString()
+        //                 : noticia.Conteudo,
+        //             PontosChave = root.TryGetProperty("pontos_chave", out var pontosChave)
+        //                 ? pontosChave.EnumerateArray()
+        //                     .Select(item => item.GetString())
+        //                     .Where(item => !string.IsNullOrWhiteSpace(item))
+        //                     .ToList() ?? new List<string>()
+        //                 : new List<string>(),
+        //             Categoria = root.TryGetProperty("categoria", out var categoria) ? categoria.GetString() : "Outros",
+        //             Sentimento = root.TryGetProperty("sentimento", out var sentimento) ? sentimento.GetString() : "Neutro"
+        //         };
 
-                if (resumo == null)
-                {
-                    resumo = new Resumo
-                    {
-                        NoticiaId = noticia.Id,
-                        Noticia = noticia
-                    };
-                    _context.Resumos.Add(resumo);
-                }
+        //         if (resumo == null)
+        //         {
+        //             resumo = new Resumo
+        //             {
+        //                 NoticiaId = noticia.Id,
+        //                 Noticia = noticia
+        //             };
+        //             _context.Resumos.Add(resumo);
+        //         }
 
-                resumo.Texto = dadosResumo.Texto;
-                resumo.Titulo = dadosResumo.Titulo;
-                resumo.ResumoExecutivo = dadosResumo.ResumoExecutivo;
-                resumo.PontosChave = dadosResumo.PontosChave;
-                resumo.Categoria = dadosResumo.Categoria;
-                resumo.Sentimento = dadosResumo.Sentimento;
+        //         resumo.Texto = dadosResumo.Texto;
+        //         resumo.Titulo = dadosResumo.Titulo;
+        //         resumo.ResumoExecutivo = dadosResumo.ResumoExecutivo;
+        //         resumo.PontosChave = dadosResumo.PontosChave;
+        //         resumo.Categoria = dadosResumo.Categoria;
+        //         resumo.Sentimento = dadosResumo.Sentimento;
 
-                await _context.SaveChangesAsync();
+        //         await _context.SaveChangesAsync();
 
-                return Ok(new
-                {
-                    noticiaId = noticia.Id,
-                    titulo = resumo.Titulo,
-                    resumo_executivo = resumo.ResumoExecutivo,
-                    pontos_chave = resumo.PontosChave,
-                    categoria = resumo.Categoria,
-                    sentimento = resumo.Sentimento
-                });
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCode(503, new { mensagem = "O Gemini está indisponível no momento. Tente novamente mais tarde.", detalhe = ex.Message });
-            }
-            catch (TaskCanceledException)
-            {
-                return StatusCode(503, new { mensagem = "A requisição ao Gemini excedeu o tempo limite. Tente novamente mais tarde." });
-            }
-            catch (JsonException)
-            {
-                return StatusCode(502, new { mensagem = "O Gemini retornou um JSON inválido para o resumo da notícia." });
-            }
-        }
+        //         return Ok(new
+        //         {
+        //             noticiaId = noticia.Id,
+        //             titulo = resumo.Titulo,
+        //             resumo_executivo = resumo.ResumoExecutivo,
+        //             pontos_chave = resumo.PontosChave,
+        //             categoria = resumo.Categoria,
+        //             sentimento = resumo.Sentimento
+        //         });
+        //     }
+        //     catch (HttpRequestException ex)
+        //     {
+        //         return StatusCode(503, new { mensagem = "O Gemini está indisponível no momento. Tente novamente mais tarde.", detalhe = ex.Message });
+        //     }
+        //     catch (TaskCanceledException)
+        //     {
+        //         return StatusCode(503, new { mensagem = "A requisição ao Gemini excedeu o tempo limite. Tente novamente mais tarde." });
+        //     }
+        //     catch (JsonException)
+        //     {
+        //         return StatusCode(502, new { mensagem = "O Gemini retornou um JSON inválido para o resumo da notícia." });
+        //     }
+        // }
 
 
         [HttpGet("{id}/resumo")]

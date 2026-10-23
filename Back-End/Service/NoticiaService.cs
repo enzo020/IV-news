@@ -295,121 +295,120 @@ namespace IVNews.Services
             return localizacao;
         }
 
-        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(
-    int perPage)
-{
-    var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
-
-    int inseridas = 0;
-    int ignoradas = 0;
-    int falhasExtracao = 0;
-    int falhasProcessamento = 0;
-
-    var categoriasBanco = await _context.Categorias.ToListAsync();
-
-    foreach (var article in noticiasApi)
-    {
-        var noticiaExistente = await _context.Noticias
-            .FirstOrDefaultAsync(
-                n => n.IdExterno == article.Id.ToString());
-
-        if (noticiaExistente != null)
+        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
         {
-            ignoradas++;
-            continue;
+            var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
+
+            int inseridas = 0;
+            int ignoradas = 0;
+            int falhasExtracao = 0;
+            int falhasProcessamento = 0;
+
+            var categoriasBanco = await _context.Categorias.ToListAsync();
+
+            foreach (var article in noticiasApi)
+            {
+                var noticiaExistente = await _context.Noticias
+                    .FirstOrDefaultAsync(
+                        n => n.IdExterno == article.Id.ToString());
+
+                if (noticiaExistente != null)
+                {
+                    ignoradas++;
+                    continue;
+                }
+
+                // 1. Extrai o conteúdo da página original.
+                var extraction = await _contentExtractor.ExtractAsync(
+                    article.Href ?? "");
+
+                if (string.IsNullOrWhiteSpace(extraction.Text))
+                {
+                    falhasExtracao++;
+                    continue;
+                }
+
+                // 2. Processa o texto extraído com o Gemini.
+                ProcessamentoNoticiaDto? processada;
+
+                try
+                {
+                    processada = await _geminiService.ProcessarNoticiaAsync(
+                        extraction.Text);
+                }
+                catch (Exception ex) when (
+                    ex is JsonException ||
+                    ex is InvalidOperationException)
+                {
+                    falhasProcessamento++;
+                    continue;
+                }
+
+                if (processada == null ||
+                    string.IsNullOrWhiteSpace(processada.ConteudoTratado) ||
+                    string.IsNullOrWhiteSpace(processada.ResumoExecutivo))
+                {
+                    falhasProcessamento++;
+                    continue;
+                }
+
+                // 3. Recupera os metadados da notícia.
+                var categoria = ObterCategoria(article, categoriasBanco);
+                var imagemUrl = await ObterImagemValidaAsync(article);
+                var localizacao =
+                    await ObterOuCriarLocalizacaoAsync(article.Location);
+
+                // 4. Salva o texto tratado, não o Body do ApiTube.
+                var noticia = new Noticia
+                {
+                    Titulo = article.Title,
+
+                    Conteudo = processada.ConteudoTratado,
+
+                    Autor = article.Author?.Name,
+                    Fonte = article.Source?.Domain,
+                    UrlNoticia = article.Href,
+                    ImagemUrl = imagemUrl,
+                    IdExterno = article.Id.ToString(),
+                    PublicadoEm = article.PublishedAt,
+                    Categoria = categoria,
+                    Localizacao = localizacao
+                };
+
+                // 5. Cria o resumo associado à notícia.
+                var resumo = new Resumo
+                {
+                    Titulo = noticia.Titulo,
+                    ResumoExecutivo = processada.ResumoExecutivo,
+                    PontosChave = processada.PontosChave ?? new(),
+                    Sentimento = processada.Sentimento,
+
+                    Noticia = noticia
+                };
+
+                _context.Noticias.Add(noticia);
+                _context.Resumos.Add(resumo);
+
+                inseridas++;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ImportacaoResultadoDto
+            {
+                TotalRecebidoDaApi = noticiasApi.Count,
+                TotalInserido = inseridas,
+                TotalIgnoradasDuplicadas = ignoradas,
+
+                // Adapte esses campos à definição real do seu DTO.
+                Mensagem =
+                    $"Importação finalizada. " +
+                    $"Recebidas: {noticiasApi.Count} | " +
+                    $"Inseridas: {inseridas} | " +
+                    $"Duplicadas: {ignoradas} | " +
+                    $"Falhas na extração: {falhasExtracao} | " +
+                    $"Falhas no Gemini: {falhasProcessamento}"
+            };
         }
-
-        // 1. Extrai o conteúdo da página original.
-        var extraction = await _contentExtractor.ExtractAsync(
-            article.Href ?? "");
-
-        if (string.IsNullOrWhiteSpace(extraction.Text))
-        {
-            falhasExtracao++;
-            continue;
-        }
-
-        // 2. Processa o texto extraído com o Gemini.
-        ProcessamentoNoticiaDto? processada;
-
-        try
-        {
-            processada = await _geminiService.ProcessarNoticiaAsync(
-                extraction.Text);
-        }
-        catch (Exception ex) when (
-            ex is JsonException ||
-            ex is InvalidOperationException)
-        {
-            falhasProcessamento++;
-            continue;
-        }
-
-        if (processada == null ||
-            string.IsNullOrWhiteSpace(processada.ConteudoTratado) ||
-            string.IsNullOrWhiteSpace(processada.ResumoExecutivo))
-        {
-            falhasProcessamento++;
-            continue;
-        }
-
-        // 3. Recupera os metadados da notícia.
-        var categoria = ObterCategoria(article, categoriasBanco);
-        var imagemUrl = await ObterImagemValidaAsync(article);
-        var localizacao =
-            await ObterOuCriarLocalizacaoAsync(article.Location);
-
-        // 4. Salva o texto tratado, não o Body do ApiTube.
-        var noticia = new Noticia
-        {
-            Titulo = article.Title,
-
-            Conteudo = processada.ConteudoTratado,
-
-            Autor = article.Author?.Name,
-            Fonte = article.Source?.Domain,
-            UrlNoticia = article.Href,
-            ImagemUrl = imagemUrl,
-            IdExterno = article.Id.ToString(),
-            PublicadoEm = article.PublishedAt,
-            Categoria = categoria,
-            Localizacao = localizacao
-        };
-
-        // 5. Cria o resumo associado à notícia.
-        var resumo = new Resumo
-        {
-            Titulo = noticia.Titulo,
-            ResumoExecutivo = processada.ResumoExecutivo,
-            PontosChave = processada.PontosChave ?? new(),
-            Sentimento = processada.Sentimento,
-
-            Noticia = noticia
-        };
-
-        _context.Noticias.Add(noticia);
-        _context.Resumos.Add(resumo);
-
-        inseridas++;
-    }
-
-    await _context.SaveChangesAsync();
-
-    return new ImportacaoResultadoDto
-    {
-        TotalRecebidoDaApi = noticiasApi.Count,
-        TotalInserido = inseridas,
-        TotalIgnoradasDuplicadas = ignoradas,
-
-        // Adapte esses campos à definição real do seu DTO.
-        Mensagem =
-            $"Importação finalizada. " +
-            $"Recebidas: {noticiasApi.Count} | " +
-            $"Inseridas: {inseridas} | " +
-            $"Duplicadas: {ignoradas} | " +
-            $"Falhas na extração: {falhasExtracao} | " +
-            $"Falhas no Gemini: {falhasProcessamento}"
-    };
-}
     }
 }
