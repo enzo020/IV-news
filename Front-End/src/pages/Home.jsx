@@ -6,6 +6,7 @@ import NewsCard from "../components/NewsCard";
 import FeaturedNews from "../components/FeaturedNews";
 import Loading from "../components/Loading/Loading";
 import ErrorMessage from "../components/ErrorMessage";
+import { selecionarNoticiasDestaque } from "../utils/rankNews";
 
 function Home() {
   const [noticias, setNoticias] = useState([]);
@@ -44,14 +45,24 @@ function Home() {
     );
   }
 
-  const featuredNews = noticias.slice(0, 5).map((noticia) => ({
-    id: noticia.id,
-    title: noticia.titulo,
-    description: noticia.conteudo,
-    image: noticia.imagemUrl,
-  }));
+const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
+  id: noticia.id,
+  title: noticia.titulo,
+  description: noticia.descricao,
+  image: noticia.imagemUrl,
+  publishedAt: noticia.publicadoEm,
+}));
 
-  const noticiasRecentes = noticias.slice(0, 6);
+  const noticiasRecentes = [...noticias]
+    .filter((noticia) => {
+      const data = new Date(noticia.publicadoEm);
+      return !Number.isNaN(data.getTime());
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.publicadoEm).getTime() - new Date(a.publicadoEm).getTime(),
+    )
+    .slice(0, 6);
 
   return (
     <main className="home-page">
@@ -171,10 +182,10 @@ function Home() {
             <small>Brasil e mundo</small>
           </Link>
 
-          <Link to="/noticias?categoria=Ciência" className="home-category-card">
-            <span>🔬</span>
-            <strong>Ciência</strong>
-            <small>Descobertas e pesquisas</small>
+          <Link to="/noticias?categoria=Economia" className="home-category-card">
+            <span>💰</span>
+            <strong>Economia</strong>
+            <small>O mundo financeiro</small>
           </Link>
         </div>
       </section>

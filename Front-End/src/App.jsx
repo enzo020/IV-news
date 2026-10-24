@@ -15,6 +15,7 @@ import News from "./pages/News";
 import Home from "./pages/Home";
 import NewsDetails from "./pages/NewsDetails";
 import Categories from "./pages/Categories";
+import Settings from "./pages/Settings";
 
 function App() {
 
@@ -62,6 +63,11 @@ function App() {
                 <Route
                     path="/ajuda"
                     element={<Help />}
+                />
+
+                <Route 
+                    path="/configuracoes"
+                    element={<Settings />}
                 />
             </Routes>
 

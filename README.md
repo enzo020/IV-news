@@ -1,215 +1,246 @@
-# Guia de execução
-## Pré-requisitos
+# IV News
+
+O **IV News** é uma plataforma web de notícias que utiliza APIs externas para obter notícias, extrai e organiza o conteúdo dos artigos e utiliza Inteligência Artificial para gerar resumos executivos. As notícias e seus resumos são armazenados em um banco de dados e exibidos em uma interface desenvolvida com React.
+
+## 1. Tecnologias utilizadas
+
+| Camada | Tecnologias |
+|---|---|
+| Frontend | React, JavaScript, Vite, Bootstrap |
+| Backend | C#, ASP.NET Core, .NET 8 |
+| Banco de dados | SQLite, Entity Framework Core |
+| Fonte de notícias | APITube |
+| Extração de conteúdo | SmartReader |
+| Processamento de texto | Google Gemini API |
+| Versionamento e gestão | Git, GitHub e Trello |
+
+## 2. Fluxo de processamento das notícias
+
+O fluxo esperado conecta a obtenção das notícias, a extração do conteúdo, o processamento por Inteligência Artificial, o armazenamento dos resultados e a exibição no frontend.
+
+### Etapa 1 — Notícia armazenada no banco de dados
+
+As notícias são obtidas da APITube e processadas pelo backend. Cada registro contém informações como título, descrição, autor, fonte, URL original, imagem, data de publicação, categoria e localização, quando disponíveis.
+
+O banco utilizado é o SQLite, acessado por meio do Entity Framework Core.
+
+O identificador externo da APITube (`IdExterno`) é utilizado para verificar se uma notícia já foi importada, evitando duplicações.
+
+### Etapa 2 — Extração do conteúdo pela URL
+
+O backend utiliza o serviço de extração baseado no **SmartReader** para acessar a URL original da notícia e tentar extrair seu conteúdo textual.
+
+O objetivo é obter o texto principal do artigo, reduzindo a presença de anúncios, menus, elementos de navegação e outros conteúdos que não fazem parte da notícia.
+
+O resultado dessa etapa é o texto extraído, que será utilizado como entrada para o processamento por Inteligência Artificial.
+
+A extração depende de a URL estar acessível e de o site permitir a obtenção do conteúdo. Páginas indisponíveis, paywalls e outras restrições podem impedir uma extração bem-sucedida.
+
+### Etapa 3 — Envio do texto ao Google Gemini
+
+Após a extração, o backend envia o texto obtido para o serviço de processamento de notícias, que utiliza a API do Google Gemini.
+
+A IA recebe instruções para preservar o sentido original do artigo, organizar o conteúdo e produzir informações estruturadas, incluindo:
+
+- **Descrição:** texto curto para apresentação da notícia.
+- **Conteúdo tratado:** versão limpa e organizada do conteúdo extraído.
+- **Resumo executivo:** síntese dos principais acontecimentos.
+- **Pontos-chave:** destaques relevantes do artigo.
+- **Sentimento:** classificação do tom da notícia, conforme o processamento implementado.
+
+A resposta é processada e validada pelo backend antes de ser utilizada. Respostas inválidas ou incompletas podem impedir que a notícia seja salva, conforme as validações da aplicação.
+
+### Etapa 4 — Armazenamento da notícia e do resumo
+
+Depois que a extração e o processamento são concluídos com sucesso, o backend cria os registros correspondentes no banco de dados.
+
+A entidade `Noticia` armazena os dados do artigo, incluindo o conteúdo tratado e a data de publicação. A entidade `Resumo` armazena o resumo executivo e as informações complementares geradas pela IA.
+
+O relacionamento entre as entidades permite associar o resumo à notícia correspondente.
+
+O Entity Framework Core persiste os registros por meio de `SaveChangesAsync()`. A aplicação também verifica duplicidades antes de inserir novas notícias.
+
+**Observação:** no fluxo de importação atual, a extração e o processamento são realizados antes da persistência da nova notícia e de seu resumo. Para notícias já armazenadas, o fluxo de extração e processamento pode ser executado separadamente, conforme os endpoints e serviços disponíveis no backend.
+
+### Etapa 5 — Exibição no frontend
+
+O frontend React consulta os endpoints do backend para obter as notícias e seus dados relacionados.
+
+As informações recebidas são utilizadas pelos componentes da interface para apresentar:
+
+- Cards com título, imagem, descrição e data de publicação.
+- Página de detalhes com o conteúdo da notícia.
+- Resumo executivo e pontos-chave, quando disponíveis.
+- Categorias, localização e demais informações fornecidas pela API.
+
+O frontend é responsável pela apresentação dos dados. A extração do artigo, o processamento com IA e a persistência ficam sob responsabilidade do backend.
+
+### Visão geral do fluxo
+
+```text
+APITube
+   |
+   v
+Backend (.NET 8)
+   |
+   v
+Obtenção dos dados e URL da notícia
+   |
+   v
+Extração do conteúdo com SmartReader
+   |
+   v
+Envio do texto ao Google Gemini
+   |
+   v
+Validação da resposta
+   |
+   v
+SQLite
+   |
+   +---- Noticia
+   |
+   +---- Resumo
+   |
+   v
+API do backend
+   |
+   v
+Frontend React
+   |
+   v
+Exibição da notícia e do resumo
+```
+
+## 3. Pré-requisitos
 
 Antes de executar o projeto, instale:
 
-.NET SDK 8.0 — necessário para o backend.
-https://dotnet.microsoft.com/pt-br/download/dotnet/8.0
-Node.js e npm — necessários para o frontend React.
-Git — para clonar e versionar o projeto.
+- **.NET SDK 8.0:** necessário para o backend. [Download do .NET 8](https://dotnet.microsoft.com/pt-br/download/dotnet/8.0)
+- **Node.js e npm:** necessários para o frontend React.
+- **Git:** necessário para clonar e versionar o projeto.
 
-Não é necessário instalar as dependências do projeto manualmente. Elas são instaladas pelos comandos descritos abaixo.
+Não é necessário instalar manualmente as dependências do projeto. Os comandos abaixo realizam a restauração ou instalação.
 
-O projeto pode ser desenvolvido em qualquer editor de código. O VS Code é recomendado, mas não é obrigatório.
+O VS Code é recomendado, mas qualquer editor compatível pode ser utilizado.
 
-Backend
+## 4. Configuração das APIs
 
-Entre no diretório do backend:
+As chaves de API **não devem ser adicionadas diretamente ao código nem enviadas ao GitHub**.
 
+No terminal, entre no diretório do backend:
+
+```bash
 cd backend
+```
+
+Inicialize o armazenamento de segredos do .NET, caso ainda não esteja configurado:
+
+```bash
+dotnet user-secrets init
+```
+
+Configure o token da APITube:
+
+```bash
+dotnet user-secrets set "ApiTubeSettings:Token" "SUA_API_KEY"
+```
+
+Configure a chave da API do Google Gemini:
+
+```bash
+dotnet user-secrets set "Gemini:ApiKey" "SUA_API_KEY"
+```
+
+Substitua `SUA_API_KEY` pela chave correspondente de cada serviço.
+
+Os principais serviços de integração com APIs externas estão na pasta `Services` do backend.
+
+## 5. Execução do backend
+
+No terminal, entre na pasta do backend:
+
+```bash
+cd backend
+```
 
 Restaure as dependências:
 
+```bash
 dotnet restore
+```
 
-Inicie o servidor:
+Inicie a aplicação:
 
+```bash
 dotnet run
+```
 
-O terminal exibirá o endereço em que a API está sendo executada, por exemplo:
+O terminal exibirá o endereço utilizado pelo servidor, por exemplo:
 
+```text
 Now listening on: http://localhost:5022
+```
 
-A porta pode variar de acordo com a configuração local. Utilize sempre o endereço exibido no terminal.
+A porta pode variar de acordo com a configuração local. Utilize o endereço exibido no terminal.
 
-# Swagger
+### Swagger
 
-Com o backend em execução, o Swagger pode ser acessado pelo endereço com ctrl+click:
+Com o backend em execução, acesse o Swagger pelo endereço configurado para a documentação da API.
 
-http://localhost:5022/
+Por exemplo, se a documentação estiver habilitada na raiz:
 
-Caso a API esteja utilizando outra porta, substitua 5022 pela porta exibida no terminal.
+[http://localhost:5022/](http://localhost:5022/)
 
-O Swagger permite visualizar e testar os endpoints disponíveis na API.
+Caso seja utilizada outra porta ou rota, consulte a configuração do projeto e a saída do terminal.
 
-# Frontend
+O Swagger permite consultar e testar os endpoints disponíveis no backend.
 
-O frontend utiliza React + Vite.
+## 6. Execução do frontend
 
-Entre no diretório do frontend:
+O frontend utiliza React e Vite.
 
+Abra outro terminal e entre na pasta do frontend:
+
+```bash
 cd frontend
+```
 
 Instale as dependências:
 
+```bash
 npm install
+```
 
 Inicie o servidor de desenvolvimento:
 
+```bash
 npm run dev
+```
 
 O terminal exibirá um endereço semelhante a:
 
-http://localhost:5173
+[http://localhost:5173](http://localhost:5173)
 
-Abra esse endereço no navegador com ctrl+click.
+Abra o endereço no navegador. Para utilizar as funcionalidades que dependem de notícias, mantenha o backend em execução e confira se a URL da API está configurada corretamente no frontend.
 
-# Guia de branches e versionamento git
-- O projeto utiliza o Git para versionamento de código. As branches seguem o padrão:
-  - main: Branch principal onde o código é compartilhado por todos.
-  - (Seu nome): Branch para desenvolvimento das novas funcionalidades.
 
-O desenvolvimento deve seguir o fluxo:
-- Antes de iniciar qualquer desenvolvimento, certifique-se de estar na branch main executando `git checkout main`.
-- Execute `git pull origin main` para atualizar sua branch local com as últimas alterações da main.
-- Crie uma branch a partir da main com o seu nome (crie com `git checkout -b <seu-nome>`).
-- Ou acesse uma já existente com o comando `git checkout <seu-nome>`.
-- Desenvolva suas funcionalidades na sua branch pessoal.
-- Após concluir o desenvolvimento, faça commit das alterações com `git add .` e `git commit -m "Descrição do que foi feito"`.
-- Para enviar suas alterações para o repositório remoto, utilize `git push origin <seu-nome>` (as alterações só serão enviadas para a sua branch).
-- Para integrar suas alterações à branch main, acesse a branch main com `git checkout main`, atualize-a com `git pull origin main` e depois faça o merge da sua branch pessoal com `git merge <seu-nome>`.
-- Por fim, envie as alterações integradas para o repositório remoto com `git push origin main`.
+## 7. Estrutura geral do projeto
 
-## Configuração das APIs
+O projeto é dividido em duas partes principais:
 
-As API keys NÃO devem ser adicionadas ao código ou ao GitHub.
+- **`backend/`**: API ASP.NET Core, serviços de integração, extração e processamento de notícias, entidades, DTOs e acesso ao banco SQLite.
+- **`frontend/`**: aplicação React, componentes visuais, páginas e consumo dos endpoints do backend.
 
-Após clonar o projeto, configure sua API key:
+A estrutura interna pode variar conforme a evolução do projeto. Consulte as pastas e os arquivos existentes no repositório para identificar os serviços e endpoints disponíveis.
+## 8. Objetivos do MVP
 
-dotnet user-secrets init
-E para as APIs, substitua "SUA_API_KEY" pela sua chave real:
+O MVP do IV News busca oferecer:
 
-APITube:
-dotnet user-secrets set "ApiTubeSettings:Token" SUA_API_KEY
+1. Obtenção e armazenamento de notícias por meio de uma API externa.
+2. Extração e organização do conteúdo dos artigos.
+3. Geração e armazenamento de resumos com Inteligência Artificial.
+4. Exibição das notícias em uma interface web responsiva.
+5. Filtros e organização por categorias e localização, conforme as funcionalidades implementadas.
 
-Gemini:
-dotnet user-secrets set "Gemini:ApiKey" SUA_API_KEY
-
-APITube: link padrão para noticias em portugues
-https://api.apitube.io/v1/news/everything?language.code=pt
-
-Os principais arquivos da pasta Services servirão para configurar as APIs externas.
-
-# 📰 IV News
-
-O **IV News** é uma plataforma web para exibição de notícias em tempo real, integrando Inteligência Artificial (Grok) para a geração automática de resumos e classificação indicativa, além de recursos de localização e mapas.
-
----
-
-## 👥 Integrantes do Projeto
-* **Enzo** - Backend (C# / ASP.NET)
-* **Adam** - Frontend / Documentação
-* **Junior** -  Documentação e IAs
-* **Murilo** - Front-end(React)
-* **Maria Clara** - Banco de Dados (SQLlite)
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* **Backend:** C# / ASP.NET Core, Entity Framework Core
-* **Frontend:** HTML, CSS, JavaScript, Bootstrap
-* **Banco de Dados:** SQLite
-* **Inteligência Artificial:** Grok (xAI)
-* **APIs Externas:** News API, Google Maps API
-* **Versionamento & Gestão:** Git/GitHub, Trello
-
----
-
-## 🎯 Objetivo do Projeto (MVP)
-O sistema tem como meta principal entregar:
-1. Feed de notícias atualizado via API.
-2. Interface responsiva com cards e filtros.
-3. Resumos e classificação indicativa gerados por IA.
-4. Integração básica com Google Maps para eventos da região.
-
----
-
-## 📌 Padrão de Branches
-* `main`: Branch principal de produção (código estável).
-* `develop`: Branch para integração das novas funcionalidades.
-* `feature/nome-da-feature`: Branches individuais para desenvolvimento de tarefas.
-
-2. Definir stack final
-================================================================
-                         STACK FINAL
-================================================================
-
-CAMADA DE NOTÍCIAS
-    Principal: APITube-100 Requisições (Qualidade boa de resumo)
-    Reserva:   NewsData.io
-
-CAMADA DE IA — TEXTO
-    Principal: Google Gemini API
-    Reserva:   Groq API
-
-CAMADA DE IA — IMAGEM
-    Principal: Cloudflare Workers AI
-    Reserva:   Stability AI API
-
-CAMADA DE IA — VÍDEO
-    Principal: fal.ai
-    Reserva:   Magic Hour API
-
-================================================================
-
-Formato Esperado do Resumo
-
-Para padronizar o consumo pela sua aplicação, o retorno da IA deve seguir uma estrutura fixa em JSON validado:
-
-{
-  "titulo": "Título curto e chamativo (máx. 10 palavras)",
-  "resumo_executivo": "Parágrafo com o contexto geral e principal fato da notícia (2 a 3 frases).",
-  "pontos_chave": [
-    "Destaque relevante 1",
-    "Destaque relevante 2",
-    "Destaque relevante 3"
-  ],
-  "categoria": "Ex: Tecnologia | Economia | Política",
-  "sentimento": "Neutro | Positivo | Negativo"
-}
-
-Exemplo de Prompt (System Prompt)
-
-Este prompt garante um retorno conciso e previne a inclusão de formatação Markdown extra fora do objeto JSON:
-
-> Role: Você é um assistente especialista em síntese de notícias para feeds rápidos.
-> Instrução: Analise o texto da notícia fornecido e crie um resumo objetivo. Retorne estritamente um objeto JSON sem blocos de código markdown ou texto explicativo extra.
-> Regras:
-> * Mantenha o tom neutro e baseado estritamente no texto fornecido.
-> * O campo resumo_executivo não deve ultrapassar 60 palavras.
-> * O campo pontos_chave deve conter exatamente 3 itens curtos.
-> Texto da Notícia: {texto_noticia_aqui}
-> 
-
-Documentação da API Escolhida (Google Gemini API — Principal)
-
- * Modelo Recomendado: gemini-2.5-flash ou gemini-1.5-flash (ideais para inferência rápida e baixo custo).
- * Configuração de Resposta: Suporta response_mime_type: "application/json" para garantir o Schema JSON sem erros de parse.
- * Limite da Camada Gratuita:
-   * 15 RPM (Requisições por minuto)
-   * 1.000 a 1.500 RPD (Requisições por dia)
-   * 1M Tokens de Janela de Contexto
- * Tamanho Máximo de Entrada: Suporta até ~700.000 palavras por requisição na camada gratuita (mais que suficiente para notícias).
-
-Definição do Plano B (Groq API — Reserva)
-
- * Propósito: Assumir as chamadas caso o limite de requisições (429 Too Many Requests) ou instabilidade ocorra na Google Gemini API.
- * Modelo Recomendado: llama-3.3-70b-versatile ou gpt-oss-120b (rodando na infraestrutura ultra-rápida LPU da Groq).
- * Limite da Camada Gratuita:
-   * 30 RPM (Requisições por minuto)
-   * 1.000 RPD (Requisições por dia)
-   * 200.000 TPD (Tokens por dia)
- * Comportamento de Failover: O backend deve interceptar o código HTTP 429 ou erros de timeout da API do Gemini e redirecionar o payload (noticia + prompt) para o endpoint da Groq via SDK da OpenAI / Groq.
-===============================================
-
+Funcionalidades adicionais, como geração de imagens por IA, podem ser incorporadas conforme o planejamento e a evolução do projeto.

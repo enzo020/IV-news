@@ -1,5 +1,7 @@
 // Este arquivo é responsável por definir os DTOs (Data Transfer Objects) utilizados para representar a resposta da API do ApiTube.
 
+using System.Text.Json.Serialization;
+
 namespace IVnews.DTOs.ApiTube
 {
     
@@ -13,6 +15,8 @@ namespace IVnews.DTOs.ApiTube
     {
         public long Id { get; set; }
         public string Href { get; set; }
+        
+        [JsonPropertyName("published_at")]
         public DateTime PublishedAt { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }

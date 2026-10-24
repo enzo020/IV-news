@@ -119,7 +119,7 @@ namespace IVNews.Services
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
-            var endpoint = $"v1/news/everything?language.code=pt&source.country.code=br&per_page={perPage}";
+            var endpoint = $"v1/news/everything?language.code=pt&source.country.code=br&published_at.start=NOW-30DAYS&published_at.end=NOW&per_page={perPage}";
 
             HttpResponseMessage response;
 
@@ -426,7 +426,6 @@ namespace IVNews.Services
 
                     Noticia = noticia
                 };
-
                 _context.Noticias.Add(noticia);
                 _context.Resumos.Add(resumo);
 

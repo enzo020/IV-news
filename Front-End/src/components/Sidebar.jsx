@@ -57,10 +57,10 @@ function Sidebar({ isOpen, onClose }) {
         </nav>
 
         <div className="sidebar-bottom">
-          <Link to="/" onClick={onClose}>
+          <Link to="/configuracoes" onClick={onClose}>
             ⚙️ Configurações
           </Link>
-          <Link to="/" onClick={onClose}>
+          <Link to="/ajuda" onClick={onClose}>
             ❓ Ajuda
           </Link>
         </div>
