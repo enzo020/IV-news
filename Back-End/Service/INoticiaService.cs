@@ -9,5 +9,6 @@ namespace IVNews.Services
         Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage);
         Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage);
         Task<Localizacao> SalvarLocalizacaoAsync(LocalizacaoDto localizacaoDto);
+        Task<Categoria> SalvarCategoriaAsync(CategoriaDto categoriaDto);
     }
 }

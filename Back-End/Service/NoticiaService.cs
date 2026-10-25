@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -335,19 +336,147 @@ namespace IVNews.Services
             return localizacao;
         }
 
+        public async Task<Categoria> SalvarCategoriaAsync(CategoriaDto categoriaDto)
+        {
+            ArgumentNullException.ThrowIfNull(categoriaDto);
+
+            var nome = Normalizar(categoriaDto.Nome);
+            var descricao = Normalizar(categoriaDto.Descricao);
+            var idExterno = Normalizar(categoriaDto.IdExterno);
+
+            if (nome == null)
+            {
+                throw new ArgumentException(
+                    "Informe o nome da categoria.",
+                    nameof(categoriaDto));
+            }
+
+            // 1) Procura pelo código da APITube, quando ele foi informado.
+            var existente = idExterno != null
+                ? await _context.Categorias.FirstOrDefaultAsync(c => c.IdExterno == idExterno)
+                : null;
+
+            // 2) Se não achou, procura pelo nome (sem diferenciar maiúsculas de minúsculas).
+            if (existente == null)
+            {
+                var nomeMinusculo = nome.ToLower();
+
+                existente = await _context.Categorias.FirstOrDefaultAsync(c =>
+                    c.Nome != null && c.Nome.ToLower() == nomeMinusculo);
+            }
+
+            if (existente != null)
+            {
+                // Completa o que estiver vazio, sem sobrescrever o que já existe.
+                if (existente.IdExterno == null && idExterno != null)
+                    existente.IdExterno = idExterno;
+
+                if (existente.Descricao == null && descricao != null)
+                    existente.Descricao = descricao;
+
+                await _context.SaveChangesAsync();
+                return existente;
+            }
+
+            var categoria = new Categoria
+            {
+                Nome = nome,
+                Descricao = descricao,
+                IdExterno = idExterno
+            };
+
+            _context.Categorias.Add(categoria);
+            await _context.SaveChangesAsync();
+
+            return categoria;
+        }
+
+        // Requisitos da documentação do banco que já dá para conferir ANTES de extrair e chamar o Gemini.
+        private static List<string> ValidarArtigoDaApi(ApiTubeArticle article)
+        {
+            var motivos = new List<string>();
+
+            if (article.Id == 0)
+                motivos.Add("Sem id da APITube");
+
+            if (string.IsNullOrWhiteSpace(article.Title))
+                motivos.Add("Título vazio");
+
+            if (string.IsNullOrWhiteSpace(article.Source?.Domain))
+                motivos.Add("Fonte vazia");
+
+            if (article.PublishedAt == default)
+                motivos.Add("Data de publicação ausente");
+
+            return motivos;
+        }
+
+        // Confere as regras que o próprio model declara ([Required] na Noticia e
+        // [RegularExpression] do Sentimento no Resumo), que são as regras da documentação do banco.
+        private static List<string> ValidarRequisitos(object entidade)
+        {
+            var resultados = new List<ValidationResult>();
+
+            Validator.TryValidateObject(
+                entidade,
+                new ValidationContext(entidade),
+                resultados,
+                validateAllProperties: true);
+
+            return resultados
+                .Select(r => $"Campo {r.MemberNames.FirstOrDefault() ?? "desconhecido"} ausente ou inválido")
+                .ToList();
+        }
+
+        // O Gemini pode devolver "positivo" ou "NEUTRO": acerta a escrita antes de validar.
+        // Qualquer outro valor é mantido como veio, e a validação rejeita.
+        private static string? NormalizarSentimento(string? valor)
+        {
+            var texto = Normalizar(valor);
+
+            if (texto == null)
+                return null;
+
+            return texto.ToLowerInvariant() switch
+            {
+                "positivo" => "Positivo",
+                "negativo" => "Negativo",
+                "neutro" => "Neutro",
+                _ => texto
+            };
+        }
+
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
         {
             var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
 
             int inseridas = 0;
             int ignoradas = 0;
+            int rejeitadas = 0;
             int falhasExtracao = 0;
             int falhasProcessamento = 0;
+            var motivosRejeicao = new List<string>();
 
             var categoriasBanco = await _context.Categorias.ToListAsync();
 
+            // Registra a notícia rejeitada e o motivo, que aparece no resultado da importação.
+            void Rejeitar(ApiTubeArticle artigo, IEnumerable<string> motivos)
+            {
+                rejeitadas++;
+                motivosRejeicao.Add($"[{artigo.Id}] {artigo.Title}: {string.Join("; ", motivos)}");
+            }
+
             foreach (var article in noticiasApi)
             {
+                // 0. Rejeita o que não cumpre os requisitos do banco, antes de gastar extração e Gemini.
+                var motivosApi = ValidarArtigoDaApi(article);
+
+                if (motivosApi.Count > 0)
+                {
+                    Rejeitar(article, motivosApi);
+                    continue;
+                }
+
                 var noticiaExistente = await _context.Noticias
                     .FirstOrDefaultAsync(
                         n => n.IdExterno == article.Id.ToString());
@@ -392,13 +521,7 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 3. Recupera os metadados da notícia.
-                var categoria = ObterCategoria(article, categoriasBanco);
-                var imagemUrl = await ObterImagemValidaAsync(article);
-                var localizacao =
-                    await ObterOuCriarLocalizacaoAsync(article.Location);
-
-                // 4. Salva o texto tratado, não o Body do ApiTube.
+                // 3. Monta a notícia (texto tratado, não o Body do ApiTube) e o resumo associado.
                 var noticia = new Noticia
                 {
                     Titulo = article.Title,
@@ -409,23 +532,36 @@ namespace IVNews.Services
                     Autor = article.Author?.Name,
                     Fonte = article.Source?.Domain,
                     UrlNoticia = article.Href,
-                    ImagemUrl = imagemUrl,
                     IdExterno = article.Id.ToString(),
-                    PublicadoEm = article.PublishedAt,
-                    Categoria = categoria,
-                    Localizacao = localizacao
+                    PublicadoEm = article.PublishedAt
                 };
 
-                // 5. Cria o resumo associado à notícia.
                 var resumo = new Resumo
                 {
                     Titulo = noticia.Titulo,
                     ResumoExecutivo = processada.ResumoExecutivo,
                     PontosChave = processada.PontosChave ?? new(),
-                    Sentimento = processada.Sentimento,
+                    Sentimento = NormalizarSentimento(processada.Sentimento),
 
                     Noticia = noticia
                 };
+
+                // 4. Confere as regras da documentação do banco. Se falhar, rejeita e segue para a próxima.
+                var motivosModelo = ValidarRequisitos(noticia)
+                    .Concat(ValidarRequisitos(resumo))
+                    .ToList();
+
+                if (motivosModelo.Count > 0)
+                {
+                    Rejeitar(article, motivosModelo);
+                    continue;
+                }
+
+                // 5. Recupera os metadados (só para quem passou na validação).
+                noticia.Categoria = ObterCategoria(article, categoriasBanco);
+                noticia.ImagemUrl = await ObterImagemValidaAsync(article);
+                noticia.Localizacao = await ObterOuCriarLocalizacaoAsync(article.Location);
+
                 _context.Noticias.Add(noticia);
                 _context.Resumos.Add(resumo);
 
@@ -439,13 +575,15 @@ namespace IVNews.Services
                 TotalRecebidoDaApi = noticiasApi.Count,
                 TotalInserido = inseridas,
                 TotalIgnoradasDuplicadas = ignoradas,
+                TotalRejeitadas = rejeitadas,
+                MotivosRejeicao = motivosRejeicao,
 
-                // Adapte esses campos à definição real do seu DTO.
                 Mensagem =
                     $"Importação finalizada. " +
                     $"Recebidas: {noticiasApi.Count} | " +
                     $"Inseridas: {inseridas} | " +
                     $"Duplicadas: {ignoradas} | " +
+                    $"Rejeitadas: {rejeitadas} | " +
                     $"Falhas na extração: {falhasExtracao} | " +
                     $"Falhas no Gemini: {falhasProcessamento}"
             };
