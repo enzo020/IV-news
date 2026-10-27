@@ -22,7 +22,7 @@ namespace IVnews.Model
         public string? IdExterno { get; set; }
         public string? Descricao { get; set; }
 
-        public DateTime PublicadoEm { get; set; }
+        public DateTime? PublicadoEm { get; set; }
 
         public Categoria? Categoria { get; set; }
         public Localizacao? Localizacao { get; set; }

@@ -187,7 +187,7 @@ namespace IVnews.Migrations
                     b.Property<int?>("LocalizacaoId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("PublicadoEm")
+                    b.Property<DateTime?>("PublicadoEm")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Titulo")

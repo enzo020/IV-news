@@ -60,7 +60,9 @@ function Header({ onMenuClick }) {
             </div>
           </div>
 
-          <button className="account-button">Conta</button>
+          <button className="account-button">
+            <i className="bi bi-person" style={{ fontSize: "1.5rem" }}></i>
+          </button>
         </div>
       </header>
     );
