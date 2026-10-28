@@ -16,4 +16,7 @@ public class ProcessamentoNoticiaDto
 
     [JsonPropertyName("descricao")]
     public string? Descricao { get; set; }
+
+    [JsonPropertyName("prompt")]
+    public string? Prompt { get; set; }
 }

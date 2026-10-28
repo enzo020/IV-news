@@ -221,6 +221,9 @@ namespace IVnews.Migrations
                     b.Property<string>("PontosChave")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Prompt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ResumoExecutivo")
                         .HasColumnType("TEXT");
 

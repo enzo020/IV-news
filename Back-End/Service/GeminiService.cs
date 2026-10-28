@@ -115,8 +115,10 @@ public class GeminiService : IGeminiService
             "- Se o conteúdo estiver incompleto, não invente os trechos ausentes.");
 
         prompt.AppendLine(
+            "- prompt: crie um prompt que será usado em uma IA de imagem, baseado no conteúdo da notícia, mantenha o resumo breve e condizente com a noticia, também instrua a IA a não gerar ilustrações de pessoas reais ou desrespeitosas com o contexto da notícia, e que seja adequado para o público geral. Mantenha o prompt em inglês. Exemplo: para a notícia sobre clima, o prompt poderia ser: Generate a cloudy sky with dark clouds. Avoid any depictions of real people or disrespectful content.");
+        prompt.AppendLine(
             "O JSON deve conter os campos: conteudo_tratado, descricao" +
-            "resumo_executivo, pontos_chave, categoria e sentimento.");
+            "resumo_executivo, pontos_chave, categoria, sentimento e prompt.");
 
         prompt.AppendLine();
         prompt.AppendLine("INÍCIO DO TEXTO DA NOTÍCIA");

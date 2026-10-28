@@ -7,8 +7,11 @@ export function useCategorias() {
   const [erro, setErro] = useState(false);
 
   useEffect(() => {
-    async function carregar() {
+    async function carregarCategorias() {
       try {
+        setLoading(true);
+        setErro(false);
+
         const dados = await getCategorias();
         setCategorias(dados);
       } catch (error) {
@@ -19,8 +22,12 @@ export function useCategorias() {
       }
     }
 
-    carregar();
+    carregarCategorias();
   }, []);
 
-  return { categorias, loading, erro };
+  return {
+    categorias,
+    loading,
+    erro,
+  };
 }

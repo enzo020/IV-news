@@ -15,6 +15,8 @@ namespace IVnews.Model
         [RegularExpression("^(Positivo|Negativo|Neutro)$")]
         public string? Sentimento { get; set; }
 
+        public string? Prompt { get; set; }
+
         public int NoticiaId { get; set; }
         public Noticia? Noticia { get; set; }
     }

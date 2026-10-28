@@ -542,6 +542,7 @@ namespace IVNews.Services
                     ResumoExecutivo = processada.ResumoExecutivo,
                     PontosChave = processada.PontosChave ?? new(),
                     Sentimento = NormalizarSentimento(processada.Sentimento),
+                    Prompt = processada.Prompt,
 
                     Noticia = noticia
                 };

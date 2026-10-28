@@ -1,10 +1,24 @@
-// Temporário
 import { Link } from "react-router-dom";
 import { useCategorias } from "../hooks/useCategorias";
-
+import Loading from "../components/Loading/Loading";
+import ErrorMessage from "../components/ErrorMessage";
 
 function Categories() {
   const { categorias, loading, erro } = useCategorias();
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (erro) {
+    return (
+      <ErrorMessage
+        title="Não foi possível carregar as categorias"
+        message="Tente novamente mais tarde."
+      />
+    );
+  }
+
   return (
     <main className="categories-page">
       <section className="categories-header">
