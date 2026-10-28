@@ -2,11 +2,48 @@ function LoadingLogo() {
     return (
         <svg
             className="loading-logo-svg"
-            viewBox="-25 -25 150 150"
+            viewBox="-30 -43 170 170"
             xmlns="http://www.w3.org/2000/svg"
         >
             
             <g className="loading-lupa">
+
+                <path
+                    d="M 30 67 L 15 82"
+                    fill="none"
+                    stroke="#6F31C8"
+                    strokeWidth="7"
+                    strokeLinecap="round"
+                />
+                <path
+                    d="M 30 67 L 15 82"
+                    fill="none"
+                    stroke="#9747FF"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                />
+
+                <path
+                    d="M 16 81 L 4 93"
+                    fill="none"
+                    stroke="#6F31C8"
+                    strokeWidth="13"
+                    strokeLinecap="round"
+                />
+                <path
+                    d="M 16 81 L 4 93"
+                    fill="none"
+                    stroke="#9747FF"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                />
+                <path
+                    d="M 10 83 L 14 87 M 6 87 L 10 91"
+                    fill="none"
+                    stroke="#6F31C8"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                />
 
                 <circle
                     cx="55"
@@ -15,16 +52,6 @@ function LoadingLogo() {
                     fill="none"
                     stroke="#9747FF"
                     strokeWidth="5"
-                />
-
-                <line
-                    x1="30"
-                    y1="67"
-                    x2="10"
-                    y2="88"
-                    stroke="#9747FF"
-                    strokeWidth="9"
-                    strokeLinecap="round"
                 />
 
             </g>

@@ -2,70 +2,81 @@ import Icon from "./Icon";
 import { useState } from "react";
 
 function Header({ onMenuClick }) {
+  const [busca, setBusca] = useState("");
 
-    const [busca, setBusca] = useState("");
+  const realizarBusca = () => {
+    const texto = busca.trim();
 
-    const realizarBusca = () => {
-        const texto = busca.trim()
-        if (!texto) {
-            window.location.href = "/noticias";
-            return;
-        }
-
-        window.location.href = `/noticias?busca=${encodeURIComponent(texto)}`;
+    if (!texto) {
+      window.location.href = "/noticias";
+      return;
     }
 
-      const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-          realizarBusca();
-        }
-      };
+    window.location.href = `/noticias?busca=${encodeURIComponent(texto)}`;
+  };
 
-    return (
-      <header className="site-header">
-        <div className="container-fluid header-content">
-          <div className="d-flex align-items-center justify-content-between w-100">
-            <button className="menu-button" onClick={onMenuClick}>
-              ☰
-            </button>
-            <Icon />
-          </div>
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      realizarBusca();
+    }
+  };
 
-          <div className="header-center">
-            <a href="/" className="site-logo">
-              <span className="site-logo-mark">IV</span>
-
-              <span className="site-logo-name">NEWS</span>
-            </a>
-
-            <p className="site-tagline">
-              Notícias atualizadas, onde você estiver
-            </p>
-
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Pesquise notícias"
-                value={busca}
-                onChange={(event) => setBusca(event.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                type="button"
-                onClick={realizarBusca}
-                aria-label="Pesquisar"
-              >
-                <i className="bi bi-search"></i>
-              </button>
-            </div>
-          </div>
-
-          <button className="account-button">
-            <i className="bi bi-person" style={{ fontSize: "1.5rem" }}></i>
+  return (
+    <header className="site-header">
+      <div className="container-fluid header-content">
+        <div className="header-left">
+          <button
+            className="menu-button"
+            type="button"
+            onClick={onMenuClick}
+            aria-label="Abrir menu"
+          >
+            ☰
           </button>
+
+          <Icon />
         </div>
-      </header>
-    );
+
+        <div className="header-center">
+          <a href="/" className="site-logo">
+            <span className="site-logo-mark">IV</span>
+            <span className="site-logo-name">NEWS</span>
+          </a>
+
+          <p className="site-tagline">
+            Notícias atualizadas, onde você estiver
+          </p>
+
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Pesquise notícias"
+              value={busca}
+              onChange={(event) => setBusca(event.target.value)}
+              onKeyDown={handleKeyDown}
+              aria-label="Pesquisar notícias"
+            />
+
+            <button
+              type="button"
+              onClick={realizarBusca}
+              aria-label="Pesquisar"
+            >
+              <i className="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <button
+          className="account-button"
+          type="button"
+          aria-label="Minha conta"
+        >
+          <i className="bi bi-person"></i>
+        </button>
+      </div>
+    </header>
+  );
 }
 
 export default Header;

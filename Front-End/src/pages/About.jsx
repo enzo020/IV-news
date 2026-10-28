@@ -1,7 +1,7 @@
 const integrantes = [
   {
     nome: "Murilo Gandin",
-    cargo: "Scrum Master, Desenvolvedor Front-end e Back-End",
+    cargo: "Líder de Projeto, Desenvolvedor Full Stack",
   },
 
   {
