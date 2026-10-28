@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { applyTheme, getSavedTheme } from "../utils/theme";
+import { getSavedTextSize, getSavedNewsLayout, applyTextSize, applyNewsLayout } from "../utils/preferences";
 
 function Settings() {
   const [selectedTheme, setSelectedTheme] = useState(() => getSavedTheme());
+  const [newsLayout, setNewsLayout] = useState(() => getSavedNewsLayout());
+  const [textSize, setTextSize] = useState(() => getSavedTextSize());
+
+  function selectTextSize(size) {
+    setTextSize(applyTextSize(size));
+  }
+
+  function selectNewsLayout(layout) {
+    setNewsLayout(applyNewsLayout(layout));
+  }
 
   function selectTheme(theme) {
     const appliedTheme = applyTheme(theme);
@@ -145,53 +156,61 @@ function Settings() {
         </div>
       </section>
 
-      <section className="settings-section">
-        <div className="settings-section-heading">
-          <div className="settings-section-icon">
-            <span aria-hidden="true">✦</span>
+      <div className="settings-preferences">
+        <div className="settings-preference">
+          <div className="preference-icon">Aa</div>
+
+          <div className="preference-description">
+            <h3>Tamanho do texto</h3>
+            <p>Ajuste o tamanho da fonte das notícias.</p>
           </div>
 
-          <div>
-            <h2>Experiência de leitura</h2>
-            <p>Opções para personalizar a navegação.</p>
+          <div className="preference-control">
+            <label htmlFor="text-size">Tamanho</label>
+            <select
+              id="text-size"
+              value={textSize}
+              onChange={(event) => selectTextSize(event.target.value)}
+            >
+              <option value="small">Pequeno</option>
+              <option value="medium">Médio</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="settings-preference">
+          <div className="preference-icon">▤</div>
+
+          <div className="preference-description">
+            <h3>Exibição das notícias</h3>
+            <p>Personalize como os artigos aparecem no feed.</p>
+          </div>
+
+          <div className="preference-control">
+            <label htmlFor="news-layout">Visualização</label>
+            <select
+              id="news-layout"
+              value={newsLayout}
+              onChange={(event) => selectNewsLayout(event.target.value)}
+            >
+              <option value="grid">Grade</option>
+              <option value="list">Lista</option>
+            </select>
           </div>
         </div>
 
-        <div className="settings-card settings-preferences">
-          <div className="settings-preference">
-            <div className="preference-icon">Aa</div>
+        <div className="settings-preference">
+          <div className="preference-icon">⌖</div>
 
-            <div className="preference-description">
-              <h3>Tamanho do texto</h3>
-              <p>Ajuste o tamanho da fonte das notícias.</p>
-            </div>
-
-            <span className="settings-tag">Em breve</span>
+          <div className="preference-description">
+            <h3>Preferências de localização</h3>
+            <p>Defina como as notícias regionais são priorizadas.</p>
           </div>
 
-          <div className="settings-preference">
-            <div className="preference-icon">▤</div>
-
-            <div className="preference-description">
-              <h3>Exibição das notícias</h3>
-              <p>Personalize como os artigos aparecem no feed.</p>
-            </div>
-
-            <span className="settings-tag">Em breve</span>
-          </div>
-
-          <div className="settings-preference">
-            <div className="preference-icon">⌖</div>
-
-            <div className="preference-description">
-              <h3>Preferências de localização</h3>
-              <p>Defina como as notícias regionais são priorizadas.</p>
-            </div>
-
-            <span className="settings-tag">Em breve</span>
-          </div>
+          <span className="settings-tag">Em breve</span>
         </div>
-      </section>
+      </div>
 
       <footer className="settings-footer">
         <span className="settings-footer-mark">IV</span>
