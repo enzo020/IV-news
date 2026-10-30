@@ -27,7 +27,6 @@ namespace IVnews.DTOs.ApiTube
         
         // Novas entidades mapeadas
         public List<ApiTubeCategory> Categories { get; set; }
-        // public ApiTubeSummary Summary { get; set; } (temporariamente retirado para testes)
         public ApiTubeLocation Location { get; set; }
     }
 
