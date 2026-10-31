@@ -6,7 +6,6 @@ namespace IVNews.Controllers
 {
     [ApiController]
     [Route("api/apitube")]
-    [Route("api/noticias/apitube")]
     public class ApiTubeController : ControllerBase
     {
         private readonly INoticiaService _noticiaService;

@@ -25,9 +25,10 @@ namespace IVnews.DTOs.ApiTube
         public ApiTubeSource Source { get; set; }
         public List<ApiTubeMedia> Media { get; set; }
         
-        // Novas entidades mapeadas
         public List<ApiTubeCategory> Categories { get; set; }
-        public ApiTubeLocation Location { get; set; }
+
+        [JsonPropertyName("locations_mentioned")]
+        public List<ApiTubeLocation>? LocationsMentioned { get; set; }
     }
 
     public class ApiTubeAuthor
@@ -60,18 +61,16 @@ namespace IVnews.DTOs.ApiTube
         public string Self { get; set; }
     }
 
-    public class ApiTubeSummary
-    {
-        public string Text { get; set; }
-        public List<string> KeyPoints { get; set; } // Opcional: caso a API traga tópicos principais do resumo
-    }
-
     public class ApiTubeLocation
     {
-        public string Country { get; set; }
-        public string Region { get; set; }
-        public string City { get; set; }
-        public string Lat { get; set; }
-        public string Long { get; set; }
+        public string? Name { get; set; }
+
+        public string? Country { get; set; }
+
+        public double? Lat { get; set; }
+
+        public double? Lng { get; set; }
+
+        public string? Type { get; set; }
     }
 }

@@ -116,10 +116,18 @@ namespace IVnews.Data
                 .IsRequired(false);
 
             modelBuilder.Entity<Noticia>()
-                .HasOne(n => n.Localizacao)
-                .WithMany()
-                .HasForeignKey("LocalizacaoId")
-                .IsRequired(false);
+                .HasMany(n => n.Localizacoes)
+                .WithMany(l => l.Noticias)
+                .UsingEntity<Dictionary<string, object>>(
+                    "NoticiaLocalizacao",
+                    r => r.HasOne<Localizacao>().WithMany().HasForeignKey("LocalizacaoId").OnDelete(DeleteBehavior.Cascade),
+                    l => l.HasOne<Noticia>().WithMany().HasForeignKey("NoticiaId").OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("NoticiaId", "LocalizacaoId");
+                        j.ToTable("NoticiaLocalizacao");
+                    }
+                );
 
             modelBuilder.Entity<Resumo>()
                 .HasOne(r => r.Noticia)

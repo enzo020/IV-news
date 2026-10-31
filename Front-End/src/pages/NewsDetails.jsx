@@ -87,11 +87,20 @@ function NewsDetails() {
 
           <h1 className="news-details-title">{noticia.titulo}</h1>
 
-          <p className="news-details-location">
-            {noticia.localizacao
-              ? noticia.localizacao.cidade
-              : "Localização não informada"}
-          </p>
+          <div className="news-details-location">
+            {noticia.localizacoes?.length > 0 ? (
+              noticia.localizacoes.map((localizacao) => (
+                <span key={localizacao.id}>
+                  <i className="bi bi-geo-alt"></i>
+                  {localizacao.cidade}
+                  {localizacao.estado && `, ${localizacao.estado}`}
+                  {localizacao.pais && ` - ${localizacao.pais}`}
+                </span>
+              ))
+            ) : (
+              <span>Localização não informada</span>
+            )}
+          </div>
           <NewsSummary resumo={resumo} />
 
           <details className="news-details-full-content">

@@ -130,7 +130,7 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
                 title={noticia.titulo}
                 description={noticia.descricao}
                 category={noticia.categoria?.nome}
-                location={noticia.localizacao?.cidade}
+                locations={noticia.localizacoes}
                 image={noticia.imagemUrl}
                 datetime={noticia.publicadoEm}
               />
@@ -182,7 +182,10 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
             <small>Brasil e mundo</small>
           </Link>
 
-          <Link to="/noticias?categoria=Economia" className="home-category-card">
+          <Link
+            to="/noticias?categoria=Economia"
+            className="home-category-card"
+          >
             <span>💰</span>
             <strong>Economia</strong>
             <small>O mundo financeiro</small>

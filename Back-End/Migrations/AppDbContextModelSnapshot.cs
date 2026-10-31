@@ -15,7 +15,7 @@ namespace IVnews.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.32");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.33");
 
             modelBuilder.Entity("IVnews.Model.Categoria", b =>
                 {
@@ -120,6 +120,9 @@ namespace IVnews.Migrations
                     b.Property<string>("Pais")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Tipo")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.ToTable("Localizacoes");
@@ -184,9 +187,6 @@ namespace IVnews.Migrations
                     b.Property<string>("ImagemUrl")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("LocalizacaoId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime?>("PublicadoEm")
                         .HasColumnType("TEXT");
 
@@ -200,8 +200,6 @@ namespace IVnews.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
-
-                    b.HasIndex("LocalizacaoId");
 
                     b.ToTable("Noticias");
                 });
@@ -240,19 +238,28 @@ namespace IVnews.Migrations
                     b.ToTable("Resumos");
                 });
 
+            modelBuilder.Entity("NoticiaLocalizacao", b =>
+                {
+                    b.Property<int>("NoticiaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocalizacaoId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("NoticiaId", "LocalizacaoId");
+
+                    b.HasIndex("LocalizacaoId");
+
+                    b.ToTable("NoticiaLocalizacao", (string)null);
+                });
+
             modelBuilder.Entity("IVnews.Model.Noticia", b =>
                 {
                     b.HasOne("IVnews.Model.Categoria", "Categoria")
                         .WithMany()
                         .HasForeignKey("CategoriaId");
 
-                    b.HasOne("IVnews.Model.Localizacao", "Localizacao")
-                        .WithMany()
-                        .HasForeignKey("LocalizacaoId");
-
                     b.Navigation("Categoria");
-
-                    b.Navigation("Localizacao");
                 });
 
             modelBuilder.Entity("IVnews.Model.Resumo", b =>
@@ -264,6 +271,21 @@ namespace IVnews.Migrations
                         .IsRequired();
 
                     b.Navigation("Noticia");
+                });
+
+            modelBuilder.Entity("NoticiaLocalizacao", b =>
+                {
+                    b.HasOne("IVnews.Model.Localizacao", null)
+                        .WithMany()
+                        .HasForeignKey("LocalizacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IVnews.Model.Noticia", null)
+                        .WithMany()
+                        .HasForeignKey("NoticiaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

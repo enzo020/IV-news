@@ -120,7 +120,8 @@ namespace IVNews.Services
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
-            var endpoint = $"v1/news/everything?language.code=pt&source.country.code=br&published_at.start=NOW-30DAYS&published_at.end=NOW&per_page={perPage}";
+            
+            var endpoint = $"v1/news/everything?language.code=pt&source.country.code=br&published_at.start=NOW-100DAYS&published_at.end=NOW&per_page={perPage}";
 
             HttpResponseMessage response;
 
@@ -207,19 +208,28 @@ namespace IVNews.Services
 
         private async Task<string?> ObterImagemValidaAsync(ApiTubeArticle article)
         {
-            if (article.Media == null)
+            if (article.Media == null || !article.Media.Any())
                 return null;
 
-            foreach (var media in article.Media)
+            string? melhorImagem = null;
+            long maiorPontuacao = 0;
+
+            foreach (var media in article.Media.Take(8))
             {
                 if (string.IsNullOrWhiteSpace(media.Url))
                     continue;
 
-                if (await _imagemService.ImagemEhValida(media.Url))
-                    return media.Url;
+                var pontuacao = await _imagemService
+                    .ObterPontuacaoImagemAsync(media.Url);
+
+                if (pontuacao == null || pontuacao <= maiorPontuacao)
+                    continue;
+
+                maiorPontuacao = pontuacao.Value;
+                melhorImagem = media.Url;
             }
 
-            return null;
+            return melhorImagem;
         }
 
         private static double? ConverterCoordenada(string? valor)
@@ -235,42 +245,51 @@ namespace IVNews.Services
                     ? coordenada
                     : null;
         }
-        private async Task<Localizacao?> ObterOuCriarLocalizacaoAsync(ApiTubeLocation? dados)
+        private async Task<List<Localizacao>> ObterOuCriarLocalizacoesAsync(IEnumerable<ApiTubeLocation>? dados)
         {
+            var localizacoes = new List<Localizacao>();
+
             if (dados == null)
-                return null;
+                return localizacoes;
 
-            var pais = Normalizar(dados.Country);
-            var estado = Normalizar(dados.Region);
-            var cidade = Normalizar(dados.City);
-
-            // Não cadastrar uma localização completamente vazia.
-            if (pais == null && estado == null && cidade == null)
-                return null;
-
-            var existente = await _context.Localizacoes.FirstOrDefaultAsync(l =>
-                l.Pais == pais &&
-                l.Estado == estado &&
-                l.Cidade == cidade);
-
-            if (existente != null)
-                return existente;
-
-            var localizacao = new Localizacao
+            foreach (var dado in dados)
             {
-                Pais = pais,
-                Estado = estado,
-                Cidade = cidade,
-                Latitude = ConverterCoordenada(dados.Lat),
-                Longitude = ConverterCoordenada(dados.Long)
-            };
+                var cidade = Normalizar(dado.Name);
+                var pais = Normalizar(dado.Country);
+                var tipo = Normalizar(dado.Type);
 
-            _context.Localizacoes.Add(localizacao);
+                if (cidade == null)
+                    continue;
 
-            // Persiste para gerar o Id.
-            await _context.SaveChangesAsync();
+                if (localizacoes.Any(l => l.Cidade == cidade && l.Pais == pais && l.Tipo == tipo))
+                    continue;
 
-            return localizacao;
+                var existente = await _context.Localizacoes
+                    .FirstOrDefaultAsync(l =>
+                        l.Cidade == cidade &&
+                        l.Pais == pais &&
+                        l.Tipo == tipo);
+
+                if (existente != null)
+                {
+                    localizacoes.Add(existente);
+                    continue;
+                }
+                
+                var novaLocalizacao = new Localizacao
+                {
+                    Cidade = cidade,
+                    Pais = pais,
+                    Tipo = tipo,
+                    Latitude = dado.Lat,
+                    Longitude = dado.Lng 
+                };
+
+                _context.Localizacoes.Add(novaLocalizacao);
+                localizacoes.Add(novaLocalizacao);
+            }
+
+            return localizacoes;
         }
 
         private static string? Normalizar(string? valor)
@@ -448,6 +467,7 @@ namespace IVNews.Services
 
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
         {
+            Console.WriteLine("Iniciando importação de notícias da API...");
             var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
 
             int inseridas = 0;
@@ -561,7 +581,8 @@ namespace IVNews.Services
                 // 5. Recupera os metadados (só para quem passou na validação).
                 noticia.Categoria = ObterCategoria(article, categoriasBanco);
                 noticia.ImagemUrl = await ObterImagemValidaAsync(article);
-                noticia.Localizacao = await ObterOuCriarLocalizacaoAsync(article.Location);
+
+                noticia.Localizacoes = await ObterOuCriarLocalizacoesAsync(article.LocationsMentioned);
 
                 _context.Noticias.Add(noticia);
                 _context.Resumos.Add(resumo);

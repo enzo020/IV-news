@@ -21,7 +21,7 @@ namespace IVNews.Controllers
         {
             var noticias = await _context.Noticias
                 .Include(n => n.Categoria)
-                .Include(n => n.Localizacao)
+                .Include(n => n.Localizacoes)
                 .ToListAsync();
 
             return Ok(noticias);
@@ -32,7 +32,7 @@ namespace IVNews.Controllers
         {
             var noticia = await _context.Noticias
                 .Include(n => n.Categoria)
-                .Include(n => n.Localizacao)
+                .Include(n => n.Localizacoes)
                 .FirstOrDefaultAsync(n => n.Id == id);
 
             if (noticia == null)
@@ -60,6 +60,15 @@ namespace IVNews.Controllers
         [HttpPost]
         public async Task<ActionResult<Noticia>> PostNoticia(Noticia noticia)
         {
+            var idsLocalizacoes = noticia.Localizacoes
+                .Select(l => l.Id)
+                .Distinct()
+                .ToList();
+
+            noticia.Localizacoes = await _context.Localizacoes
+                .Where(l => idsLocalizacoes.Contains(l.Id))
+                .ToListAsync();
+
             _context.Noticias.Add(noticia);
 
             try
@@ -82,23 +91,34 @@ namespace IVNews.Controllers
         public async Task<IActionResult> PutNoticia(int id, Noticia noticia)
         {
             if (id != noticia.Id)
-            {
                 return BadRequest();
-            }
 
-            _context.Entry(noticia).State = EntityState.Modified;
+            var noticiaExistente = await _context.Noticias
+                .Include(n => n.Localizacoes)
+                .FirstOrDefaultAsync(n => n.Id == id);
+
+            if (noticiaExistente == null)
+                return NotFound();
+
+            // Atualiza os campos escalares da notícia.
+            _context.Entry(noticiaExistente)
+                .CurrentValues.SetValues(noticia);
+
+            // Atualiza as associações de localizações.
+            var idsLocalizacoes = noticia.Localizacoes
+                .Select(l => l.Id)
+                .Distinct()
+                .ToList();
+
+            var localizacoes = await _context.Localizacoes
+                .Where(l => idsLocalizacoes.Contains(l.Id))
+                .ToListAsync();
+
+            noticiaExistente.Localizacoes = localizacoes;
 
             try
             {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NoticiaExists(id))
-                {
-                    return NotFound();
-                }
-                return StatusCode(500, new { mensagem = "Não foi possível atualizar a notícia." });
             }
             catch (DbUpdateException)
             {

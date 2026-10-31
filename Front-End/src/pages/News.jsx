@@ -173,7 +173,7 @@ function News() {
                 title={noticia.titulo}
                 description={noticia.descricao}
                 category={noticia.categoria?.nome}
-                location={noticia.localizacao?.cidade}
+                locations={noticia.localizacoes}
                 image={noticia.imagemUrl}
                 datetime={noticia.publicadoEm}
               />

@@ -25,6 +25,7 @@ namespace IVnews.Model
         public DateTime? PublicadoEm { get; set; }
 
         public Categoria? Categoria { get; set; }
-        public Localizacao? Localizacao { get; set; }
+        public ICollection<Localizacao> Localizacoes { get; set; }
+            = new List<Localizacao>();
     }
 }

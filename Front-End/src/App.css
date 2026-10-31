@@ -669,17 +669,22 @@ body {
 /* Imagem */
 
 .news-card-image {
+    position: relative;
     width: 100%;
-    height: 240px;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
+}
+
+.news-card-image img,
+.news-card-image .image-placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .news-card-image img {
     display: block;
-
-    width: 100%;
-    height: 100%;
-
     object-fit: cover;
     object-position: center;
     transition: transform 0.4s ease;
@@ -763,7 +768,53 @@ body {
 
 .news-card-location {
     font-size: 0.875em;
-    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.location-tooltip-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.location-more {
+    color: var(--primary-color);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+.location-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+
+    min-width: 120px;
+    padding: 8px 12px;
+
+    background-color: var(--surface-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
+    z-index: 10;
+}
+
+.location-tooltip span {
+    display: block;
+    color: var(--text-color);
+    font-size: 0.85em;
+    white-space: nowrap;
+    padding: 3px 0;
+}
+
+.location-tooltip-container:hover .location-tooltip {
+    display: block;
 }
 
 .news-card-date {
@@ -1351,7 +1402,7 @@ body {
 /* Grid */
 
 .news-page {
-    margin: 0;
+    margin: 0 auto;
 }
 
 .news-grid {
@@ -1376,11 +1427,13 @@ body {
     align-items: stretch;
 }
 
-:root[data-news-layout="list"] .news-card img {
-    width: 220px;
-    max-width: 35%;
-    flex-shrink: 0;
-    object-fit: cover;
+:root[data-news-layout="list"] .news-card > .news-card-image {
+    flex: 0 0 320px;
+    width: 320px;
+    max-width: none;
+    height: auto;
+    aspect-ratio: auto;
+    align-self: stretch;
 }
 
 :root[data-news-layout="list"] .news-card > div {
@@ -1393,10 +1446,10 @@ body {
         flex-direction: column;
     }
 
-    :root[data-news-layout="list"] .news-card img {
+    :root[data-news-layout="list"] .news-card > .news-card-image {
+        flex: none;
         width: 100%;
         max-width: 100%;
-        height: 180px;
     }
 }
 
@@ -1493,9 +1546,21 @@ body {
 }
 
 .news-details-location {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
     margin-top: 15px;
+
     color: var(--text-secondary);
     font-size: 0.9375em;
+}
+
+.news-details-location span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .news-details-description {
