@@ -32,6 +32,7 @@ builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddScoped<
     IVNews.Backend.Services.IContentExtractorService,
     IVNews.Backend.Services.ContentExtractorService>();
+builder.Services.AddScoped<IGeracaoDeImagensService, GeracaoDeImagensService>();
 
 var app = builder.Build();
 

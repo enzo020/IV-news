@@ -151,8 +151,15 @@ Configure a chave da API do Google Gemini:
 ```bash
 dotnet user-secrets set "Gemini:ApiKey" "SUA_API_KEY"
 ```
-
 Substitua `SUA_API_KEY` pela chave correspondente de cada serviço.
+
+Configure a conta e o token da Cloudflare para geração de imagens:
+``` bash
+dotnet user-secrets set "Cloudflare:AccountId" "SEU_ACCOUNT_ID" 
+
+dotnet user-secrets set "Cloudflare:ApiToken" "SEU_API_TOKEN" 
+```
+
 
 Os principais serviços de integração com APIs externas estão na pasta `Services` do backend.
 
