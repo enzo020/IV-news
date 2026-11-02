@@ -22,7 +22,8 @@ function News() {
 } = useCategorias();
 
   const categoriaSelecionada = searchParams.get("categoria");
-  const busca = searchParams.get("busca");
+  const busca = searchParams.get("busca") || "";
+  const localizacao = searchParams.get("localizacao") || "";
 
   useEffect(() => {
     async function carregarNoticias() {
@@ -30,7 +31,7 @@ function News() {
         setLoading(true);
         setErro(false);
 
-        const dados = await getNoticias();
+        const dados = await getNoticias({ busca, localizacao });
         setNoticias(dados);
       } catch (error) {
         setErro(true);

@@ -3,16 +3,16 @@ import { useState } from "react";
 
 function Header({ onMenuClick }) {
   const [busca, setBusca] = useState("");
+  const [localizacao, setLocalizacao] = useState("");
 
   const realizarBusca = () => {
-    const texto = busca.trim();
+    const params = new URLSearchParams();
 
-    if (!texto) {
-      window.location.href = "/noticias";
-      return;
-    }
+    if (busca.trim()) params.set("busca", busca.trim());
 
-    window.location.href = `/noticias?busca=${encodeURIComponent(texto)}`;
+    if (localizacao.trim()) params.set("localizacao", localizacao.trim());
+
+    window.location.href = `/noticias${params.toString() ? `?${params}` : ""}`;
   };
 
   const handleKeyDown = (event) => {
@@ -55,6 +55,15 @@ function Header({ onMenuClick }) {
               onChange={(event) => setBusca(event.target.value)}
               onKeyDown={handleKeyDown}
               aria-label="Pesquisar notícias"
+            />
+
+            <input
+              type="text"
+              placeholder="Localização"
+              value={localizacao}
+              onChange={(event) => setLocalizacao(event.target.value)}
+              onKeyDown={handleKeyDown}
+              aria-label="Filtrar por localização"
             />
 
             <button

@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using IVnews.Data;
 using IVnews.DTOs;
 using IVnews.DTOs.ApiTube;
@@ -123,47 +125,130 @@ namespace IVNews.Services
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
-            
-            var endpoint = $"v1/news/everything?language.code=pt&source.country.code=br&published_at.start=NOW-100DAYS&published_at.end=NOW&per_page={perPage}";
+            const int quantidadePeriodos = 5;
+            const int intervaloDias = 20;
+            const int tamanhoPagina = 10;
+            const int limitePaginas = 5;
+
+            var hoje = DateTime.UtcNow.Date;
+            var inicio = hoje.AddDays(-100);
+
+            // IDs externos que já estão cadastrados no banco.
+            var idsExistentes = (await _context.Noticias
+                .Where(n => n.IdExterno != null)
+                .Select(n => n.IdExterno!)
+                .ToListAsync())
+                .ToHashSet();
+
+            var noticias = new List<ApiTubeArticle>();
+            var idsSelecionados = new HashSet<string>();
+
+            for (int i = 0; i < quantidadePeriodos; i++)
+            {
+                if (noticias.Count >= perPage)
+                    break;
+
+                var dataInicio = inicio.AddDays(i * intervaloDias);
+
+                var dataFim = i == quantidadePeriodos - 1
+                    ? hoje
+                    : dataInicio.AddDays(intervaloDias - 1);
+
+                // Distribui a quantidade restante entre os períodos restantes.
+                int periodosRestantes = quantidadePeriodos - i;
+                int quantidadeAlvo = (int)Math.Ceiling(
+                    (double)(perPage - noticias.Count) / periodosRestantes
+                );
+
+                int novasNoPeriodo = 0;
+
+                for (int pagina = 1; pagina <= limitePaginas; pagina++)
+                {
+                    if (novasNoPeriodo >= quantidadeAlvo ||
+                        noticias.Count >= perPage)
+                        break;
+
+                    var resultados = await BuscarNoticiasPorPeriodoAsync(
+                        dataInicio,
+                        dataFim,
+                        tamanhoPagina,
+                        pagina
+                    );
+
+                    if (resultados.Count == 0)
+                        break;
+
+                    foreach (var noticia in resultados)
+                    {
+                        string id = noticia.Id.ToString();
+
+                        // Ignora notícias já importadas ou repetidas nesta execução.
+                        if (idsExistentes.Contains(id) ||
+                            !idsSelecionados.Add(id))
+                            continue;
+
+                        noticias.Add(noticia);
+                        novasNoPeriodo++;
+
+                        if (novasNoPeriodo >= quantidadeAlvo ||
+                            noticias.Count >= perPage)
+                            break;
+                    }
+                }
+            }
+
+            return noticias;
+        }
+        private async Task<List<ApiTubeArticle>> BuscarNoticiasPorPeriodoAsync(
+            DateTime inicio,
+            DateTime fim,
+            int perPage,
+            int page)
+        {
+            var endpoint =
+                $"v1/news/everything" +
+                $"?language.code=pt" +
+                $"&source.country.code=br" +
+                $"&published_at.start={inicio:yyyy-MM-dd}" +
+                $"&published_at.end={fim:yyyy-MM-dd}" +
+                $"&sort.by=published_at" +
+                $"&sort.order=desc" +
+                $"&per_page={perPage}" +
+                $"&page={page}";
 
             HttpResponseMessage response;
 
             try
             {
-                // Tenta realizar a requisição à API externa
                 response = await _httpClient.GetAsync(endpoint);
             }
             catch (TaskCanceledException)
             {
                 throw new HttpRequestException(
-                    "[ApiTube Error] A requisição excedeu o tempo limite (Timeout). O serviço do ApiTube pode estar indisponível ou instável."
+                    "[ApiTube Error] A requisição excedeu o tempo limite."
                 );
             }
             catch (HttpRequestException ex)
             {
                 throw new HttpRequestException(
-                    $"[ApiTube Error] Falha de conexão de rede ao tentar acessar o ApiTube. Verifique sua conexão com a internet. Detalhes: {ex.Message}",
-                    ex
+                    $"[ApiTube Error] Falha de conexão: {ex.Message}", ex
                 );
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
-            // Se a API retornar erro HTTP (ex: 502, 503, 504, 500)
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException(
-                    $"[ApiTube Error] O ApiTube retornou um erro. Status Code: {(int)response.StatusCode} ({response.StatusCode}). " +
+                    $"[ApiTube Error] Status: {(int)response.StatusCode}. " +
                     $"Detalhes: {jsonResponse}"
                 );
             }
 
             if (string.IsNullOrWhiteSpace(jsonResponse))
-            {
                 throw new InvalidOperationException(
-                    "[ApiTube Error] A API retornou uma resposta com corpo vazio."
+                    "[ApiTube Error] Resposta vazia."
                 );
-            }
 
             var data = JsonSerializer.Deserialize<ApiTubeResponse>(
                 jsonResponse,
@@ -174,11 +259,9 @@ namespace IVNews.Services
             );
 
             if (data?.Results == null)
-            {
                 throw new InvalidOperationException(
-                    $"[ApiTube Error] Falha ao processar os dados recebidos. JSON: {jsonResponse}"
+                    "[ApiTube Error] Não foi possível processar a resposta."
                 );
-            }
 
             return data.Results;
         }
@@ -297,9 +380,10 @@ namespace IVNews.Services
 
         private static string? Normalizar(string? valor)
         {
-            return string.IsNullOrWhiteSpace(valor)
-                ? null
-                : valor.Trim();
+            if (string.IsNullOrWhiteSpace(valor))
+                return null;
+
+            return valor.Trim().ToLowerInvariant();
         }
 
         public async Task<Localizacao> SalvarLocalizacaoAsync(LocalizacaoDto localizacaoDto)
@@ -468,6 +552,84 @@ namespace IVNews.Services
             };
         }
 
+        // Normaliza o título para evitar duplicatas, removendo acentos, pontuação e espaços duplicados.
+        private string NormalizarTitulo(string? titulo)
+        {
+            if (string.IsNullOrWhiteSpace(titulo))
+                return string.Empty;
+
+            string normalizado = titulo.ToLowerInvariant();
+
+            // Remove acentos.
+            normalizado = normalizado.Normalize(NormalizationForm.FormD);
+
+            normalizado = new string(
+                normalizado
+                    .Where(c => CharUnicodeInfo.GetUnicodeCategory(c)
+                        != UnicodeCategory.NonSpacingMark)
+                    .ToArray()
+            );
+
+            normalizado = normalizado.Normalize(NormalizationForm.FormC);
+
+            // Remove pontuação e caracteres especiais.
+            normalizado = Regex.Replace(normalizado, @"[^\w\s]", " ");
+
+            // Remove espaços duplicados.
+            normalizado = Regex.Replace(normalizado, @"\s+", " ").Trim();
+
+            return normalizado;
+        }
+
+        // Calcula a similaridade usando fórmula de Jaccard entre dois títulos, para evitar duplicatas.
+        private double CalcularSimilaridadeJaccard(string tituloA, string tituloB)
+        {
+            var palavrasA = tituloA
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .ToHashSet();
+
+            var palavrasB = tituloB
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .ToHashSet();
+
+            if (palavrasA.Count == 0 || palavrasB.Count == 0)
+                return 0;
+
+            int intersecao = palavrasA.Intersect(palavrasB).Count();
+            int uniao = palavrasA.Union(palavrasB).Count();
+
+            return (double)intersecao / uniao;
+        }
+
+        private bool EhTituloDuplicado(
+            string? titulo,
+            IEnumerable<string?> titulosExistentes,
+            double limite = 0.80)
+        {
+            var tituloNormalizado = NormalizarTitulo(titulo);
+
+            if (string.IsNullOrWhiteSpace(tituloNormalizado))
+                return false;
+
+            foreach (var tituloExistente in titulosExistentes)
+            {
+                var existenteNormalizado = NormalizarTitulo(tituloExistente);
+
+                if (string.IsNullOrWhiteSpace(existenteNormalizado))
+                    continue;
+
+                double similaridade = CalcularSimilaridadeJaccard(
+                    tituloNormalizado,
+                    existenteNormalizado
+                );
+
+                if (similaridade >= limite)
+                    return true;
+            }
+
+            return false;
+        }
+
         public async Task GerarESalvarImagemDaNoticiaAsync(Noticia noticia, string? prompt)
         {
             if (noticia == null)
@@ -507,6 +669,13 @@ namespace IVNews.Services
                 motivosRejeicao.Add($"[{artigo.Id}] {artigo.Title}: {string.Join("; ", motivos)}");
             }
 
+            var titulosExistentes = await _context.Noticias
+                .Where(n => n.PublicadoEm >= DateTime.UtcNow.AddDays(-100))
+                .Select(n => n.Titulo)
+                .ToListAsync();
+
+            var titulosImportados = new List<string>();
+
             foreach (var article in noticiasApi)
             {
                 // 0. Rejeita o que não cumpre os requisitos do banco, antes de gastar extração e Gemini.
@@ -523,6 +692,14 @@ namespace IVNews.Services
                         n => n.IdExterno == article.Id.ToString());
 
                 if (noticiaExistente != null)
+                {
+                    ignoradas++;
+                    continue;
+                }
+
+                var titulosParaComparar = titulosExistentes.Concat(titulosImportados);
+                
+                if (EhTituloDuplicado(article.Title, titulosParaComparar))
                 {
                     ignoradas++;
                     continue;
@@ -607,6 +784,8 @@ namespace IVNews.Services
 
                 _context.Noticias.Add(noticia);
                 _context.Resumos.Add(resumo);
+
+                titulosImportados.Add(noticia.Titulo!);
 
                 inseridas++;
             }

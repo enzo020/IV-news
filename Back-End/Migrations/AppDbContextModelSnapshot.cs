@@ -125,37 +125,10 @@ namespace IVnews.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Localizacoes");
+                    b.HasIndex("Cidade", "Pais", "Tipo")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Cidade = "Maringá",
-                            Estado = "PR",
-                            Pais = "Brasil"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Cidade = "São Paulo",
-                            Estado = "SP",
-                            Pais = "Brasil"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Cidade = "Curitiba",
-                            Estado = "PR",
-                            Pais = "Brasil"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Cidade = "Rio de Janeiro",
-                            Estado = "RJ",
-                            Pais = "Brasil"
-                        });
+                    b.ToTable("Localizacoes");
                 });
 
             modelBuilder.Entity("IVnews.Model.Noticia", b =>
@@ -209,9 +182,6 @@ namespace IVnews.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Categoria")
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("NoticiaId")
                         .HasColumnType("INTEGER");

@@ -17,12 +17,36 @@ namespace IVNews.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetNoticias()
+        public async Task<IActionResult> GetNoticias(
+      [FromQuery] string? busca,
+      [FromQuery] string? localizacao)
         {
-            var noticias = await _context.Noticias
+            var query = _context.Noticias
                 .Include(n => n.Categoria)
                 .Include(n => n.Localizacoes)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(busca))
+            {
+                query = query.Where(n =>
+                    EF.Functions.Like(n.Titulo!, $"%{busca}%") ||
+                    EF.Functions.Like(n.Descricao!, $"%{busca}%") ||
+                    EF.Functions.Like(n.Conteudo!, $"%{busca}%")
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(localizacao))
+            {
+                query = query.Where(n =>
+                    n.Localizacoes.Any(l =>
+                        EF.Functions.Like(l.Cidade!, $"%{localizacao}%") ||
+                        EF.Functions.Like(l.Estado!, $"%{localizacao}%") ||
+                        EF.Functions.Like(l.Pais!, $"%{localizacao}%")
+                    )
+                );
+            }
+
+            var noticias = await query.ToListAsync();
 
             var noticiasComPrompt = await _context.Resumos
                 .Where(r => !string.IsNullOrWhiteSpace(r.Prompt))

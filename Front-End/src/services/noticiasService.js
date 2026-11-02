@@ -1,7 +1,15 @@
 import apiFetch from "./api";
 
-export async function getNoticias() {
-    return apiFetch("/noticias");
+export async function getNoticias(filtros = {}) {
+  const params = new URLSearchParams();
+
+  if (filtros.busca) params.append("busca", filtros.busca);
+
+  if (filtros.localizacao) params.append("localizacao", filtros.localizacao);
+
+  const query = params.toString();
+
+  return apiFetch(`/noticias${query ? `?${query}` : ""}`);
 }
 
 export async function getNoticiaById(id) {

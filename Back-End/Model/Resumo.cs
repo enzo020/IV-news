@@ -10,8 +10,6 @@ namespace IVnews.Model
         public string? Titulo { get; set; }
         public string? ResumoExecutivo { get; set; }
         public List<string>? PontosChave { get; set; }
-        public string? Categoria { get; set; }
-
         [RegularExpression("^(Positivo|Negativo|Neutro)$")]
         public string? Sentimento { get; set; }
 
