@@ -28,6 +28,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient<INoticiaService, NoticiaService>();
 builder.Services.AddHttpClient<ImagemService>();
+builder.Services.AddScoped<ArmazenamentoImagemService>();
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddScoped<
     IVNews.Backend.Services.IContentExtractorService,

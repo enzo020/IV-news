@@ -8,7 +8,6 @@ using IVnews.DTOs.ApiTube;
 using IVnews.Model;
 using IVNews.Backend.Services;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
 
 namespace IVNews.Services
 {
@@ -18,15 +17,17 @@ namespace IVNews.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ImagemService _imagemService;
+        private readonly ArmazenamentoImagemService _armazenamentoImagemService;
         private readonly IContentExtractorService _contentExtractor;
         private readonly IGeminiService _geminiService;
 
-        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService, IContentExtractorService contentExtractor, IGeminiService geminiService)
+        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService, ArmazenamentoImagemService armazenamentoImagemService, IContentExtractorService contentExtractor, IGeminiService geminiService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _context = context;
             _imagemService = imagemService;
+            _armazenamentoImagemService = armazenamentoImagemService;
             _contentExtractor = contentExtractor;
             _geminiService = geminiService;
 
@@ -205,22 +206,6 @@ namespace IVNews.Services
             return categoriasBanco.FirstOrDefault(c => c.Id == CategoriaOutrosId);
         }
 
-        private async Task<string?> ObterImagemValidaAsync(ApiTubeArticle article)
-        {
-            if (article.Media == null)
-                return null;
-
-            foreach (var media in article.Media)
-            {
-                if (string.IsNullOrWhiteSpace(media.Url))
-                    continue;
-
-                if (await _imagemService.ImagemEhValida(media.Url))
-                    return media.Url;
-            }
-
-            return null;
-        }
 
         private static double? ConverterCoordenada(string? valor)
         {
@@ -455,6 +440,7 @@ namespace IVNews.Services
             int rejeitadas = 0;
             int falhasExtracao = 0;
             int falhasProcessamento = 0;
+            int falhasImagem = 0;
             var motivosRejeicao = new List<string>();
 
             var categoriasBanco = await _context.Categorias.ToListAsync();
@@ -558,10 +544,32 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 5. Recupera os metadados (só para quem passou na validação).
+                // 5. Recupera os metadados.
                 noticia.Categoria = ObterCategoria(article, categoriasBanco);
-                noticia.ImagemUrl = await ObterImagemValidaAsync(article);
                 noticia.Localizacao = await ObterOuCriarLocalizacaoAsync(article.Location);
+
+                // 6. Gera e armazena a imagem da notícia.
+                try
+                {
+                    var descricaoImagem =
+                        $"{noticia.Titulo}. {noticia.Descricao}. {processada.ResumoExecutivo}";
+
+                    var imagemBytes = await _imagemService.GerarImagemAsync(descricaoImagem);
+
+                    noticia.ImagemUrl = await _armazenamentoImagemService.SalvarImagemAsync(
+                        imagemBytes,
+                        $"noticia-{article.Id}.png"
+                    );
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    noticia.ImagemUrl = null;
+                    falhasImagem++;
+
+                    Console.WriteLine(
+                        $"Falha ao gerar imagem da notícia {article.Id}: {ex.Message}"
+                    );
+                }
 
                 _context.Noticias.Add(noticia);
                 _context.Resumos.Add(resumo);
@@ -586,7 +594,8 @@ namespace IVNews.Services
                     $"Duplicadas: {ignoradas} | " +
                     $"Rejeitadas: {rejeitadas} | " +
                     $"Falhas na extração: {falhasExtracao} | " +
-                    $"Falhas no Gemini: {falhasProcessamento}"
+                    $"Falhas no Gemini: {falhasProcessamento}"+
+                    $" | Falhas nas imagens: {falhasImagem}"
             };
         }
     }
