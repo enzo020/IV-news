@@ -1,13 +1,16 @@
 using SixLabors.ImageSharp;
 
-// Arquivo responsável por tratamentos de resolução das imagens
 public class ImagemService
 {
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
 
-    public ImagemService(HttpClient httpClient)
+    public ImagemService(
+        HttpClient httpClient,
+        IConfiguration configuration)
     {
         _httpClient = httpClient;
+        _configuration = configuration;
     }
 
     public static bool PareceBanner(int largura, int altura)

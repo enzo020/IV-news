@@ -160,6 +160,12 @@ dotnet user-secrets set "Cloudflare:AccountId" "SEU_ACCOUNT_ID"
 dotnet user-secrets set "Cloudflare:ApiToken" "SEU_API_TOKEN" 
 ```
 
+Configure a conta da Cloudinary para armazenamento de imagens:
+``` bash
+dotnet user-secrets set "Cloudinary:CloudName" "SEU_CLOUD_NAME" 
+dotnet user-secrets set "Cloudinary:ApiKey" "SUA_API_KEY" 
+dotnet user-secrets set "Cloudinary:ApiSecret" "SEU_API_SECRET"
+```
 
 Os principais serviços de integração com APIs externas estão na pasta `Services` do backend.
 

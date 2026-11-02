@@ -17,18 +17,42 @@ namespace IVNews.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Noticia>>> GetNoticias()
+        public async Task<IActionResult> GetNoticias()
         {
             var noticias = await _context.Noticias
                 .Include(n => n.Categoria)
                 .Include(n => n.Localizacoes)
                 .ToListAsync();
 
-            return Ok(noticias);
+            var noticiasComPrompt = await _context.Resumos
+                .Where(r => !string.IsNullOrWhiteSpace(r.Prompt))
+                .Select(r => r.NoticiaId)
+                .Distinct()
+                .ToListAsync();
+
+            var resultado = noticias.Select(noticia => new
+            {
+                noticia.Id,
+                noticia.Titulo,
+                noticia.Conteudo,
+                noticia.Autor,
+                noticia.Fonte,
+                noticia.UrlNoticia,
+                noticia.ImagemUrl,
+                noticia.IdExterno,
+                noticia.Descricao,
+                noticia.PublicadoEm,
+                noticia.Categoria,
+                noticia.Localizacoes,
+
+                possuiPrompt = noticiasComPrompt.Contains(noticia.Id)
+            });
+
+            return Ok(resultado);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Noticia>> GetNoticia(int id)
+        public async Task<IActionResult> GetNoticia(int id)
         {
             var noticia = await _context.Noticias
                 .Include(n => n.Categoria)
@@ -40,7 +64,18 @@ namespace IVNews.Controllers
                 return NotFound();
             }
 
-            return Ok(noticia);
+            var possuiPrompt = await _context.Resumos
+                .AnyAsync(r =>
+                    r.NoticiaId == id &&
+                    !string.IsNullOrWhiteSpace(r.Prompt)
+                );
+
+
+            return Ok(new
+            {
+                noticia,
+                possuiPrompt
+            });
         }
 
         [HttpGet("{id}/resumo")]

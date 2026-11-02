@@ -176,6 +176,7 @@ function News() {
                 locations={noticia.localizacoes}
                 image={noticia.imagemUrl}
                 datetime={noticia.publicadoEm}
+                possuiPrompt={noticia.possuiPrompt}
               />
             ))}
           </div>

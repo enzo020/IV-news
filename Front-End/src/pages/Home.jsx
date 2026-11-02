@@ -133,6 +133,7 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
                 locations={noticia.localizacoes}
                 image={noticia.imagemUrl}
                 datetime={noticia.publicadoEm}
+                possuiPrompt={noticia.possuiPrompt}
               />
             ))}
           </div>

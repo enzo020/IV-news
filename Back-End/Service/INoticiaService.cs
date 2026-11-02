@@ -10,5 +10,6 @@ namespace IVNews.Services
         Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage);
         Task<Localizacao> SalvarLocalizacaoAsync(LocalizacaoDto localizacaoDto);
         Task<Categoria> SalvarCategoriaAsync(CategoriaDto categoriaDto);
+        Task GerarESalvarImagemDaNoticiaAsync(Noticia noticia, string? prompt);
     }
 }

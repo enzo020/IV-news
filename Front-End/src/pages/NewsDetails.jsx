@@ -24,8 +24,8 @@ function NewsDetails() {
                 setErro(false);
                 
                 const dados = await getNoticiaById(Number(id));
-                
-                setNoticia(dados);
+
+                setNoticia(dados.noticia);
             } catch (error) {
                 setErro(true);
             } finally {

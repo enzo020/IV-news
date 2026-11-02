@@ -1,4 +1,4 @@
 public interface IGeracaoDeImagensService
 {
-    Task<string> GerarImagemAsync(string prompt);
+    Task<byte[]> GerarImagemAsync(string prompt);
 }

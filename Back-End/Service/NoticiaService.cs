@@ -8,7 +8,6 @@ using IVnews.DTOs.ApiTube;
 using IVnews.Model;
 using IVNews.Backend.Services;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
 
 namespace IVNews.Services
 {
@@ -18,15 +17,19 @@ namespace IVNews.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ImagemService _imagemService;
+        private readonly ArmazenamentoImagemService _armazenamentoImagemService;
         private readonly IContentExtractorService _contentExtractor;
         private readonly IGeminiService _geminiService;
+        private readonly IGeracaoDeImagensService _geracaoDeImagensService;
 
-        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService, IContentExtractorService contentExtractor, IGeminiService geminiService)
+        public NoticiaService(HttpClient httpClient, IConfiguration configuration, AppDbContext context, ImagemService imagemService, ArmazenamentoImagemService armazenamentoImagemService, IContentExtractorService contentExtractor, IGeminiService geminiService, IGeracaoDeImagensService geracaoDeImagensService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _context = context;
             _imagemService = imagemService;
+            _armazenamentoImagemService = armazenamentoImagemService;
+            _geracaoDeImagensService = geracaoDeImagensService;
             _contentExtractor = contentExtractor;
             _geminiService = geminiService;
 
@@ -465,6 +468,24 @@ namespace IVNews.Services
             };
         }
 
+        public async Task GerarESalvarImagemDaNoticiaAsync(Noticia noticia, string? prompt)
+        {
+            if (noticia == null)
+                throw new ArgumentNullException(nameof(noticia));
+
+            if (prompt == null)
+                throw new ArgumentNullException(nameof(prompt));
+
+            var imagemBytes = await _geracaoDeImagensService.GerarImagemAsync(prompt);
+            var publicId = $"noticias/{Guid.NewGuid()}";
+
+            noticia.ImagemUrl = await _armazenamentoImagemService.SalvarImagemAsync(
+                imagemBytes,
+                publicId
+            );
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
         {
             Console.WriteLine("Iniciando importação de notícias da API...");
@@ -578,7 +599,7 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 5. Recupera os metadados (só para quem passou na validação).
+                // 5. Recupera os metadados.
                 noticia.Categoria = ObterCategoria(article, categoriasBanco);
                 noticia.ImagemUrl = await ObterImagemValidaAsync(article);
 

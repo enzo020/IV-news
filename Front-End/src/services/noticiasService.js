@@ -7,3 +7,10 @@ export async function getNoticias() {
 export async function getNoticiaById(id) {
     return apiFetch(`/noticias/${id}`);
 }
+
+export async function gerarImagemDaNoticia(id) {
+    return apiFetch(`/gerar-imagens?noticiaId=${id}`, {
+      method: "POST"
+    });
+}
+        

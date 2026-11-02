@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+using System.Text.Json;
 using IVnews.Data;
 
 public class GeracaoDeImagensService : IGeracaoDeImagensService
@@ -14,49 +16,64 @@ public class GeracaoDeImagensService : IGeracaoDeImagensService
 
     }
 
-    public async Task<string> GerarImagemAsync(string prompt)
+    public async Task<byte[]> GerarImagemAsync(string prompt)
     {
-        var defaultUrl = $"https://api.cloudflare.com/client/v4/accounts/{_configuration.GetValue<string>("Cloudflare:AccountId")}{_configuration.GetValue<string>("Cloudflare:Model")}";
+        var accountId = _configuration["Cloudflare:AccountId"];
+        var apiToken = _configuration["Cloudflare:ApiToken"];
+        string width = "512", height = "512";
 
-        var token = _configuration.GetValue<string>("Cloudflare:ApiToken");
-
-        int width = 512, height = 512;
-
-        using var requestBody = new MultipartFormDataContent
+        if (string.IsNullOrWhiteSpace(accountId) ||
+            string.IsNullOrWhiteSpace(apiToken))
         {
-            { new StringContent(prompt), "prompt" },
-            { new StringContent(width.ToString()), "width" },
-            { new StringContent(height.ToString()), "height" }
-        };
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, defaultUrl)
-        {
-            Content = requestBody
-        };
-
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-        Console.WriteLine($"Token nulo: {token == null}");
-        Console.WriteLine($"Token vazio: {string.IsNullOrWhiteSpace(token)}");
-        Console.WriteLine($"Token começa com Bearer: {token?.StartsWith("Bearer ") == true}");
-        Console.WriteLine($"Tamanho do token: {token?.Length}");
-        var response = await _httpclient.SendAsync(request);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var erro = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Erro ao gerar imagem: {erro}");
+            throw new InvalidOperationException(
+                "As credenciais da Cloudflare não foram configuradas."
+            );
         }
+
+        var endpoint = $"https://api.cloudflare.com/client/v4/accounts/{_configuration.GetValue<string>("Cloudflare:AccountId")}{_configuration.GetValue<string>("Cloudflare:Model")}";
+
+        using var form = new MultipartFormDataContent();
+
+        form.Add(new StringContent(prompt), "prompt");
+        form.Add(new StringContent(width), "width");
+        form.Add(new StringContent(height), "height");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiToken);
+
+        request.Content = form;
+
+        using var response = await _httpclient.SendAsync(request);
 
         var responseContent = await response.Content.ReadAsStringAsync();
 
-        using var jsonResponse = System.Text.Json.JsonDocument.Parse(responseContent);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Erro na geração da imagem: {responseContent}"
+            );
+        }
 
-        var imagemBase64 = jsonResponse.RootElement
-            .GetProperty("result")
-            .GetProperty("image")
-            .GetString();
+        using var json = JsonDocument.Parse(responseContent);
 
-        return imagemBase64 ?? throw new Exception("Erro ao gerar imagem: resposta inválida do servidor.");
+        if (!json.RootElement.TryGetProperty("result", out var result) ||
+            !result.TryGetProperty("image", out var imageElement))
+        {
+            throw new InvalidOperationException(
+                "A resposta da Cloudflare não contém a imagem esperada."
+            );
+        }
+
+        var imagemBase64 = imageElement.GetString();
+
+        if (string.IsNullOrWhiteSpace(imagemBase64))
+        {
+            throw new InvalidOperationException(
+                "A Cloudflare retornou uma imagem vazia."
+            );
+        }
+
+        return Convert.FromBase64String(imagemBase64);
     }
 }
