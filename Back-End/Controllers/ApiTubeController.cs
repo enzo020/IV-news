@@ -44,6 +44,37 @@ namespace IVNews.Controllers
             }
         }
 
+        [HttpPost("importarPorCategoria")]
+        public async Task<IActionResult> ImportarNoticiasDaApiTube(
+            [FromQuery] int categoriaId,
+            [FromQuery] int perPage = 10)
+        {
+            var validacao = ValidarPerPage(perPage);
+
+            if (validacao != null)
+                return validacao;
+
+            if (categoriaId < 1 || categoriaId > 10)
+            {
+                return BadRequest(new
+                {
+                    mensagem = "O categoriaId deve estar entre 1 e 10."
+                });
+            }
+
+            try
+            {
+                var resultado = await _noticiaService
+                    .SalvarNoticiasDaApiAsync(perPage, categoriaId);
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return CriarRespostaErroImportacao(ex);
+            }
+        }
+
         private IActionResult? ValidarPerPage(int perPage)
         {
             if (perPage >= 1 && perPage <= 10)

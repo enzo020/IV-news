@@ -102,7 +102,6 @@ namespace IVNews.Services
 
             // Negócios
             ["medtop:20000243"] = 7,
-            ["medtop:20000209"] = 7,
             ["medtop:20001136"] = 7,
             ["medtop:20001371"] = 7,
             ["medtop:09000000"] = 7,
@@ -122,6 +121,123 @@ namespace IVNews.Services
             ["medtop:02000000"] = 10,
             ["medtop:20000133"] = 10
         };
+
+        // sobrecar o método para aceitar um parâmetro de categoria do banco, e filtrar as notícias da API com base nesse parâmetro.
+        public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(
+            int perPage,
+            int categoriaBancoId)
+        {
+            const int CategoriaOutrosId = 6;
+
+            // Outros não utiliza category.id.
+            var gruposCategorias = categoriaBancoId == CategoriaOutrosId
+                ? new List<string[]> { Array.Empty<string>() }
+                : CategoriaMapeamento
+                    .Where(c => c.Value == categoriaBancoId)
+                    .Select(c => c.Key)
+                    .Distinct()
+                    .Chunk(3)
+                    .Select(grupo => grupo.ToArray())
+                    .ToList();
+
+            if (gruposCategorias.Count == 0)
+                throw new ArgumentException(
+                    $"Não existem categorias APITube associadas ao ID {categoriaBancoId}.");
+
+            var idsExistentes = (await _context.Noticias
+                .Where(n => n.IdExterno != null)
+                .Select(n => n.IdExterno!)
+                .ToListAsync())
+                .ToHashSet();
+
+            var noticias = new List<ApiTubeArticle>();
+            var idsSelecionados = new HashSet<string>();
+
+            foreach (var grupo in gruposCategorias)
+            {
+                var resultados = await BuscarNoticiasPorCategoriaAsync(
+                    perPage,
+                    grupo);
+
+                foreach (var noticia in resultados)
+                {
+                    string id = noticia.Id.ToString();
+
+                    if (idsExistentes.Contains(id) ||
+                        !idsSelecionados.Add(id))
+                        continue;
+
+                    noticias.Add(noticia);
+                }
+            }
+
+            return noticias;
+        }
+
+
+        private async Task<List<ApiTubeArticle>> BuscarNoticiasPorCategoriaAsync(
+            int perPage,
+            string[] categoriasApi)
+        {
+            var endpoint =
+                "v1/news/everything" +
+                "?language.code=pt" +
+                "&source.country.code=br";
+
+            if (categoriasApi.Length > 0)
+            {
+                var categorias = Uri.EscapeDataString(
+                    string.Join(",", categoriasApi));
+
+                endpoint += $"&category.id={categorias}";
+            }
+
+            endpoint += $"&per_page={perPage}";
+
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await _httpClient.GetAsync(endpoint);
+            }
+            catch (TaskCanceledException)
+            {
+                throw new HttpRequestException(
+                    "[ApiTube Error] A requisição excedeu o tempo limite.");
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException(
+                    $"[ApiTube Error] Falha de conexão: {ex.Message}", ex);
+            }
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"[ApiTube Error] Status: {(int)response.StatusCode}. " +
+                    $"Detalhes: {jsonResponse}");
+            }
+
+            if (string.IsNullOrWhiteSpace(jsonResponse))
+                throw new InvalidOperationException(
+                    "[ApiTube Error] Resposta vazia.");
+
+            var data = JsonSerializer.Deserialize<ApiTubeResponse>(
+                jsonResponse,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            if (data?.Results == null)
+                throw new InvalidOperationException(
+                    "[ApiTube Error] Não foi possível processar a resposta.");
+
+            return data.Results;
+        }
+
 
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
         {
@@ -215,6 +331,7 @@ namespace IVNews.Services
                 $"&sort.order=desc" +
                 $"&per_page={perPage}" +
                 $"&page={page}";
+
 
             HttpResponseMessage response;
 
@@ -350,7 +467,13 @@ namespace IVNews.Services
                 if (localizacoes.Any(l => l.Cidade == cidade && l.Pais == pais && l.Tipo == tipo))
                     continue;
 
-                var existente = await _context.Localizacoes
+                var existente = _context.Localizacoes.Local
+                    .FirstOrDefault(l =>
+                        l.Cidade == cidade &&
+                        l.Pais == pais &&
+                        l.Tipo == tipo);
+
+                existente ??= await _context.Localizacoes
                     .FirstOrDefaultAsync(l =>
                         l.Cidade == cidade &&
                         l.Pais == pais &&
@@ -648,10 +771,30 @@ namespace IVNews.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(int perPage)
+        public Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(
+            int perPage)    
+        {
+            return SalvarNoticiasDaApiInternoAsync(
+                perPage,
+                categoriaBancoId: null);
+        }
+
+        public Task<ImportacaoResultadoDto> SalvarNoticiasDaApiAsync(
+            int perPage,
+            int categoriaBancoId)
+        {
+            return SalvarNoticiasDaApiInternoAsync(
+                perPage,
+                categoriaBancoId);
+        }
+
+        public async Task<ImportacaoResultadoDto> SalvarNoticiasDaApiInternoAsync(int perPage, int? categoriaBancoId)
         {
             Console.WriteLine("Iniciando importação de notícias da API...");
-            var noticiasApi = await ObterNoticiasDaApiAsync(perPage);
+            var noticiasApi = categoriaBancoId.HasValue
+                ? await ObterNoticiasDaApiAsync(perPage, categoriaBancoId.Value)
+                : await ObterNoticiasDaApiAsync(perPage);
+
 
             int inseridas = 0;
             int ignoradas = 0;
