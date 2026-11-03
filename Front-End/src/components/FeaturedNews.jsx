@@ -79,7 +79,7 @@ function FeaturedNews({ news = [], interval = 5000 }) {
             onClick={previousNews}
             aria-label="Notícia anterior"
           >
-            ‹
+            <span>‹</span>
           </button>
 
           <button
@@ -88,7 +88,7 @@ function FeaturedNews({ news = [], interval = 5000 }) {
             onClick={nextNews}
             aria-label="Próxima notícia"
           >
-            ›
+            <span>›</span>
           </button>
 
           <div className="featured-news-indicators">
