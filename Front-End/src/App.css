@@ -424,13 +424,13 @@ body {
 
 .featured-news {
     position: relative;
-    translate: 1.75%;
+    translate: 0;
     width: 90%;
     min-height: 450px;
     overflow: hidden;
     border-radius: 12px;
     background-color: var(--background-color);
-    margin: 2rem;
+    margin: 2rem auto;
 }
 
 /* Imagem */
@@ -470,22 +470,26 @@ body {
 .featured-news-content {
     position: absolute;
     z-index: 2;
-    bottom: 35px;
+    bottom: 45px;
     left: 40px;
-    right: 80px;
+    right: 40px;
+
     font-size: var(--news-body-font-size);
+    overflow-wrap: anywhere;
 }
 
 .featured-news-title {
     margin: 0 0 10px;
     font-size: 2em;
     color: var(--text-contrast);
+    overflow-wrap: anywhere;
 }
 
 .featured-news-description {
     margin: 0;
     color: var(--text-contrast);
     font-size: 1em;
+    overflow-wrap: anywhere;
 }
 
 .featured-news-link {
@@ -636,6 +640,91 @@ body {
     }
 }
 
+/* Tablets */
+@media (max-width: 768px) {
+    .featured-news {
+        width: 95%;
+        min-height: 400px;
+        margin: 1.5rem auto;
+    }
+
+    .featured-news-slide {
+        min-height: 400px;
+    }
+
+    .featured-news-content {
+        left: 25px;
+        right: 25px;
+        bottom: 40px;
+    }
+
+    .featured-news-title {
+        font-size: 1.6em;
+    }
+
+    .featured-news-description {
+        font-size: 0.95em;
+    }
+
+    .featured-news-arrow {
+        width: 38px;
+        height: 38px;
+        font-size: 1.6rem;
+    }
+}
+
+/* Celulares */
+@media (max-width: 480px) {
+    .featured-news {
+        width: 100%;
+        min-height: 380px;
+        margin: 1rem auto;
+        border-radius: 8px;
+    }
+
+    .featured-news-slide {
+        min-height: 380px;
+    }
+
+    .featured-news-content {
+        left: 18px;
+        right: 18px;
+        bottom: 45px;
+        font-size: 0.9rem;
+    }
+
+    .featured-news-title {
+        font-size: 1.35em;
+        margin-bottom: 8px;
+    }
+
+    .featured-news-description {
+        font-size: 0.9em;
+    }
+
+    .featured-news-link {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+
+    .featured-news-arrow {
+        width: 32px;
+        height: 32px;
+        font-size: 1.4rem;
+    }
+
+    .featured-news-arrow-left {
+        left: 8px;
+    }
+
+    .featured-news-arrow-right {
+        right: 8px;
+    }
+
+    .featured-news-indicators {
+        bottom: 12px;
+    }
+}
 .navbar-links a:hover {
     color: var(--primary-color);
 }

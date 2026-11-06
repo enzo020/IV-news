@@ -931,9 +931,10 @@ namespace IVNews.Services
                 titulosImportados.Add(noticia.Titulo!);
 
                 inseridas++;
+                await _context.SaveChangesAsync();
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
 
-            await _context.SaveChangesAsync();
 
             return new ImportacaoResultadoDto
             {
