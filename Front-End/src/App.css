@@ -435,6 +435,35 @@ body {
 
 /* Imagem */
 
+.ai-generated-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 5px 9px;
+    border-radius: 20px;
+
+    background: rgba(33, 28, 43, 0.88);
+    color: #D8BCFF;
+
+    border: 1px solid rgba(155, 109, 208, 0.65);
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+
+    backdrop-filter: blur(5px);
+}
+
+.ai-generated-badge i {
+    font-size: 13px;
+}
+
 .featured-news-image {
     position: absolute;
     inset: 0;

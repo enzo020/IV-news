@@ -89,10 +89,7 @@ public class GeminiService : IGeminiService
 
         prompt.AppendLine("Regras para os campos:");
         prompt.AppendLine(
-            "- conteudo_tratado: limpe o texto, removendo menus, " +
-            "avisos de cookies, navegação, duplicações e elementos " +
-            "irrelevantes. Preserve os fatos, nomes, datas, números, " +
-            @"citações e o sentido original. Não invente informações. Mantenha todas as palavras relevantes para o texto, não resuma aqui, apenas limpe e organize. Utilize a tag \n para inserir quebras de linha e espaços para parágrafos de no mínimo 4 linhas, mantendo o texto menos condensado");
+            "- conteudo_tratado: limpe o texto removendo menus, cabeçalhos, rodapés, avisos de cookies, chamadas de assinatura (paywall), botões de compartilhamento, links de `leia também`, anúncios e duplicações. Preserve rigorosamente todos os fatos, nomes próprios, cargos, datas, locais, números, citações diretas e o sentido original. Não invente informações. Mantenha todas as informações relevantes do artigo: não resuma nem omita parágrafos informativos neste campo, apenas limpe e organize em parágrafos coesos. Utilize a tag \n para inserir quebras de linha e espaços para parágrafos de no mínimo 4 linhas, mantendo o texto menos condensado");
 
         prompt.AppendLine(
             "- resumo_executivo: resumo fiel e objetivo, com no máximo 60 palavras.");
@@ -115,7 +112,7 @@ public class GeminiService : IGeminiService
             "- Se o conteúdo estiver incompleto, não invente os trechos ausentes.");
 
         prompt.AppendLine(
-            "- prompt: crie um prompt que será usado em uma IA de imagem, baseado no conteúdo da notícia, mantenha o resumo breve e condizente com a noticia, também instrua a IA a não gerar ilustrações de pessoas reais ou desrespeitosas com o contexto da notícia, que seja adequado para o público geral e principalmente, que mantenha a simplicidade e que evite a todo custo gerar qualquer tipo de texto (evita alucinações). Mantenha o prompt em inglês. Exemplo de prompt: para a notícia sobre clima, o prompt poderia ser: Generate simple image of a cloudy sky with dark clouds. Avoid any depictions of written text, real people or disrespectful content.");
+            "- prompt:  descrição visual curta (máximo de 35 palavras) detalhando uma cena fotográfica editorial realista, sem texto escrito nem rostos de figuras públicas reais, para geração de imagem ilustrativa por IA. Mantenha o prompt em inglês. Exemplo de prompt: para a notícia sobre clima, o prompt poderia ser: Generate a realist image of a cloudy sky with dark clouds. Avoid any depictions of written text, real people or disrespectful content.");
         prompt.AppendLine(
             "O JSON deve conter os campos: conteudo_tratado, descricao" +
             "resumo_executivo, pontos_chave, categoria, sentimento e prompt.");
