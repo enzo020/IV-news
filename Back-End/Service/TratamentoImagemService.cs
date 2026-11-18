@@ -41,7 +41,6 @@ public class ImagemService
                 !contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            // Evita baixar arquivos excessivamente grandes.
             if (response.Content.Headers.ContentLength > 20_000_000)
                 return null;
 
@@ -60,12 +59,10 @@ public class ImagemService
 
             long quantidadePixels = (long)largura * altura;
 
-            // Rejeita imagens pequenas demais.
             if (Math.Max(largura, altura) < 700 ||
                 quantidadePixels < 350_000)
                 return null;
 
-            // A resolução determina a pontuação.
             return quantidadePixels;
         }
         catch

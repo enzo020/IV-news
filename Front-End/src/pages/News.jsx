@@ -104,7 +104,7 @@ function News() {
         </p>
       </section>
 
-      {/* Filtros */}
+      
 
       <section className="news-filters">
         <div className="news-filter-group">
@@ -141,7 +141,7 @@ function News() {
         </div>
       </section>
 
-      {/* Resultado */}
+      
 
       <section className="news-results">
         <div className="news-results-header">

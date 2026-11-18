@@ -24,7 +24,6 @@ function NewsCard({
   const possuiImagem = Boolean(imagemAtual?.trim());
 
   async function handleGerarImagem() {
-    // Proteção adicional contra chamadas repetidas.
     if (gerandoImagem || possuiImagem) return;
 
     try {
@@ -32,7 +31,6 @@ function NewsCard({
 
       const resultado = await gerarImagemDaNoticia(id);
 
-      // Considerando que o backend retorna a imagem atualizada.
       setImagemAtual(resultado.imagemUrl);
     } catch (error) {
       console.error("Erro ao gerar imagem da notícia:", error);

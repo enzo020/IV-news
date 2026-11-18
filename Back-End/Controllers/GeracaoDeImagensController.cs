@@ -10,8 +10,6 @@ namespace IVNews.Controllers;
 public class GeracaoDeImagensController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IGeracaoDeImagensService _geracaoDeImagensService;
-    private readonly IArmazenamentoImagemService _armazenamentoImagemService;
     private readonly INoticiaService _noticiaService;
 
     public GeracaoDeImagensController(AppDbContext context, INoticiaService noticiaService)

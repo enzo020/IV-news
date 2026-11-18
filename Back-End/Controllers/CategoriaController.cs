@@ -1,6 +1,3 @@
-
-
-using System.Reflection.Metadata.Ecma335;
 using IVnews.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,10 +31,5 @@ namespace IVNews.Controllers
 
             return Ok(categorias);
         }
-
-
-
-
-        
     }
 }

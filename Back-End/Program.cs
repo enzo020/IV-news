@@ -1,10 +1,9 @@
-using Microsoft.EntityFrameworkCore; // Clara 03/09
+using Microsoft.EntityFrameworkCore; 
 using IVnews.Data;
 using IVNews.Services;
-using IVNews.Backend.Services; // Clara 03/09
+using IVNews.Backend.Services; 
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
 
 builder.Services.AddControllers();
 
@@ -18,11 +17,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Registra o banco SQLite (Clara 03/09)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -39,7 +36,6 @@ var app = builder.Build();
 
 app.UseCors("ReactPolicy");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -47,7 +43,6 @@ if (app.Environment.IsDevelopment())
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sua API v1");
     
-    // Define o Swagger na raiz do site
     c.RoutePrefix = string.Empty; 
 });
 }

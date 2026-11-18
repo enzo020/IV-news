@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Routes, Route } from 'react-router-dom';
 import "./App.css";
 
-// Componentes
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
@@ -11,7 +10,6 @@ import About from "./pages/About";
 import Help from "./pages/Help";
 import News from "./pages/News";
 
-// Páginas
 import Home from "./pages/Home";
 import NewsDetails from "./pages/NewsDetails";
 import Categories from "./pages/Categories";

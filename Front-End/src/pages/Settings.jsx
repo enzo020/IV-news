@@ -57,7 +57,7 @@ function Settings() {
           </div>
 
           <div className="theme-options">
-            {/* Modo escuro */}
+            
             <button
               type="button"
               className={`theme-option ${
@@ -101,7 +101,7 @@ function Settings() {
               </div>
             </button>
 
-            {/* Modo claro */}
+            
             <button
               type="button"
               className={`theme-option ${

@@ -10,7 +10,7 @@ const integrantes = [
   },
   {
     nome: "Maria Clara Paiva",
-    cargo: "Administradora de Banco de dados",
+    cargo: "Desenvolvedora de Banco de dados",
   },
   {
     nome: "Adam Farah de Almeida Prado",
@@ -46,7 +46,7 @@ const recursos = [
 function About() {
   return (
     <main className="about-page container py-5">
-      {/* Apresentação */}
+      
       <section className="about-hero mb-5">
         <span className="about-eyebrow">CONHEÇA O PROJETO</span>
 
@@ -68,7 +68,7 @@ function About() {
         </a>
       </section>
 
-      {/* Proposta */}
+      
       <section className="about-section mb-5">
         <div className="row g-4 align-items-start">
           <div className="col-md-4">
@@ -103,7 +103,7 @@ function About() {
         </div>
       </section>
 
-      {/* Recursos */}
+      
       <section className="about-section mb-5">
         <div className="mb-4">
           <span className="about-eyebrow">O QUE NOS DEFINE</span>
@@ -130,7 +130,7 @@ function About() {
         </div>
       </section>
 
-      {/* Equipe */}
+      
       <section className="about-team">
         <div className="row g-4 align-items-start">
           <div className="col-lg-5">
@@ -184,7 +184,7 @@ function About() {
         </div>
       </section>
 
-      {/* Encerramento */}
+      
       <section className="about-footer mt-5">
         <h2>Conhecimento que vira projeto.</h2>
 

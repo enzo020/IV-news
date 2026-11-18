@@ -66,7 +66,7 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
 
   return (
     <main className="home-page">
-      {/* Introdução */}
+      
 
       <section className="home-intro">
         <div className="home-intro-content">
@@ -88,7 +88,7 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
         </div>
       </section>
 
-      {/* Destaque */}
+      
 
       {featuredNews.length > 0 && (
         <section className="home-featured">
@@ -104,7 +104,7 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
         </section>
       )}
 
-      {/* Notícias recentes */}
+      
 
       <section className="home-latest">
         <div className="home-section-header">
@@ -140,7 +140,7 @@ const featuredNews = selecionarNoticiasDestaque(noticias, 5).map((noticia) => ({
         )}
       </section>
 
-      {/* Categorias */}
+      
 
       <section className="home-categories">
         <div className="home-section-header">

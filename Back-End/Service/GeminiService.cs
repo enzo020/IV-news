@@ -19,12 +19,13 @@ public class GeminiService : IGeminiService
         _httpClient.BaseAddress ??= new Uri("https://generativelanguage.googleapis.com/");
     }
 
-    public async Task<ProcessamentoNoticiaDto?> ProcessarNoticiaAsync(string conteudo)
+    public async Task<ProcessamentoNoticiaDto> ProcessarNoticiaAsync(string conteudo)
     {
         var resposta = await GerarResumoAsync(conteudo);
 
         if (string.IsNullOrWhiteSpace(resposta))
-            return null;
+            throw new InvalidOperationException(
+                "O Gemini não retornou uma resposta válida para a notícia.");
 
         ProcessamentoNoticiaDto? resultado;
 
@@ -55,7 +56,6 @@ public class GeminiService : IGeminiService
     }
 
 
-    // Retorna o JSON completo do processamento.
     public async Task<string?> GerarResumoAsync(string conteudo)
     {
         if (string.IsNullOrWhiteSpace(conteudo))
@@ -89,8 +89,10 @@ public class GeminiService : IGeminiService
 
         prompt.AppendLine("Regras para os campos:");
         prompt.AppendLine(
-            "- conteudo_tratado: limpe o texto removendo menus, cabeçalhos, rodapés, avisos de cookies, chamadas de assinatura (paywall), botões de compartilhamento, links de `leia também`, anúncios e duplicações. Preserve rigorosamente todos os fatos, nomes próprios, cargos, datas, locais, números, citações diretas e o sentido original. Não invente informações. Mantenha todas as informações relevantes do artigo: não resuma nem omita parágrafos informativos neste campo, apenas limpe e organize em parágrafos coesos. Utilize a tag \n para inserir quebras de linha e espaços para parágrafos de no mínimo 4 linhas, mantendo o texto menos condensado");
+            "- conteudo_tratado: limpe o texto removendo menus, cabeçalhos, rodapés, avisos de cookies, chamadas de assinatura (paywall), botões de compartilhamento, links de `leia também`, anúncios e duplicações. Preserve rigorosamente todos os fatos, nomes próprios, cargos, datas, locais, números, citações diretas e o sentido original. Não invente informações. Mantenha todas as informações relevantes do artigo: não resuma nem omita parágrafos informativos neste campo, apenas limpe e organize em parágrafos coesos. Utilize a tag \n para inserir quebras de linha e espaços para parágrafos de no mínimo 4 linhas, mantendo o texto menos condensado.");
 
+        prompt.AppendLine(
+            " O conteudo_tratado deve ter apenas o texto recebido, NÃO INICIE ESSE CAMPO COM QUALQUER INTRODUÇÃO DO TEXTO COMO 'O conteúdo da notícia é:' ou 'O texto apresenta' ou algo similar. Ele deve ter exlusivamente o conteúdo tratado da notícia, fiel ao original.");
         prompt.AppendLine(
             "- resumo_executivo: resumo fiel e objetivo, com no máximo 60 palavras.");
 
@@ -116,6 +118,9 @@ public class GeminiService : IGeminiService
         prompt.AppendLine(
             "O JSON deve conter os campos: conteudo_tratado, descricao" +
             "resumo_executivo, pontos_chave, categoria, sentimento e prompt.");
+
+        prompt.AppendLine(
+            "Se algum campo não puder ser preenchido, não retorne qualquer valor JSON, essa notícia deve ser descartada.");
 
         prompt.AppendLine();
         prompt.AppendLine("INÍCIO DO TEXTO DA NOTÍCIA");

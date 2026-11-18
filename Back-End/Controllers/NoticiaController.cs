@@ -159,11 +159,9 @@ namespace IVNews.Controllers
             if (noticiaExistente == null)
                 return NotFound();
 
-            // Atualiza os campos escalares da notícia.
             _context.Entry(noticiaExistente)
                 .CurrentValues.SetValues(noticia);
 
-            // Atualiza as associações de localizações.
             var idsLocalizacoes = noticia.Localizacoes
                 .Select(l => l.Id)
                 .Distinct()

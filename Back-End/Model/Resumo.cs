@@ -6,7 +6,7 @@ namespace IVnews.Model
     {
         public int Id { get; set; }
 
-        // Resultados do Gemini (ficam vazios até a notícia ser processada)
+        
         public string? Titulo { get; set; }
         public string? ResumoExecutivo { get; set; }
         public List<string>? PontosChave { get; set; }

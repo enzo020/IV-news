@@ -6,12 +6,10 @@ function FeaturedNews({ news = [], interval = 5000 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState("next");
 
-  // Garante que o índice continue válido quando a lista mudar.
   useEffect(() => {
     setCurrentIndex(0);
   }, [news.length]);
 
-  // Avança automaticamente pelo carrossel.
   useEffect(() => {
     if (news.length <= 1) return;
 

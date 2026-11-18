@@ -57,11 +57,9 @@ namespace IVNews.Services
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
         }
-
-        // Mapeamento das categorias ApiTube > IvNews
         private static readonly Dictionary<string, int> CategoriaMapeamento = new()
         {
-            // Política
+
             ["medtop:16000000"] = 1,
             ["medtop:20000368"] = 1,
             ["medtop:20000593"] = 1,
@@ -71,11 +69,11 @@ namespace IVNews.Services
             ["medtop:11000000"] = 1,
             ["medtop:20000574"] = 1,
 
-            // Esporte
+
             ["medtop:15000000"] = 2,
             ["medtop:20001108"] = 2,
 
-            // Tecnologia
+
             ["medtop:13000000"] = 3,
             ["medtop:20000086"] = 3,
             ["medtop:20000265"] = 3,
@@ -86,13 +84,13 @@ namespace IVNews.Services
             ["medtop:20000231"] = 3,
             ["medtop:20000225"] = 3,
 
-            // Saúde
+
             ["medtop:07000000"] = 4,
             ["medtop:20000461"] = 4,
             ["medtop:20001358"] = 4,
             ["medtop:20000462"] = 4,
 
-            // Economia
+
             ["medtop:04000000"] = 5,
             ["medtop:20000170"] = 5,
             ["medtop:20000209"] = 5,
@@ -100,7 +98,7 @@ namespace IVNews.Services
             ["medtop:20001366"] = 5,
             ["medtop:20000346"] = 5,
 
-            // Negócios
+  
             ["medtop:20000243"] = 7,
             ["medtop:20001136"] = 7,
             ["medtop:20001371"] = 7,
@@ -108,28 +106,23 @@ namespace IVNews.Services
             ["medtop:20000509"] = 7,
             ["medtop:20000513"] = 7,
 
-            // Educação
             ["medtop:05000000"] = 8,
 
-            // Cultura
             ["medtop:20000038"] = 9,
             ["medtop:20000043"] = 9,
             ["medtop:14000000"] = 9,
             ["medtop:01000000"] = 9,
 
-            // Segurança
             ["medtop:02000000"] = 10,
             ["medtop:20000133"] = 10
         };
 
-        // sobrecar o método para aceitar um parâmetro de categoria do banco, e filtrar as notícias da API com base nesse parâmetro.
         public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(
             int perPage,
             int categoriaBancoId)
         {
             const int CategoriaOutrosId = 6;
 
-            // Outros não utiliza category.id.
             var gruposCategorias = categoriaBancoId == CategoriaOutrosId
                 ? new List<string[]> { Array.Empty<string>() }
                 : CategoriaMapeamento
@@ -168,6 +161,80 @@ namespace IVNews.Services
                         continue;
 
                     noticias.Add(noticia);
+                }
+            }
+
+            return noticias;
+        }
+
+        public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
+        {
+            const int quantidadePeriodos = 5;
+            const int intervaloDias = 20;
+            const int tamanhoPagina = 10;
+            const int limitePaginas = 5;
+
+            var hoje = DateTime.UtcNow.Date;
+            var inicio = hoje.AddDays(-100);
+
+            var idsExistentes = (await _context.Noticias
+                .Where(n => n.IdExterno != null)
+                .Select(n => n.IdExterno!)
+                .ToListAsync())
+                .ToHashSet();
+
+            var noticias = new List<ApiTubeArticle>();
+            var idsSelecionados = new HashSet<string>();
+
+            for (int i = 0; i < quantidadePeriodos; i++)
+            {
+                if (noticias.Count >= perPage)
+                    break;
+
+                var dataInicio = inicio.AddDays(i * intervaloDias);
+
+                var dataFim = i == quantidadePeriodos - 1
+                    ? hoje
+                    : dataInicio.AddDays(intervaloDias - 1);
+
+                int periodosRestantes = quantidadePeriodos - i;
+                int quantidadeAlvo = (int)Math.Ceiling(
+                    (double)(perPage - noticias.Count) / periodosRestantes
+                );
+
+                int novasNoPeriodo = 0;
+
+                for (int pagina = 1; pagina <= limitePaginas; pagina++)
+                {
+                    if (novasNoPeriodo >= quantidadeAlvo ||
+                        noticias.Count >= perPage)
+                        break;
+
+                    var resultados = await BuscarNoticiasPorPeriodoAsync(
+                        dataInicio,
+                        dataFim,
+                        tamanhoPagina,
+                        pagina
+                    );
+
+                    if (resultados.Count == 0)
+                        break;
+
+                    foreach (var noticia in resultados)
+                    {
+                        string id = noticia.Id.ToString();
+
+                        if (idsExistentes.Contains(id) ||
+                            !idsSelecionados.Add(id))
+                            continue;
+
+                        noticias.Add(noticia);
+                        novasNoPeriodo++;
+
+                        if (novasNoPeriodo >= quantidadeAlvo ||
+                            noticias.Count >= perPage)
+                            break;
+                    }
                 }
             }
 
@@ -238,83 +305,6 @@ namespace IVNews.Services
             return data.Results;
         }
 
-
-        public async Task<List<ApiTubeArticle>> ObterNoticiasDaApiAsync(int perPage)
-        {
-            const int quantidadePeriodos = 5;
-            const int intervaloDias = 20;
-            const int tamanhoPagina = 10;
-            const int limitePaginas = 5;
-
-            var hoje = DateTime.UtcNow.Date;
-            var inicio = hoje.AddDays(-100);
-
-            // IDs externos que já estão cadastrados no banco.
-            var idsExistentes = (await _context.Noticias
-                .Where(n => n.IdExterno != null)
-                .Select(n => n.IdExterno!)
-                .ToListAsync())
-                .ToHashSet();
-
-            var noticias = new List<ApiTubeArticle>();
-            var idsSelecionados = new HashSet<string>();
-
-            for (int i = 0; i < quantidadePeriodos; i++)
-            {
-                if (noticias.Count >= perPage)
-                    break;
-
-                var dataInicio = inicio.AddDays(i * intervaloDias);
-
-                var dataFim = i == quantidadePeriodos - 1
-                    ? hoje
-                    : dataInicio.AddDays(intervaloDias - 1);
-
-                // Distribui a quantidade restante entre os períodos restantes.
-                int periodosRestantes = quantidadePeriodos - i;
-                int quantidadeAlvo = (int)Math.Ceiling(
-                    (double)(perPage - noticias.Count) / periodosRestantes
-                );
-
-                int novasNoPeriodo = 0;
-
-                for (int pagina = 1; pagina <= limitePaginas; pagina++)
-                {
-                    if (novasNoPeriodo >= quantidadeAlvo ||
-                        noticias.Count >= perPage)
-                        break;
-
-                    var resultados = await BuscarNoticiasPorPeriodoAsync(
-                        dataInicio,
-                        dataFim,
-                        tamanhoPagina,
-                        pagina
-                    );
-
-                    if (resultados.Count == 0)
-                        break;
-
-                    foreach (var noticia in resultados)
-                    {
-                        string id = noticia.Id.ToString();
-
-                        // Ignora notícias já importadas ou repetidas nesta execução.
-                        if (idsExistentes.Contains(id) ||
-                            !idsSelecionados.Add(id))
-                            continue;
-
-                        noticias.Add(noticia);
-                        novasNoPeriodo++;
-
-                        if (novasNoPeriodo >= quantidadeAlvo ||
-                            noticias.Count >= perPage)
-                            break;
-                    }
-                }
-            }
-
-            return noticias;
-        }
         private async Task<List<ApiTubeArticle>> BuscarNoticiasPorPeriodoAsync(
             DateTime inicio,
             DateTime fim,
@@ -435,19 +425,6 @@ namespace IVNews.Services
             return melhorImagem;
         }
 
-        private static double? ConverterCoordenada(string? valor)
-        {
-            if (string.IsNullOrWhiteSpace(valor))
-                return null;
-
-            return double.TryParse(
-                valor,
-                NumberStyles.Float,
-                CultureInfo.InvariantCulture,
-                out var coordenada)
-                    ? coordenada
-                    : null;
-        }
         private async Task<List<Localizacao>> ObterOuCriarLocalizacoesAsync(IEnumerable<ApiTubeLocation>? dados)
         {
             var localizacoes = new List<Localizacao>();
@@ -580,12 +557,10 @@ namespace IVNews.Services
                     nameof(categoriaDto));
             }
 
-            // 1) Procura pelo código da APITube, quando ele foi informado.
             var existente = idExterno != null
                 ? await _context.Categorias.FirstOrDefaultAsync(c => c.IdExterno == idExterno)
                 : null;
 
-            // 2) Se não achou, procura pelo nome (sem diferenciar maiúsculas de minúsculas).
             if (existente == null)
             {
                 var nomeMinusculo = nome.ToLower();
@@ -596,7 +571,6 @@ namespace IVNews.Services
 
             if (existente != null)
             {
-                // Completa o que estiver vazio, sem sobrescrever o que já existe.
                 if (existente.IdExterno == null && idExterno != null)
                     existente.IdExterno = idExterno;
 
@@ -620,7 +594,6 @@ namespace IVNews.Services
             return categoria;
         }
 
-        // Requisitos da documentação do banco que já dá para conferir ANTES de extrair e chamar o Gemini.
         private static List<string> ValidarArtigoDaApi(ApiTubeArticle article)
         {
             var motivos = new List<string>();
@@ -640,8 +613,7 @@ namespace IVNews.Services
             return motivos;
         }
 
-        // Confere as regras que o próprio model declara ([Required] na Noticia e
-        // [RegularExpression] do Sentimento no Resumo), que são as regras da documentação do banco.
+
         private static List<string> ValidarRequisitos(object entidade)
         {
             var resultados = new List<ValidationResult>();
@@ -657,8 +629,7 @@ namespace IVNews.Services
                 .ToList();
         }
 
-        // O Gemini pode devolver "positivo" ou "NEUTRO": acerta a escrita antes de validar.
-        // Qualquer outro valor é mantido como veio, e a validação rejeita.
+
         private static string? NormalizarSentimento(string? valor)
         {
             var texto = Normalizar(valor);
@@ -675,7 +646,6 @@ namespace IVNews.Services
             };
         }
 
-        // Normaliza o título para evitar duplicatas, removendo acentos, pontuação e espaços duplicados.
         private string NormalizarTitulo(string? titulo)
         {
             if (string.IsNullOrWhiteSpace(titulo))
@@ -683,7 +653,6 @@ namespace IVNews.Services
 
             string normalizado = titulo.ToLowerInvariant();
 
-            // Remove acentos.
             normalizado = normalizado.Normalize(NormalizationForm.FormD);
 
             normalizado = new string(
@@ -695,16 +664,15 @@ namespace IVNews.Services
 
             normalizado = normalizado.Normalize(NormalizationForm.FormC);
 
-            // Remove pontuação e caracteres especiais.
+
             normalizado = Regex.Replace(normalizado, @"[^\w\s]", " ");
 
-            // Remove espaços duplicados.
+
             normalizado = Regex.Replace(normalizado, @"\s+", " ").Trim();
 
             return normalizado;
         }
 
-        // Calcula a similaridade usando fórmula de Jaccard entre dois títulos, para evitar duplicatas.
         private double CalcularSimilaridadeJaccard(string tituloA, string tituloB)
         {
             var palavrasA = tituloA
@@ -805,7 +773,6 @@ namespace IVNews.Services
 
             var categoriasBanco = await _context.Categorias.ToListAsync();
 
-            // Registra a notícia rejeitada e o motivo, que aparece no resultado da importação.
             void Rejeitar(ApiTubeArticle artigo, IEnumerable<string> motivos)
             {
                 rejeitadas++;
@@ -821,7 +788,7 @@ namespace IVNews.Services
 
             foreach (var article in noticiasApi)
             {
-                // 0. Rejeita o que não cumpre os requisitos do banco, antes de gastar extração e Gemini.
+
                 var motivosApi = ValidarArtigoDaApi(article);
 
                 if (motivosApi.Count > 0)
@@ -848,7 +815,6 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 1. Extrai o conteúdo da página original.
                 var extraction = await _contentExtractor.ExtractAsync(
                     article.Href ?? "");
 
@@ -858,7 +824,7 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 2. Processa o texto extraído com o Gemini.
+
                 ProcessamentoNoticiaDto? processada;
 
                 try
@@ -882,7 +848,7 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 3. Monta a notícia (texto tratado, não o Body do ApiTube) e o resumo associado.
+
                 var noticia = new Noticia
                 {
                     Titulo = article.Title,
@@ -908,7 +874,7 @@ namespace IVNews.Services
                     Noticia = noticia
                 };
 
-                // 4. Confere as regras da documentação do banco. Se falhar, rejeita e segue para a próxima.
+
                 var motivosModelo = ValidarRequisitos(noticia)
                     .Concat(ValidarRequisitos(resumo))
                     .ToList();
@@ -919,7 +885,7 @@ namespace IVNews.Services
                     continue;
                 }
 
-                // 5. Recupera os metadados.
+
                 noticia.Categoria = ObterCategoria(article, categoriasBanco);
                 noticia.ImagemUrl = await ObterImagemValidaAsync(article);
 
